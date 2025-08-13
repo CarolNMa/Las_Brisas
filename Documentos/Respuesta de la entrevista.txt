@@ -1,0 +1,150 @@
+ Y bueno, primero te voy a pedir el permiso de la grabación.
+ Antes de comenzar, queremos asegurarnos de que tú estés de acuerdo con ESCO.
+ Esta entrevista será grabada para ayudarnos a entender mejor las necesidades de la empresa
+ y mejorar el sistema de gestión de personal.
+ La grabación será usada solo con este propósito y no se compartirá sin su permiso.
+ Nos autoriza a grabar esta entrevista.
+ Sí, sí, gracias.
+ ¿Cuáles son las principales tareas que realiza Recursos Humanos?
+ Todos los días.
+ Bueno, tenemos varias tareas.
+ Una es la gestión de personal.
+ En la gestión de personal hacemos todo lo que son vacaciones, liquidaciones, contratos,
+ llevar recursos a los contratos de las personas.
+ La base de datos de los contratos de las personas.
+ Se hace también el proceso disciplinario.
+ Yo reconozco que muchas de estas herramientas son procesos de prácticas,
+ reglamentos internos de trabajo.
+ Hay algún proceso que le parezca complicado, aumento, ¿cuál y el por qué?
+ Bueno, como hablaba la vez pasada con ustedes, yo me decía que el proceso que queríamos automatizar o mejorar
+ es el proceso concerniente a la administración de los datos del personal.
+ Todo lo que es base de datos, los registros de información como vacaciones,
+ con fechas de contrato, toda la parte documental del personal.
+ Poder tener esa información del personal más a la mano, porque en este momento la tenemos física, no está dictada.
+ ¿Qué información sobre los empleados consultan con más frecuencia?
+ Todo lo que es concerniente a la hoja de vida de ellos.
+ Desde la hoja de vida tengo fechas de exámenes médicos, fechas de vacaciones, fechas de contratos,
+ tipos de contratos, direcciones, teléfonos, correos.
+ Y sí.
+ Es más que todo eso.
+ ¿Cuáles son los datos más importantes que deben tener actualizados en todo momento?
+ La información de las carpetas de los trabajadores.
+ O sea, ahí está todo.
+ Vacaciones, contratos, cargos, salarios.
+ Como la parte documental, la parte de base de datos.
+ Bueno, me acabas de decir que la empresa maneja todo esto de forma manual.
+ Y eso de forma manual.
+ Y otra parte importante es todo lo que tiene que ver con el proceso.
+ La inducción.
+ Porque es lo primero que se hace al administrar personas.
+ Es lo primero que hacemos.
+ Cuando ingresa una persona, lo primero que hacemos es darle a la persona esa inducción al cargo que va a realizar.
+ Entonces vemos la inducción a la empresa, la parte de gestión de talento humano.
+ La inducción a seguridad y salud en el trabajo.
+ La inducción a control de calidad.
+ Y la inducción al cargo.
+ Entonces ese es otro proceso que es dispendioso.
+ Y que es muy monótono porque pues en cada inducción es lo mismo.
+ La empresa, bueno, algo que vimos e investigamos es que también se maneja la nómina.
+ Pero pues no, aquí es un...
+ Sí, pero nosotros no llevamos nómina.
+ Ah, ok.
+ O sea, yo no llevo nómina.
+ Ok, ok.
+ ¿Cómo llevas el control de las asistencias, los horarios y los permisos de los empleados?
+ En este caso se lleva manual.
+ ¿Manual?
+ ¿Has tenido algunos problemas con estos registros?
+ Las partes manuales.
+ Siempre se presentan problemas de pronto que una persona no registró el formato.
+ ¿Cómo se solicitan y aprueban actualmente las vacaciones y los permisos?
+ La persona tiene que venir, lo hacemos mediante un formato, una planilla Excel.
+ Se imprime el formato, la persona firma el formato y se le aprueban las vacaciones.
+ ¿Hay alguna dificultad con este proceso que les gustaría mejorar?
+ No es tanto la dificultad porque el proceso es fácil.
+ Sino que...
+ Es un proceso que siempre hay que...
+ O sea, no es automatizado, no se actualiza él solo, sino que yo tengo que hacerlo de manera manual.
+ Ok.
+ ¿Ustedes hacen evaluaciones de desempeño a los empleados?
+ ¿Cómo las hacen?
+ También son en formato Excel.
+ ¿En formato Excel?
+ ¿Generan informes o reportes sobre el personal?
+ ¿Qué información incluye?
+ Depende de lo que se esté revisando.
+ O sea, para actuar en juego.
+ O sea, informes de capacitación, informes de actividades de bienestar,
+ informes de actividades que se hacen, por ejemplo, en la parte de salud ocupacional.
+ Entonces, dependiendo de las actividades, uno se genera un informe.
+ Ok.
+ ¿Hay algún otro tipo de reporte que les gustaría tener o involucrar?
+ Ahorita que me acorde, no.
+ Ok.
+ ¿Cómo se comunican recursos humanos y los empleados?
+ Por medio de WhatsApp.
+ Ok.
+ ¿Crees que...
+ ¿Podría mejorar este tipo de comunicación interna?
+ Puede ser.
+ O sea, por lo menos en la parte que ustedes demostraron la vez pasada, uno ve, por ejemplo, el aplicativo.
+ Cada persona ingresaba con un usuario y podía ver la información.
+ Entonces, digamos que sería una buena oportunidad de comunicarse.
+ Ok.
+ ¿Te preocupa la seguridad de los datos personales?
+ Sí, por siempre.
+ Porque la información del personal es sensible.
+ O sea, la información del personal no...
+ Pueden salir de esta oficina, por decirlo así.
+ Ok.
+ ¿Quiénes deberían tener acceso a la información de los empleados y qué datos deberían poder ver o modificar?
+ Normalmente, a la información de los empleados solo tengo acceso yo.
+ Y el área contable, pero no tiene acceso a todo.
+ O sea, los permisos están como restringidos.
+ Ellos tienen información, aparte, más superficial, como es el cargo, el área, el salario, el nombre, la cédula.
+ Pero nosotros tenemos datos más sensibles.
+ Como cómo está conformada la familia del trabajador, dónde vive, con quién vive, qué nivel de estudio tienen sus hijos, cuántos hijos tienen, a qué se dedica.
+ Entonces, toda esa información es propia de nosotros y esa información no sale de acá.
+ Solo la utilizamos para eventos de bienestar.
+ ¿Qué características creen que el sistema sea fácil de usar?
+ ¿Qué tú crees que sería fácil de usar y por qué?
+ No te entiendo la pregunta.
+ ¿Qué características?
+ ¿Qué características creen que harían que el sistema sea fácil para usted y su equipo?
+ De pronto, un sistema que permita consultarnos.
+ En esto tenemos las hojas de vida codificadas.
+ Entonces, de pronto poder subir esas carpetas de esas hojas de vida a un sistema y que por medio de ese código sea más fácil de que tú empezara al sistema o cuando uno busca en el PC.
+ Usted pone la cédula de la persona y automáticamente puede buscar lo que necesita.
+ Solo que pues nosotros tenemos.
+ Diversas carpetas, entonces sería bueno tener todo en una sola parte donde encontremos la historia del personal en un solo lugar.
+ Ok.
+ ¿Crees que los empleados deberían poder ver y actualizar su propia información en el sistema?
+ Sí.
+ Individual, ¿no?
+ Sí.
+ Que no sea público para todos, pero yo como persona, sí, que la pueda ver y la pueda utilizar.
+ Porque muchas veces ellos cambian de residencia o hay alguna otra situación y pues esas situaciones.
+ Entonces, ¿qué esperas de este sistema de gestión de personal?
+ Espero que me ayude a cortar los tiempos.
+ O sea, que se automatice más el proceso y de pronto no sea como tan nervioso hacer determinadas cosas.
+ Ok.
+ ¿Qué cambios positivos le gustaría ver cuando el sistema esté funcionando?
+ Bueno, uno pues que, como tú me decías, que el empleado se pueda autogestionar.
+ Ya que si por lo menos el empleado necesita una solicitud de vacaciones, pues la puede hacer por medio de la plataforma y podamos hacer todo el proceso.
+ O por lo menos una incapacidad, si el empleado es incapacitado, es que también pueda subir una incapacidad.
+ O si necesita un certificado laboral, pues que el sistema le permita de pronto, con los datos que se alimenten, pues poder descargar sus certificantes.
+ Más que todo, sería como autogestión por parte del empleado.
+ Y que nosotros, pues con ese por medio de esa autogestión, pues reducimos los tiempos de pronto.
+ De respuesta y va a ser más ágil todo el proceso.
+ ¿Hay alguna otra función que te gustaría incluir en el sistema?
+ No.
+ En este momento no sé de lo que hablamos, que no me olvido de tratar.
+ Hablamos tantas cosas.
+ Tú sí me hablabas de lo de la inducción, que querías que fuera un video para reportar los tiempos.
+ Sí, que de pronto podamos autogestionar la institución.
+ O sea, que nosotros normalmente nos gastamos un medio día.
+ Y pues medio día, cada vez que entra una persona, yo en ese medio día puedo hacer muchas cosas.
+ Entonces, pues sería más práctico si por medio de un video o algo, la persona pudiera simplemente sentarse, ver toda la inducción.
+ Y después que si le aplique la evaluación para verificar que la persona efectivamente comprendió la inducción.
+ Hasta aquí la entrevista. Muchas gracias.
+ Vale.
