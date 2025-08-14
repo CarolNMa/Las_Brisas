@@ -1,0 +1,118 @@
+body {
+    background: url('../../assets/img/fondoLogin.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.login-container {
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.logo {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
+  background-image: url('../../assets/img/logo.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  margin-left: 15%;
+}
+
+.login-form {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 25px;
+  margin-left: 8%;
+  width: 400px;
+  background: #fff;
+}
+
+.titulos{
+    font-size: 15px;
+    color: #000;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 20px;
+}
+
+.icon-email{
+    background: url('../../assets/img/mail.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    width: 20px;
+    height: 20px;
+}
+
+.icon-password{
+    background: url('../../assets/img/password.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    width: 20px;
+    height: 20px;
+
+}
+
+.inputs{
+    color: #000;
+    background: transparent;
+    border: none;
+    margin-left: 2%;
+}
+
+.input-container .icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+input {
+  border: none;
+  outline: none;
+  flex: 1;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 10px;
+  background-color: #c20000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.btn-login:hover {
+  background-color: #a00000;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+}
+
+.links a {
+  font-size: 14px;
+  color: #000;
+  text-decoration: none;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
