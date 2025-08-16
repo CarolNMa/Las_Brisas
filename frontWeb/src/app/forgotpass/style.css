@@ -1,0 +1,133 @@
+body {
+    background: url('../../assets/img/fondopassword.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.logo {
+    width: 150px;
+    height: 90px;
+    background-image: url('../../assets/img/logo.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    margin-left: 45%;
+    top: 15%;
+    position: absolute;
+}
+
+
+.card {
+    width: 807px;
+    height: 420px;
+    background: #fff;
+    padding: 25px;
+    border: 3px solid #D9D9D9;
+    border-radius: 10px;
+    margin-top: 200px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.title {
+    font-size: 35px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #000000;
+}
+
+.subtitle {
+    font-size: 20px;
+    color: #1E1E1E;
+    margin-top: 15px;
+}
+
+
+.inputGroup {
+    width: 100%;
+    height: 40px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+}
+
+.contenido {
+    color: #000;
+    background: transparent;
+    border: 1px solid #000000;
+    margin-left: 5%;
+    width: 95%;
+    height: 40px;
+    border-radius: 6px;
+}
+
+
+.titulos {
+    font-size: 22px;
+    color: #000;
+    margin-top: 40px;
+}
+
+.input-container {
+    width: 80%;
+    height: 50px;
+    align-items: center;
+    border: 3px solid #D9D9D9;
+    border-radius: 6px;
+    padding: 8px;
+    margin-top: 20px;
+}
+
+.icon-email {
+    background: url('../../assets/img/mail.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    width: 25px;
+    height: 22px;
+    margin-top: 4px;
+    position: absolute;
+}
+
+.inputs {
+    color: #000;
+    border: none;
+    background: transparent;
+    margin-left: 6%;
+    font-size: 15px;
+    width: 95%;
+    position: relative;
+    top: 1px;
+    height: 28px;
+    border-radius: 6px;
+}
+
+input {
+    border: none;
+    outline: none;
+    flex: 1;
+}
+
+
+.button {
+    width: 20%;
+    height: 50px;
+    background: #c00;
+    color: white;
+    padding: 10px;
+    border: 1px solid #975102;
+    border-radius: 6px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 50px;
+    backdrop-filter: blur(50%);
+}
+
+.button:hover {
+    background: #a00;
+}

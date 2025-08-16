@@ -48,6 +48,15 @@ body {
   margin-bottom: 20px;
 }
 
+.icon-name{
+    background: url('../../assets/img/name.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    width: 20px;
+    height: 20px;
+}
+
 .icon-email{
     background: url('../../assets/img/mail.png');
     background-repeat: no-repeat;
@@ -100,18 +109,4 @@ input {
 .btn-login:hover {
   background-color: #a00000;
 }
-
-.links {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 10px;
-}
-
-.links a {
-  font-size: 14px;
-  color: #000;
-  text-decoration: underline;
-}
-
 

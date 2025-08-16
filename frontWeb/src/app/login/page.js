@@ -4,11 +4,13 @@ import "./style.css";
 import { useState } from "react";
 
 export default function Log() {
+    const [nombre, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("Nombre:", nombre);
         console.log("Email:", email);
         console.log("Password:", password);
     };
@@ -19,6 +21,21 @@ export default function Log() {
             </div>
 
             <form className="login-form" onSubmit={handleSubmit}>
+                <div className="titulos">
+                    <label>Nombre</label>
+                </div>
+
+                <div className="input-container">
+                    <span className="icon-name"></span>
+                    <input className="inputs"
+                        type="text"
+                        placeholder="Ingresa tu nombre"
+                        value={nombre}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                </div>
+
                 <div className="titulos">
                     <label>Email</label>
                 </div>
@@ -33,10 +50,11 @@ export default function Log() {
                         required
                     />
                 </div>
-
+                
                 <div className="titulos">
                     <label>Contraseña</label>
                 </div>
+                
                 <div className="input-container">
                     <span className="icon-password"></span>
                     <input className="inputs"
@@ -49,14 +67,8 @@ export default function Log() {
                 </div>
 
                 <button type="submit" className="btn-login">
-                    Iniciar Sesión
+                    Registrarse
                 </button>
-
-                <div className="links">
-                    <a href="../forgotpass/">¿Olvidaste tu contraseña?</a>
-                    <br></br>
-                    <a href="../login/">Crear cuenta</a>
-                </div>
             </form>
         </div>
     );
