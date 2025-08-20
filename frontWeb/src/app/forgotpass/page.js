@@ -45,7 +45,10 @@ export default function Log() {
                     </div>
                 </div>
 
-                <button className="button">Enviar Código</button>
+                <a href="../newpass/">
+                    <button className="button">Enviar Código</button>
+                </a>
+
             </div>
 
 

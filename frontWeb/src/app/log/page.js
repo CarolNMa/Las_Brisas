@@ -55,7 +55,7 @@ export default function Log() {
                 <div className="links">
                     <a href="../forgotpass/">¿Olvidaste tu contraseña?</a>
                     <br></br>
-                    <a href="../login/">Crear cuenta</a>
+                    <a href="../logup/">Crear cuenta</a>
                 </div>
             </form>
         </div>
