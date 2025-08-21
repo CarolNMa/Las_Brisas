@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Las Brisas",
+    "slug": "",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundImage": "./assets/fondo.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "splash": {
+        "image": "./assets/fondo.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#000"
+      }
+    },
+    "web": {
+      "favicon": "./assets/logo.png"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
