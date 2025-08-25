@@ -7,12 +7,54 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  Alert,
 } from "react-native";
 
 export default function LoginScreen({ setScreen }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const validate = () => {
+    if (!email.trim()) {
+      Alert.alert("Error", "El correo electrónico es obligatorio");
+      return false;
+    }
+    if (email.includes(" ")) {
+      Alert.alert("Error", "El correo electrónico no puede contener espacios");
+      return false;
+    }
+    if (email.length > 100) {
+      Alert.alert("Error", "El correo electrónico no puede superar 100 caracteres");
+      return false;
+    }
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Error", "Ingresa un correo electrónico válido");
+      return false;
+    }
+
+    if (!password.trim()) {
+      Alert.alert("Error", "La contraseña es obligatoria");
+      return false;
+    }
+    if (password.length < 6) {
+      Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres");
+      return false;
+    }
+    if (password.includes(" ")) {
+      Alert.alert("Error", "La contraseña no puede contener espacios");
+      return false;
+    }
+    return true;
+  }
+
+  const handleRegister = () => {
+    if (validate()) {
+      console.log("Email:", email);
+      console.log("Password:", password);
+      setScreen("Principal");
+    }
+  };
   return (
     <ImageBackground
       source={require("../assets/fondo.png")}
@@ -52,7 +94,7 @@ export default function LoginScreen({ setScreen }) {
           </View>
 
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
             <Text style={styles.buttonText}>Iniciar Sesión</Text>
           </TouchableOpacity>
 

@@ -1,0 +1,97 @@
+.body {
+    background-color: #fff;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.contenedor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.usuario {
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    background: rgb(248, 231, 231);
+    margin-left: 20px;
+}
+
+.user-infos {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.user-role {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #000;
+    font-size: 20px;
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 40px;
+}
+
+.card {
+    border: 1px solid #e58181;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    background: rgb(248, 231, 231);
+}
+
+.card p {
+    color: rgb(57, 54, 54);
+    font-size: 16px;
+}
+
+.card h2 {
+    font-size: 24px;
+    margin-top: 8px;
+    color: #000;
+}
+
+.buttonss {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.buttonss button {
+    border: 1px solid #ddd;
+    padding: 15px 60px;
+    border-radius: 8px;
+    cursor: pointer;
+    background: white;
+    color: #000;
+    font-size: 16px;
+}
+
+.buttonss button:hover {
+    background: #f0f0f0;
+}

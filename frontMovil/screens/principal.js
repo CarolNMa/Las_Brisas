@@ -10,7 +10,7 @@ import {
     Alert,
 } from "react-native";
 
-export default function RegisterScreen({ setScreen }) {
+export default function PrincipalScreen({ setScreen }) {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

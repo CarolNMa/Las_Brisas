@@ -1,0 +1,60 @@
+.usuarios-container {
+  margin: 20px;
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.titulo-seccion {
+  background: #c80000;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.usuarios-table th {
+  background: #f5f5f5;
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  color: #000;
+}
+
+.usuarios-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+    color: #000;
+}
+
+.usuario-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 25px;
+  height: 25px;
+  background: #ccc;
+  border-radius: 50%;
+}
+
+.btn-edit {
+  background: url('../../assets/img/Edit.png') no-repeat center;
+  background-size: contain;
+  width: 30px;
+  height: 25px;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}

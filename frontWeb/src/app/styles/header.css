@@ -1,0 +1,121 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #D9D9D9;
+    padding: 10px 20px;
+    position: relative;
+    height: 60px;
+}
+
+.calendar-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 20px;
+    color: #000;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 5px 10px;
+    margin-left: 20px;
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    flex: 1;
+    background: transparent;
+    color: #000;
+}
+
+.search-btn {
+    background: url('../../assets/img/search.png') no-repeat center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.left input {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+
+.icon-notificaciones {
+    background: url('../../assets/img/bell1.png') no-repeat center;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    margin-right: 3px;
+    border-radius: 20px;
+    border: none;
+}
+
+.icon-ajustes {
+    background: url('../../assets/img/ajustes.png') no-repeat center;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    margin-right: 3px;
+    border-radius: 20px;
+    border: none;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-info {
+    color: #000;
+    font-size: 16px;
+    
+}
+
+.icon-avatar {
+    background: url('../../assets/img/profile.png') no-repeat center;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    margin-right: 3px;
+    border-radius: 20px;
+    border: none;
+}
+
+.menu-btn {
+    background: url('../../assets/img/Menu.png') no-repeat center;
+    width: 30px;
+    height: 30px;
+    font-size: 22px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+

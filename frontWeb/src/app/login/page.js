@@ -1,9 +1,12 @@
 "use client";
 
+import Dashboard from "../homes/page";
+import { useRouter } from "next/navigation";
 import "./style.css";
 import { useState } from "react";
 
 export default function Log() {
+    const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -11,6 +14,8 @@ export default function Log() {
         e.preventDefault();
         console.log("Email:", email);
         console.log("Password:", password);
+
+        router.push("/homes");
     };
 
     return (

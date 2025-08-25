@@ -11,6 +11,8 @@ import {
 import LoginScreen from "./screens/login";
 import RegisterScreen from "./screens/register";
 import ForgotPasswordScreen from "./screens/forgotPass";
+import PrincipalScreen from "./screens/principal";
+import NewPassScreen from "./screens/newPass";
 
 export default function App() {
   const [email, setEmail] = useState("");
@@ -28,6 +30,10 @@ export default function App() {
     return <RegisterScreen setScreen={setScreen} />;
   } else if (screen === "ForgotPassword") {
     return <ForgotPasswordScreen setScreen={setScreen} />;
+  }else if(screen === "Principal"){
+    return <PrincipalScreen setScreen={setScreen} />;
+  }else if(screen === "Newpass"){
+    return <NewPassScreen setScreen={setScreen} />;
   }
 }
 
