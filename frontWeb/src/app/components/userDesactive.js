@@ -1,30 +1,27 @@
-"use client";
 
-import "../../styles/usuarios.css";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function UsuariosTable() {
-    const usuarios = [
-        {
-            estado: "Activo",
-            nombre: "Carlos Torres",
-            email: "Carlostorres8@gmail.com",
-            tipo: "Admin",
-            area: "Producción",
-            cargo: "Supervisor",
-        },
-        {
-            estado: "Activo",
-            nombre: "Carlos Torres",
-            email: "Carlostorres8@gmail.com",
-            tipo: "Admin",
-            area: "Producción",
-            cargo: "Supervisor",
-        },
+export default function UserDesactive() {
+    const [usuarios, setUsuarios] = useState([]);
+    const router = useRouter();
 
-    ];
+    useEffect(() => {
+        fetch("/api/usuarios")
+            .then((res) => res.json())
+            .then((data) => {
+                setUsuarios(data);
+            });
+    }, []);
+
+    const handleEdit = (id) => {
+        router.push(`/usuarios/${id}`);
+    };
+
     return (
         <div className="usuarios-container">
-            <h2 className="titulo-seccion">Gestión de usuarios</h2>
+            <h2 className="titulo-seccion">Desvinculados</h2>
 
             <table className="usuarios-table">
                 <thead>
@@ -42,7 +39,7 @@ export default function UsuariosTable() {
                     {usuarios.map((u, index) => (
                         <tr key={index}>
                             <td>
-                                <input type="checkbox" checked={u.estado === "Activo"} readOnly /> {u.estado}
+                                <input type="checkbox" checked={u.estado === "Desvinculado"} readOnly /> {u.estado}
                             </td>
                             <td>
                                 <div className="usuario-info">
@@ -54,11 +51,9 @@ export default function UsuariosTable() {
                             <td>{u.area}</td>
                             <td>{u.cargo}</td>
                             <td>
-
-                                <a href="../users/profile">
-                                    <div className="btn-edit"></div>
-                                </a>
-
+                                <div>
+                                    <button className="btn-edit"></button>
+                                </div>
 
                             </td>
                         </tr>

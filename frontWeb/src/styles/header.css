@@ -38,7 +38,7 @@
 }
 
 .search-btn {
-    background: url('../../assets/img/search.png') no-repeat center;
+    background: url('../assets/img/search.png') no-repeat center;
     width: 30px;
     height: 30px;
     border: none;
@@ -68,7 +68,7 @@
 
 
 .icon-notificaciones {
-    background: url('../../assets/img/bell1.png') no-repeat center;
+    background: url('../assets/img/bell1.png') no-repeat center;
     width: 30px;
     height: 30px;
     cursor: pointer;
@@ -78,7 +78,7 @@
 }
 
 .icon-ajustes {
-    background: url('../../assets/img/ajustes.png') no-repeat center;
+    background: url('../assets/img/ajustes.png') no-repeat center;
     width: 30px;
     height: 30px;
     cursor: pointer;
@@ -100,7 +100,7 @@
 }
 
 .icon-avatar {
-    background: url('../../assets/img/profile.png') no-repeat center;
+    background: url('../assets/img/profile.png') no-repeat center;
     width: 30px;
     height: 30px;
     cursor: pointer;
@@ -110,7 +110,7 @@
 }
 
 .menu-btn {
-    background: url('../../assets/img/Menu.png') no-repeat center;
+    background: url('../assets/img/Menu.png') no-repeat center;
     width: 30px;
     height: 30px;
     font-size: 22px;
@@ -119,3 +119,9 @@
     margin-right: 10px;
 }
 
+.user-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 8px;
+}

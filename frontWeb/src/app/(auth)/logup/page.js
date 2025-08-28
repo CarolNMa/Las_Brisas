@@ -1,21 +1,25 @@
 "use client";
 
-import Dashboard from "../homes/page";
 import { useRouter } from "next/navigation";
 import "./style.css";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
-export default function Log() {
+export default function Logup() {
     const router = useRouter();
+    const [nombre, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("Nombre:", nombre);
         console.log("Email:", email);
         console.log("Password:", password);
 
-        router.push("/homes");
+        Swal.fire("Información","Tu solicitud ha sido enviada. Un administrador debe aprobarla antes de que puedas acceder.");
+
+        router.push("../login");
     };
 
     return (
@@ -24,6 +28,22 @@ export default function Log() {
             </div>
 
             <form className="login-form" onSubmit={handleSubmit}>
+                <div className="titulos">
+                    <label>Nombre</label>
+                </div>
+
+                <div className="input-container">
+                    <span className="icon-name"></span>
+                    <input className="inputs"
+                        type="text"
+                        placeholder="Ingresa tu nombre"
+                        value={nombre}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        pattern="[A-Za-z ]+"
+                    />
+                </div>
+
                 <div className="titulos">
                     <label>Email</label>
                 </div>
@@ -36,12 +56,14 @@ export default function Log() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                     />
                 </div>
 
                 <div className="titulos">
                     <label>Contraseña</label>
                 </div>
+
                 <div className="input-container">
                     <span className="icon-password"></span>
                     <input className="inputs"
@@ -50,18 +72,16 @@ export default function Log() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        minLength={8}
+                        maxLength={20}
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                        title="Debe contener al menos una mayúscula, un número y 6 caracteres."
                     />
                 </div>
 
                 <button type="submit" className="btn-login">
-                    Iniciar Sesión
+                    Registrarse
                 </button>
-
-                <div className="links">
-                    <a href="../forgotpass/">¿Olvidaste tu contraseña?</a>
-                    <br></br>
-                    <a href="../logup/">Crear cuenta</a>
-                </div>
             </form>
         </div>
     );

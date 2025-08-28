@@ -1,5 +1,5 @@
-import Header from "../components/header";
-import "../styles/dashboard.css";
+import Header from "../../components/header";
+import "../../../styles/dashboard.css";
 
 export default function Dashboard() {
     return (

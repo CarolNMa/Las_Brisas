@@ -19,7 +19,7 @@
 }
 
 .icon-password {
-    background: url('../../assets/img/password.png');
+    background: url('../../../assets/img/password.png');
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Sidebar from "./barreralateral";
-import "../styles/header.css";
-import "../styles/barra.css";
+import "../../styles/header.css";
+import "../../styles/barra.css";
 import "react-calendar/dist/Calendar.css";
 
 export default function Header() {
@@ -49,13 +49,15 @@ export default function Header() {
                     </div>
 
                     <div className="user">
-                        <div>
-                            <button className="icon-avatar"></button>
-                        </div>
-                        <div className="user-info">
-                            <span>Carol Marentes</span>
+                        <a href="../users/profile" className="user-link">
+                            <div>
+                                <button className="icon-avatar"></button>
+                            </div>
+                            <div className="user-info">
+                                <span>Carol Marentes</span>
 
-                        </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </header>

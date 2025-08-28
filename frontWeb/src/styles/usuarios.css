@@ -50,7 +50,7 @@
 }
 
 .btn-edit {
-  background: url('../../assets/img/Edit.png') no-repeat center;
+  background: url('../assets/img/Edit.png') no-repeat center;
   background-size: contain;
   width: 30px;
   height: 25px;

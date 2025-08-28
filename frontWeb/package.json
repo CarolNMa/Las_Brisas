@@ -12,7 +12,10 @@
     "next": "15.4.6",
     "react": "19.1.0",
     "react-calendar": "^6.0.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.62.0",
+    "sweetalert2": "^11.22.5",
+    "sweetalert2-react-content": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

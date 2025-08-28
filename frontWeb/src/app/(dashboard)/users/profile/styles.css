@@ -1,0 +1,211 @@
+.perfil-container {
+    display: flex;
+    gap: 20px;
+    padding: 65px;
+    font-family: sans-serif;
+}
+
+/* Panel izquierdo */
+.perfil-left {
+    flex: 1;
+    background: #D9D9D9;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+}
+
+.perfil-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #fafafa;
+    margin: 0 auto 15px;
+}
+
+.btn-edit {
+    background: url('../../../../assets/img/Edit.png') no-repeat center;
+    background-size: contain;
+    width: 30px;
+    height: 25px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.btn-save {
+    background: url('../../../../assets/img/save.png') no-repeat center;
+    background-size: contain;
+    width: 30px;
+    height: 25px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.perfil-name {
+    color: #000;
+}
+
+.perfil-info {
+    text-align: left;
+    margin-top: 20px;
+    color: #000;
+    margin-left: 50px;
+}
+
+.perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.perfil-info p {
+    margin: 10px 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #000;
+}
+
+.perfil-right {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.perfil-right h3 {
+    margin-bottom: 10px;
+    color: #000000;
+    font-size: 25px;
+}
+
+.perfil-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.perfil-card {
+    background: #eaeaea;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.perfil-info p {
+  margin: 12px 2;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.perfil-info strong {
+  display: inline-block;
+  border-bottom: 2px solid #444; 
+  padding-bottom: 5px;
+  margin-bottom: 4px;
+  font-weight: 600;
+  width: 200px;
+}
+
+
+.icons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.icon-mail {
+    background: url('../../../../assets/img/mail.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+
+.icon-location {
+    background: url('../../../../assets/img/location.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-id {
+    background: url('../../../../assets/img/card.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-phone {
+    background: url('../../../../assets/img/Phone.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-calendar {
+    background: url('../../../../assets/img/calendar.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-profile {
+    background: url('../../../../assets/img/name.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-time{
+    background: url('../../../../assets/img/Clock.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-document{
+    background: url('../../../../assets/img/document.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;        
+    border: none;    
+    font-size: 18px;
+}
+
+input {
+    border: none;
+    outline: none;
+    flex: 1;
+    background: #ffffff;
+    color: #000;
+    width: 100%;
+    padding: 5px;
+    border-radius: 10px;
+}

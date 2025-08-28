@@ -2,8 +2,12 @@
 
 import "./style.css";
 import { useState } from "react";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
-export default function Log() {
+
+export default function ForgotPass() {
+    const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -11,6 +15,9 @@ export default function Log() {
         e.preventDefault();
         console.log("Email:", email);
         console.log("Password:", password);
+
+        Swal.fire("Código Enviado","Se ha enviado un código de verificación a tu correo.");
+        router.push("/newpass");
     };
 
     return (
@@ -32,7 +39,7 @@ export default function Log() {
                     <label>Correo Electrónico</label>
                 </div>
 
-                <div className="input-container">
+                <form className="input-container" onSubmit={handleSubmit}>
                     <span className="icon-email"></span>
                     <div>
                         <input className="inputs"
@@ -41,13 +48,15 @@ export default function Log() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
+                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                            maxLength={150}
                         />
                     </div>
-                </div>
 
-                <a href="../newpass/">
-                    <button className="button">Enviar Código</button>
-                </a>
+                    <button type="submit" className="button">
+                        Enviar Código
+                    </button>
+                </form>
 
             </div>
 

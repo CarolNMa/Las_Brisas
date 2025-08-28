@@ -1,12 +1,15 @@
-import Header from "../components/header";
-import UsuariosTable from "../components/usuarios";
+"use client" ;
+
+import Header from "@/app/components/header";
+import UsuariosTable from "@/app/components/usuarios";
+
 
 export default function Page() {
     return (
 
         <div className="container">
             <main className="main">
-                <Header />
+                <Header/>
 
                 <div>
                     <UsuariosTable />

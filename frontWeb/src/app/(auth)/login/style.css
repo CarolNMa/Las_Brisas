@@ -1,27 +1,27 @@
-body {
-    background: url('../../assets/img/fondoLogin.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    height: 100vh;
-    width: 100vw;
+.login-page {
+  background: url('../../../assets/img/fondoLogin.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100vh;
+  width: 100vw;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
-.login-container {
-  justify-content: center;
-  align-items: center;
-  margin-top: 50px;
-}
 
 .logo {
   width: 150px;
-  height: 150px;
-  margin-bottom: 20px;
-  background-image: url('../../assets/img/logo.png');
+  height: 75px;
+  /* border: 1px solid #000; */
+  background-image: url('../../../assets/img/logo.png');
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   margin-left: 15%;
+  margin-bottom: 20px;
 }
 
 .login-form {
@@ -33,10 +33,10 @@ body {
   background: #fff;
 }
 
-.titulos{
-    font-size: 15px;
-    color: #000;
-    margin-bottom: 5px;
+.titulos {
+  font-size: 15px;
+  color: #000;
+  margin-bottom: 5px;
 }
 
 .input-container {
@@ -48,30 +48,30 @@ body {
   margin-bottom: 20px;
 }
 
-.icon-email{
-    background: url('../../assets/img/mail.png');
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    width: 20px;
-    height: 20px;
+.icon-email {
+  background: url('../../../assets/img/mail.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  width: 20px;
+  height: 20px;
 }
 
-.icon-password{
-    background: url('../../assets/img/password.png');
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    width: 20px;
-    height: 20px;
+.icon-password {
+  background: url('../../../assets/img/password.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  width: 20px;
+  height: 20px;
 
 }
 
-.inputs{
-    color: #000;
-    background: transparent;
-    border: none;
-    margin-left: 2%;
+.inputs {
+  color: #000;
+  background: transparent;
+  border: none;
+  margin-left: 2%;
 }
 
 .input-container .icon {
@@ -113,5 +113,3 @@ input {
   color: #000;
   text-decoration: underline;
 }
-
-
