@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 
 export default function Perfil() {
     const [isEditing, setIsEditing] = useState(false);
+    const [role, setRole] = useState("empleado");
 
     const [correo, setCorreo] = useState("carolmarentes@gmail.com");
     const [direccion, setdirreccion] = useState("Cl 10 #25-2");
@@ -15,7 +16,7 @@ export default function Perfil() {
     const [telefono, setTelefono] = useState("3001234567");
     const [fechaNacimiento, setFechaNacimiento] = useState("31/08/2000");
     const [genreo, setGenreo] = useState("Femenino");
-    const [grupoSanguíneo, setGrupoSanguíno] = useState("O+");
+    const [grupoSanguineo, setGrupoSanguíno] = useState("O+");
     const [cargo, setCargo] = useState("Vendedora");
     const [area, setArea] = useState("Ventas");
     const [ubicacion, setUbicacion] = useState("Sede Principal");
@@ -23,11 +24,18 @@ export default function Perfil() {
     const [tiempoContrato, setTiempoContrato] = useState("Indefinido");
     const [superior, setSuperior] = useState("María Lopez");
 
-
-
     const handleSave = () => {
         setIsEditing(false);
-        Swal.fire("Cambios guardados","","success");
+        Swal.fire("Cambios guardados", "", "success");
+    };
+
+    const canEdit = (field) => {
+        if (role === "admin") return true;
+        if (role === "empleado") {
+            const personalFields = ["correo", "direccion", "telefono", "identificacion" , "fechaNacimiento", "genero", "Sanguineo"];
+            return personalFields.includes(field);
+        }
+        return false;
     };
     return (
 
@@ -52,7 +60,7 @@ export default function Perfil() {
                             <p>
                                 <span>
                                     <strong>Correo Electrónico</strong><br />
-                                    {isEditing ? (
+                                    {isEditing && canEdit("correo") ? (
                                         <input
                                             type="email"
                                             value={correo}
@@ -69,7 +77,7 @@ export default function Perfil() {
                             <p>
                                 <span>
                                     <strong>Dirección</strong><br />
-                                    {isEditing ? (
+                                    {isEditing && canEdit("direccion") ? (
                                         <input
                                             type="text"
                                             value={direccion}
@@ -85,7 +93,7 @@ export default function Perfil() {
                             <div className="icon-id"></div>
                             <p> <span>
                                 <strong>Número de identificación</strong><br />
-                                {isEditing ? (
+                                {isEditing && canEdit("identificacion") ? (
                                     <input
                                         type="number"
                                         value={identificación}
@@ -100,7 +108,7 @@ export default function Perfil() {
                             <div className="icon-phone"></div>
                             <p> <span>
                                 <strong>Número de teléfono</strong><br />
-                                {isEditing ? (
+                                {isEditing && canEdit("telefono") ? (
                                     <input
                                         type="text"
                                         value={telefono}
@@ -120,11 +128,11 @@ export default function Perfil() {
                         <h3>Información Personal</h3>
                         <div className="perfil-grid">
                             <div className="perfil-card">
-                                <div className="icons">
+                                <div className="icones">
                                     <div className="icon-calendar"></div>
                                     <p> <span>
                                         <strong>Fecha de Nacimiento</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("fechaNacimiento") ? (
                                             <input
                                                 type="date"
                                                 value={fechaNacimiento}
@@ -138,12 +146,12 @@ export default function Perfil() {
                             </div>
 
                             <div className="perfil-card">
-                                <div className="icons">
-                                    <div className="icon-calendar"></div>
+                                <div className="icones">
+                                    <div className="icon-profile"></div>
                                     <p> <span>
 
                                         <strong>Género</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("genero") ? (
                                             <input
                                                 type="text"
                                                 value={genreo}
@@ -157,18 +165,18 @@ export default function Perfil() {
                             </div>
 
                             <div className="perfil-card">
-                                <div className="icons">
+                                <div className="icones">
                                     <div className="icon-calendar"></div>
                                     <p> <span>
                                         <strong>Grupo Sanguíneo</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("Sanguineo") ? (
                                             <input
                                                 type="text"
-                                                value={grupoSanguíneo}
+                                                value={grupoSanguineo}
                                                 onChange={(e) => setGrupoSanguíno(e.target.value)}
                                             />
                                         ) : (
-                                            grupoSanguíneo
+                                            grupoSanguineo
                                         )}
                                     </span></p>
                                 </div>
@@ -182,11 +190,11 @@ export default function Perfil() {
                         <h3>Información Laboral</h3>
                         <div className="perfil-grid">
                             <div className="perfil-card">
-                                <div className="icons">
+                                <div className="icones">
                                     <div className="icon-profile"></div>
                                     <p> <span>
                                         <strong>Cargo</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("cargo") ? (
                                             <input
                                                 type="text"
                                                 value={cargo}
@@ -199,11 +207,11 @@ export default function Perfil() {
                                 </div>
                             </div>
                             <div className="perfil-card">
-                                <div className="icons">
+                                <div className="icones">
                                     <div className="icon-location"></div>
                                     <p> <span>
                                         <strong>Área</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("area") ? (
                                             <input
                                                 type="text"
                                                 value={area}
@@ -217,11 +225,11 @@ export default function Perfil() {
                                 </div>
                             </div>
                             <div className="perfil-card">
-                                <div className="icons">
+                                <div className="icones">
                                     <div className="icon-location"></div>
                                     <p> <span>
                                         <strong>Ubicación</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("ubicacion") ? (
                                             <input
                                                 type="text"
                                                 value={ubicacion}
@@ -234,11 +242,11 @@ export default function Perfil() {
                                 </div>
                             </div>
                             <div className="perfil-card">
-                                <div className="icons">
+                                <div className="icones">
                                     <div className="icon-calendar"></div>
                                     <p> <span>
                                         <strong>Fecha de Ingreso</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("fechaIngreso") ? (
                                             <input
                                                 type="date"
                                                 value={fechaIngreso}
@@ -251,11 +259,11 @@ export default function Perfil() {
                                 </div>
                             </div>
                             <div className="perfil-card">
-                                <div className="icons">
+                                <div className="icones">
                                     <div className="icon-time"></div>
                                     <p> <span>
                                         <strong>Tiempo de Contrato</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("tiempoContrato") ? (
                                             <input
                                                 type="text"
                                                 value={tiempoContrato}
@@ -268,11 +276,11 @@ export default function Perfil() {
                                 </div>
                             </div>
                             <div className="perfil-card">
-                                <div className="icons">
+                                <div className="icones">
                                     <div className="icon-profile"></div>
                                     <p> <span>
                                         <strong>Supervisor</strong><br />
-                                        {isEditing ? (
+                                        {isEditing && canEdit("superior") ? (
                                             <input
                                                 type="text"
                                                 value={superior}

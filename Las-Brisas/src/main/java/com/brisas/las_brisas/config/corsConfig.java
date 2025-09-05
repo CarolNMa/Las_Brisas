@@ -13,7 +13,7 @@ public class corsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin("http://localhost:3000/log");
+        config.addAllowedOrigin("http://localhost:3000/");
         config.addAllowedOriginPattern("*");
 
         

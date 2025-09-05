@@ -102,9 +102,6 @@ export default function LoginScreen({ setScreen }) {
             <Text style={styles.link}>¿Olvidaste tu contraseña?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setScreen("Register")}>
-            <Text style={styles.link}>Registrarse</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </ImageBackground>

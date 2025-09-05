@@ -40,3 +40,76 @@ a {
     color-scheme: dark;
   }
 }
+
+.icon-mail {
+    background: url('../assets/img/mail.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+
+.icon-location {
+    background: url('../assets/img/location.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-id {
+    background: url('../assets/img/card.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-phone {
+    background: url('../assets/img/Phone.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-calendar {
+    background: url('../assets/img/calendar.png') no-repeat center;
+    background-size: contain;
+    width: 30px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-profile {
+    background: url('../assets/img/name.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-time{
+    background: url('../assets/img/Clock.png') no-repeat center;
+    background-size: contain;
+    width: 30px;
+    height: 20px;
+    border: none;
+    font-size: 18px;
+}
+
+.icon-document{
+    background: url('../assets/img/document.png') no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;        
+    border: none;    
+    font-size: 18px;
+}
