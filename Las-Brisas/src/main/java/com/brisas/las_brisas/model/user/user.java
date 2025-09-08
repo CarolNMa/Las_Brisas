@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.model;
+package com.brisas.las_brisas.model.user;
 
 import java.time.LocalDateTime;
 
@@ -23,17 +23,25 @@ public class user {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false)
-    private int id;
+    @Column(name = "id_user", unique = true, nullable = false)
+    private int id_user;
 
     @Column(name = "username", nullable = false)
     private String username;
 
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Column(name = "password", nullable = false)
     private String password;
 
+    public enum status {
+        ACTIVE,
+        INACTIVE
+    }
+
     @Column(name = "status", nullable = false)
-    private String status;
+    private status status;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

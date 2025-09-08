@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.model;
+package com.brisas.las_brisas.model.application;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,23 +12,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "area")
+@Table(name = "application_type")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class area {
-
+public class application_type {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private int id;
 
-    @Column(name = "name_area", nullable = false)
-    private String nameArea;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "description", nullable = false)
-    private String description;
-    
-    
+    @Column(name = "required", nullable = false)
+    private boolean required;
 }

@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.model;
+package com.brisas.las_brisas.model.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,16 +12,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "rol")
+@Table(name = "permision")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class rol {
-    
+public class permition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false)
     private int id;
 
     @Column(name = "name", nullable = false)

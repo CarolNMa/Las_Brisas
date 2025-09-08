@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.model;
+package com.brisas.las_brisas.model.location;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

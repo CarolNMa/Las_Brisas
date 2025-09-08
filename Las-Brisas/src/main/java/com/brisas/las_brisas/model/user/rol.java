@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.model;
+package com.brisas.las_brisas.model.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,27 +12,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "post")
+@Table(name = "rol")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class post {
+public class rol {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     private int id;
 
-    @Column(name = "name_post", nullable = false)
-    private String namePost;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Column(name = "description", nullable = false)
     private String description;
-
-    @Column(name = "function", nullable = false)
-    private String function;
-
-    @Column(name = "requirements", nullable = false)
-    private String requirements;
-
 }
