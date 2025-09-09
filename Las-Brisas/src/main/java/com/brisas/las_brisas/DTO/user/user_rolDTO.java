@@ -13,6 +13,4 @@ public class user_rolDTO {
     private int id;
     private int idUser;
     private int idRol;
-    private String userName;    // Para mostrar el nombre del usuario
-    private String rolName;     // Para mostrar el nombre del rol
 }

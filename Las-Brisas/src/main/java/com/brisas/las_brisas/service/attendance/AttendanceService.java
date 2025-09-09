@@ -48,7 +48,7 @@ public class AttendanceService {
 
     private attendance convertToEntity(attendanceDTO dto) {
         employee e = new employee();
-        e.setId(dto.getEmployee().getId());
+        e.setId(dto.getEmployee());
 
         attendance.status statusEnum;
         try {
@@ -74,7 +74,7 @@ public class AttendanceService {
                 .timeStart(entity.getTime_start())
                 .timeEnd(entity.getTime_end())
                 .status(entity.getStatus().name())
-                .employee(entity.getEmployee())
+                .employee(entity.getEmployee() != null ? entity.getEmployee().getId() : 0)
                 .build();
     }
 }

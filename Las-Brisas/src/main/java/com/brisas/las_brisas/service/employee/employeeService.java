@@ -47,13 +47,20 @@ public class employeeService {
             if (!StringUtils.hasText(dto.getLastName())) {
                 return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "El apellido no puede estar vacío", null);
             }
+            if (!StringUtils.hasText(dto.getEmail())) {
+                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "El email no puede estar vacío", null);
+            }
+            if (!StringUtils.hasText(dto.getDocumentNumber())) {
+                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(),
+                        "El número de documento no puede estar vacío", null);
+            }
 
             employee entity = convertToEntity(dto);
+
             if (dto.getId() == 0) {
                 entity.setCreatedAt(LocalDateTime.now());
-            } else {
-                entity.setUpdatedAt(LocalDateTime.now());
             }
+            entity.setUpdatedAt(LocalDateTime.now());
 
             iEmployee.save(entity);
             return new ResponseDTO<>(HttpStatus.OK.toString(), "Empleado guardado correctamente", convertToDTO(entity));
@@ -67,21 +74,21 @@ public class employeeService {
     private employee convertToEntity(employeeDTO dto) {
         employee.tipo_documento docType;
         try {
-            docType = employee.tipo_documento.valueOf(dto.getTipoDocumento().toUpperCase());
+            docType = employee.tipo_documento.valueOf(dto.getTipoDocumento().toLowerCase());
         } catch (Exception e) {
             docType = employee.tipo_documento.cc;
         }
 
         employee.gender genderEnum;
         try {
-            genderEnum = employee.gender.valueOf(dto.getGender().toUpperCase());
+            genderEnum = employee.gender.valueOf(dto.getGender().toLowerCase());
         } catch (Exception e) {
             genderEnum = employee.gender.other;
         }
 
         employee.civil_status civilStatusEnum;
         try {
-            civilStatusEnum = employee.civil_status.valueOf(dto.getCivilStatus().toUpperCase());
+            civilStatusEnum = employee.civil_status.valueOf(dto.getCivilStatus().toLowerCase());
         } catch (Exception e) {
             civilStatusEnum = employee.civil_status.single;
         }
@@ -102,7 +109,7 @@ public class employeeService {
                 .email(dto.getEmail())
                 .civilStatus(civilStatusEnum)
                 .address(dto.getAddress())
-                .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now())
+                .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())
                 .user(u)
                 .build();
@@ -113,7 +120,7 @@ public class employeeService {
                 .id(entity.getId())
                 .firstName(entity.getFirstName())
                 .lastName(entity.getLastName())
-                .tipoDocumento(entity.getTipoDocumento().name()) // enum → string
+                .tipoDocumento(entity.getTipoDocumento().name())
                 .documentNumber(entity.getDocumentNumber())
                 .birthdate(entity.getBirthdate())
                 .photoProfile(entity.getPhotoProfile())
@@ -124,7 +131,7 @@ public class employeeService {
                 .address(entity.getAddress())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
-                .userId(0)
+                .userId(entity.getUser() != null ? entity.getUser().getIdUser() : 0)
                 .build();
     }
 }

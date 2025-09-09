@@ -114,8 +114,6 @@ public class UserRolService {
                 .id(entity.getId())
                 .idUser(entity.getUser().getIdUser())
                 .idRol(entity.getRol().getId())
-                .userName(entity.getUser().getUsername())
-                .rolName(entity.getRol().getName())
                 .build();
     }
 }

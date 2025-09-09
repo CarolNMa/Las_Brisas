@@ -84,7 +84,7 @@ public class employee {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_user", nullable = false, referencedColumnName = "id_user")
     private user user;
 
 }
