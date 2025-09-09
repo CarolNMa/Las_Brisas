@@ -1,23 +1,12 @@
 package com.brisas.las_brisas.model.employee;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.brisas.las_brisas.model.user.user;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "employee")
@@ -38,32 +27,33 @@ public class employee {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    public enum TipoDocumento {
-        CC,
-        TI,
-        DNI,
-        PASAPORTE
+    public enum tipo_documento {
+        cc,
+        ti,
+        dni,
+        pasaporte
     }
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_documento", nullable = false)
-    private TipoDocumento tipoDocumento;
+    private tipo_documento tipoDocumento;
 
     @Column(name = "document", nullable = false)
     private String documentNumber;
 
     @Column(name = "birthdate", nullable = false)
-    private String birthdate;
+    private LocalDate birthdate;
 
     @Column(name = "photo_profile", nullable = false)
     private String photoProfile;
 
     public enum gender {
-        MALE,
-        FEMALE,
-        OTHER
+        male,
+        female,
+        other
     }
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private gender gender;
 
@@ -73,15 +63,16 @@ public class employee {
     @Column(name = "email", nullable = false)
     private String email;
 
-    public enum civilStatus {
-        SINGLE,
-        MARRIED,
-        DIVORCED,
-        WIDOWED
+    public enum civil_status {
+        single,
+        married,
+        divorced,
+        widowed
     }
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "civil_status", nullable = false)
-    private civilStatus civilStatus;
+    private civil_status civilStatus;
 
     @Column(name = "address", nullable = false)
     private String address;

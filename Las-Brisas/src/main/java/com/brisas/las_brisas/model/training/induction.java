@@ -2,16 +2,8 @@ package com.brisas.las_brisas.model.training;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "induction")
@@ -32,28 +24,28 @@ public class induction {
     @Column(name = "description", nullable = false)
     private String description; 
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private type type;
 
     public enum type {
-        Induction,
-        Capacitacion
+        induction,
+        capacitacion
     }
-    
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private status status;
 
     public enum status {
-        Pendiente,
-        Aprobado,
-        Rechazado
+        pendiente,
+        aprobado,
+        rechazado
     }
 
     @Column(name = "date_create", nullable = false)
-    private LocalDateTime date_create;
+    private LocalDateTime dateCreate;
 
     @Column(name = "date_update", nullable = false)
-    private LocalDateTime date_update;
-
-
+    private LocalDateTime dateUpdate;
 }

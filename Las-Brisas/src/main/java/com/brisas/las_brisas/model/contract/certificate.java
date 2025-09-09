@@ -4,18 +4,8 @@ import java.time.LocalDateTime;
 
 import com.brisas.las_brisas.model.employee.employee;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "certificate")
@@ -24,35 +14,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class certificate {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_certificate", unique = true, nullable = false)
-    private int id_certificate;
+    private int idCertificate;
 
     @Column(name = "date_certificate", nullable = false)
-    private LocalDateTime date_certificate;
+    private LocalDateTime dateCertificate;
 
     @Column(name = "document_url", nullable = false)
-    private String document_url;
+    private String documentUrl;
 
-    public enum status {
-        Generado,
-        Enviado,
-        Validado
-    }
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private status status;
 
-    public enum type {
-        Laboral
+    public enum status {
+        generado,
+        enviado,
+        validado
     }
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private type type;
+
+    public enum type {
+        laboral
+    }
 
     @ManyToOne
     @JoinColumn(name = "id_employee", nullable = false)
     private employee employee;
-
 }
