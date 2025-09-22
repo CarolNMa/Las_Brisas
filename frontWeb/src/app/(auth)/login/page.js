@@ -15,7 +15,7 @@ export default function Log() {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:8085/api/v1/user/login", {
+            const response = await fetch("http://localhost:8085/api/v1/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -76,11 +76,9 @@ export default function Log() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            minLength={8}
                             maxLength={20}
-                            pattern="^[A-Za-z0-9]{8,}$"
 
-                            title="Debe contener 8 caracteres."
+                            title="Debe contener caracteres."
                         />
                     </div>
 
