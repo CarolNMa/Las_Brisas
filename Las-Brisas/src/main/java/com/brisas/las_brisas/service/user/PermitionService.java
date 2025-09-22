@@ -7,7 +7,6 @@ import com.brisas.las_brisas.repository.user.Ipermition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,34 +31,25 @@ public class PermitionService {
             return new ResponseDTO<>("Permiso no existe", HttpStatus.NOT_FOUND.toString(), null);
         }
         iPermition.deleteById(id);
-        return new ResponseDTO<>("Permiso eliminado correctamente", HttpStatus.OK.toString(), convertToDTO(permOpt.get()));
+        return new ResponseDTO<>("Permiso eliminado correctamente", HttpStatus.OK.toString(),
+                convertToDTO(permOpt.get()));
     }
 
     public ResponseDTO<permitionDTO> save(permitionDTO dto) {
         try {
-            if (!StringUtils.hasText(dto.getName())) {
-                return new ResponseDTO<>("El nombre del permiso no puede estar vacío", HttpStatus.BAD_REQUEST.toString(), null);
+           
+            if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+                return new ResponseDTO<>("El nombre del permiso no puede estar vacío",
+                        HttpStatus.BAD_REQUEST.toString(), null);
             }
-            if (!StringUtils.hasText(dto.getDescription())) {
-                return new ResponseDTO<>("La descripción no puede estar vacía", HttpStatus.BAD_REQUEST.toString(), null);
+            if (dto.getDescription() == null || dto.getDescription().trim().isEmpty()) {
+                return new ResponseDTO<>("La descripción no puede estar vacía", HttpStatus.BAD_REQUEST.toString(),
+                        null);
             }
-
-            permition entity;
-            if (dto.getId() == 0) {
-
-                entity = convertToModel(dto);
-            } else {
-
-                Optional<permition> existing = iPermition.findById(dto.getId());
-                if (existing.isEmpty()) {
-                    return new ResponseDTO<>("Permiso no encontrado", HttpStatus.NOT_FOUND.toString(), null);
-                }
-                entity = convertToModel(dto);
-            }
-
+            permition entity = convertToModel(dto);
             permition saved = iPermition.save(entity);
-            return new ResponseDTO<>("Permiso guardado correctamente", HttpStatus.OK.toString(), convertToDTO(saved));
 
+            return new ResponseDTO<>("Permiso guardado correctamente", HttpStatus.OK.toString(), convertToDTO(saved));
         } catch (Exception e) {
             return new ResponseDTO<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
@@ -72,7 +62,6 @@ public class PermitionService {
                 .description(entity.getDescription())
                 .build();
     }
-
 
     private permition convertToModel(permitionDTO dto) {
         return permition.builder()

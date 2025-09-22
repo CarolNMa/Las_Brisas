@@ -13,6 +13,7 @@ import com.brisas.las_brisas.model.employee.employee;
 import com.brisas.las_brisas.model.employee.resume;
 import com.brisas.las_brisas.repository.employee.Idisciplinary_process;
 
+import org.springframework.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -40,11 +41,23 @@ public class disciplinary_processService {
 
     public ResponseDTO<disciplinary_processDTO> save(disciplinary_processDTO dto) {
         try {
+            
+            if (dto.getEmployeeId() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (!StringUtils.hasText(dto.getDescription())) {
+                return new ResponseDTO<>("La descripción no puede estar vacía", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+
+          
             disciplinary_process entity = convertToEntity(dto);
             iProcess.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Proceso disciplinario guardado", convertToDTO(entity));
+
+            return new ResponseDTO<>("Proceso disciplinario guardado correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(),
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                     null);
         }
     }

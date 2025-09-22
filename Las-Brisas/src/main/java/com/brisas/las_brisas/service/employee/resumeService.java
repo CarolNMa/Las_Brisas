@@ -13,6 +13,7 @@ import com.brisas.las_brisas.model.employee.employee;
 import com.brisas.las_brisas.model.employee.resume;
 import com.brisas.las_brisas.repository.employee.Iresume;
 
+import org.springframework.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 public class resumeService {
 
-     private final Iresume iResume;
+    private final Iresume iResume;
 
     public List<resume> getAllResumes() {
         return iResume.findAll();
@@ -41,6 +42,16 @@ public class resumeService {
 
     public ResponseDTO<resumeDTO> save(resumeDTO dto) {
         try {
+           
+            if (dto.getEmployeeId() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (!StringUtils.hasText(dto.getDocumentUrl())) {
+                return new ResponseDTO<>("El documento de la hoja de vida es obligatorio",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
+           
             resume entity = convertToEntity(dto);
             if (dto.getId() == 0) {
                 entity.setDate_create(LocalDateTime.now());
@@ -48,9 +59,12 @@ public class resumeService {
                 entity.setDate_update(LocalDateTime.now());
             }
             iResume.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Hoja de vida guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Hoja de vida guardada correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 
@@ -79,4 +93,3 @@ public class resumeService {
                 .build();
     }
 }
-

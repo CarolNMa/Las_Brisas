@@ -37,11 +37,29 @@ public class PositionsService {
 
     public ResponseDTO<positionsDTO> save(positionsDTO dto) {
         try {
+            if (dto.getNamePost() == null || dto.getNamePost().trim().isEmpty()) {
+                return new ResponseDTO<>("El nombre del puesto es obligatorio", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+            if (dto.getDescription() == null || dto.getDescription().trim().isEmpty()) {
+                return new ResponseDTO<>("La descripción es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getJobFunction() == null || dto.getJobFunction().trim().isEmpty()) {
+                return new ResponseDTO<>("La función del puesto es obligatoria", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+            if (dto.getRequirements() == null || dto.getRequirements().trim().isEmpty()) {
+                return new ResponseDTO<>("Los requisitos del puesto son obligatorios",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             positions entity = convertToEntity(dto);
             ipositions.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Puesto guardado correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Puesto guardado correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 

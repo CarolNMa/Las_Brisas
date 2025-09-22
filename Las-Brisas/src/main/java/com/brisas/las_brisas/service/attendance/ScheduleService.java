@@ -37,11 +37,31 @@ public class ScheduleService {
 
     public ResponseDTO<scheduleDTO> save(scheduleDTO dto) {
         try {
+            if (dto.getTime_start() == null) {
+                return new ResponseDTO<>("La hora de inicio es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getTime_end() == null) {
+                return new ResponseDTO<>("La hora de fin es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getTime_start().isAfter(dto.getTime_end())) {
+                return new ResponseDTO<>("La hora de inicio no puede ser mayor a la hora de fin",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getDay_week() == null || dto.getDay_week().trim().isEmpty()) {
+                return new ResponseDTO<>("El día de la semana es obligatorio", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getShift() == null || dto.getShift().trim().isEmpty()) {
+                return new ResponseDTO<>("El turno es obligatorio", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             schedule entity = convertToEntity(dto);
             ischedule.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Horario guardado correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Horario guardado correctamente",
+                    HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 

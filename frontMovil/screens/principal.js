@@ -66,81 +66,8 @@ export default function PrincipalScreen({ setScreen }) {
         }
     }
         return (
-            <ImageBackground
+            <ImageBackground>
                 source={require("../assets/fondo.png")}
-                style={styles.background}
-                resizeMode="cover"
-            >
-                <View style={styles.overlay}>
-
-                    <View style={styles.volver}>
-                        <TouchableOpacity
-                            style={styles.volver}
-                            onPress={() => setScreen("Login")}
-                        >
-                            <Image
-                                source={require("../assets/devolver.png")}
-                                style={styles.volverImage}
-                            />
-                        </TouchableOpacity>
-                    </View>
-
-                    <Image
-                        source={require("../assets/logo.png")}
-                        style={styles.logo}
-                        resizeMode="contain"
-                    />
-
-                    <View style={styles.card}>
-                        <Text style={styles.label}>Nombre Completo</Text>
-                        <View style={styles.inputContainer}>
-                            <Image source={require("../assets/name.png")} style={styles.iconImage} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Ingresa tu nombre completo"
-                                value={name}
-                                onChangeText={setName}
-                                maxLength={100}
-                            />
-                        </View>
-
-                        <Text style={styles.label}>Correo Electrónico</Text>
-
-                        <View style={styles.inputContainer}>
-                            <Image source={require("../assets/mail.png")} style={styles.iconImage} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Ingresa tu correo electrónico"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                maxLength={100}
-                            />
-
-                        </View>
-
-                        <Text style={styles.label}>Contraseña</Text>
-
-                        <View style={styles.inputContainer}>
-                            <Image source={require("../assets/password.png")} style={styles.iconImage} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Ingresa tu contraseña"
-                                value={password}
-                                onChangeText={setPassword}
-                                secureTextEntry
-                                maxLength={20}
-                            />
-
-                        </View>
-
-
-
-                        <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                            <Text style={styles.buttonText}>Registrarse</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
             </ImageBackground>
         );
     }

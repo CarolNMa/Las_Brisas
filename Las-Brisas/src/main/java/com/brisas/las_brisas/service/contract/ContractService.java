@@ -27,6 +27,10 @@ public class ContractService {
         return icontract.findById(id);
     }
 
+    public Optional<contract> findByUserEmail(String email) {
+        return icontract.findByEmployee_User_Email(email);
+    }
+
     public ResponseDTO<contractDTO> delete(int id) {
         Optional<contract> opt = icontract.findById(id);
         if (opt.isEmpty()) {
@@ -38,11 +42,28 @@ public class ContractService {
 
     public ResponseDTO<contractDTO> save(contractDTO dto) {
         try {
+            if (dto.getEmployee() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getDateStart() == null) {
+                return new ResponseDTO<>("La fecha de inicio es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getDateEnd() != null && dto.getDateStart().isAfter(dto.getDateEnd())) {
+                return new ResponseDTO<>("La fecha de fin no puede ser anterior a la de inicio",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getType() == null || dto.getType().trim().isEmpty()) {
+                return new ResponseDTO<>("El tipo de contrato es obligatorio", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             contract entity = convertToEntity(dto);
             icontract.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Contrato guardado correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Contrato guardado correctamente",
+                    HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 

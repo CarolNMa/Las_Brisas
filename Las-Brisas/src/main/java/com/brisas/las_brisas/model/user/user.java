@@ -1,12 +1,15 @@
 package com.brisas.las_brisas.model.user;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "user") 
-@Data  
+@Table(name = "user")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -37,4 +40,9 @@ public class user {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_rol"))
+    @Builder.Default
+    private Set<rol> roles = new HashSet<>();
 }

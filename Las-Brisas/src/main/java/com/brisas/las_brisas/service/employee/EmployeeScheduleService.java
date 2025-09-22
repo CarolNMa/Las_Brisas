@@ -39,11 +39,20 @@ public class EmployeeScheduleService {
 
     public ResponseDTO<emplo_scheduleDTO> save(emplo_scheduleDTO dto) {
         try {
+            if (dto.getEmployeeId() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getScheduleId() <= 0) {
+                return new ResponseDTO<>("El ID del horario es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             emplo_schedule entity = convertToEntity(dto);
             iemplo_schedule.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Relación guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Relación guardada correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

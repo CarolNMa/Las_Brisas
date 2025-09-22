@@ -8,6 +8,8 @@ import com.brisas.las_brisas.service.employee.employeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,58 +22,44 @@ public class EmployeeController {
 
     private final employeeService employeeService;
 
-    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
     public ResponseEntity<List<employee>> getAllEmployees() {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getEmployeeById(@PathVariable int id) {
         Optional<employee> emp = employeeService.findById(id);
         if (emp.isEmpty()) {
-            return ResponseEntity.status(404).body(new ResponseDTO<>("Empleado no encontrado", "404", null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDTO<>("Empleado no encontrado", "404", null));
         }
         return ResponseEntity.ok(emp.get());
     }
 
-    @PostMapping
-    public ResponseEntity<ResponseDTO<employeeDTO>> saveEmployee(@RequestBody employeeDTO dto) {
-        ResponseDTO<employeeDTO> response = employeeService.save(dto);
-
-        HttpStatus httpStatus;
-        try {
-            // Si el status es un número (ej: "200", "404")
-            httpStatus = HttpStatus.valueOf(Integer.parseInt(response.getStatus()));
-        } catch (NumberFormatException e) {
-            // Si el status es un texto (ej: "OK", "NOT_FOUND")
-            try {
-                httpStatus = HttpStatus.valueOf(response.getStatus().toUpperCase());
-            } catch (IllegalArgumentException ex) {
-                // Si tampoco coincide, default a 200
-                httpStatus = HttpStatus.OK;
-            }
+    @PreAuthorize("hasRole('EMPLEADO')")
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyProfile(Authentication auth) {
+        Optional<employee> emp = employeeService.findByEmail(auth.getName());
+        if (emp.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseDTO<>("Empleado no encontrado", "404", null));
         }
-
-        return ResponseEntity.status(httpStatus).body(response);
+        return ResponseEntity.ok(emp.get());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDTO<employeeDTO>> deleteEmployee(@PathVariable int id) {
-        ResponseDTO<employeeDTO> response = employeeService.deleteEmployee(id);
-         HttpStatus httpStatus;
-        try {
-            // Si el status es un número (ej: "200", "404")
-            httpStatus = HttpStatus.valueOf(Integer.parseInt(response.getStatus()));
-        } catch (NumberFormatException e) {
-            // Si el status es un texto (ej: "OK", "NOT_FOUND")
-            try {
-                httpStatus = HttpStatus.valueOf(response.getStatus().toUpperCase());
-            } catch (IllegalArgumentException ex) {
-                // Si tampoco coincide, default a 200
-                httpStatus = HttpStatus.OK;
-            }
-        }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
+    public ResponseEntity<ResponseDTO<employeeDTO>> createEmployee(@RequestBody employeeDTO dto) {
+        return ResponseEntity.ok(employeeService.save(dto));
+    }
 
-        return ResponseEntity.status(httpStatus).body(response);
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteEmployee(@PathVariable int id) {
+        employeeService.deleteEmployee(id);
+        return ResponseEntity.ok("Empleado eliminado");
     }
 }

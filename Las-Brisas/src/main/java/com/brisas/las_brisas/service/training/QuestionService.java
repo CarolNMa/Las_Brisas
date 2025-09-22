@@ -38,11 +38,21 @@ public class QuestionService {
 
     public ResponseDTO<questionDTO> save(questionDTO dto) {
         try {
+            if (dto.getModuleInductionId() <= 0) {
+                return new ResponseDTO<>("El ID del módulo de inducción es requerido",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getQuestion() == null || dto.getQuestion().trim().isEmpty()) {
+                return new ResponseDTO<>("La pregunta no puede estar vacía", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             question entity = convertToEntity(dto);
             iquestion.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Pregunta guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Pregunta guardada correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

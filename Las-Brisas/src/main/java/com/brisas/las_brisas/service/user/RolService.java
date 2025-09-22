@@ -7,7 +7,6 @@ import com.brisas.las_brisas.repository.user.Irol;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,20 +36,29 @@ public class RolService {
 
     public ResponseDTO<rolDTO> save(rolDTO dto) {
         try {
-            if (!StringUtils.hasText(dto.getName())) {
-                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "El nombre no puede ser nulo", null);
+            if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+                return new ResponseDTO<>("El nombre no puede estar vacío", HttpStatus.BAD_REQUEST.toString(), null);
             }
-            if (!StringUtils.hasText(dto.getDescription())) {
-                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "La descripción no puede ser nula", null);
+            if (dto.getName().length() < 3) {
+                return new ResponseDTO<>("El nombre del rol debe tener al menos 3 caracteres",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getDescription() == null || dto.getDescription().trim().isEmpty()) {
+                return new ResponseDTO<>("La descripción no puede estar vacía", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+            if (dto.getDescription().length() > 200) {
+                return new ResponseDTO<>("La descripción no puede superar 200 caracteres",
+                        HttpStatus.BAD_REQUEST.toString(), null);
             }
 
             rol entity = convertToEntity(dto);
             iRol.save(entity);
 
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Rol guardado correctamente", convertToDTO(entity));
-
+            return new ResponseDTO<>("Rol guardado correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

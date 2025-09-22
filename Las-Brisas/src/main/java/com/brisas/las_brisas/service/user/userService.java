@@ -7,7 +7,6 @@ import com.brisas.las_brisas.repository.user.Iuser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +20,10 @@ public class userService {
 
     public List<user> getAllUsers() {
         return iUser.findAll();
+    }
+
+    public Optional<user> findByEmail(String email) {
+        return iUser.findByEmail(email);
     }
 
     public Optional<user> findById(int id) {
@@ -38,45 +41,48 @@ public class userService {
 
     public ResponseDTO<userDTO> save(userDTO dto) {
         try {
-
-            if (!StringUtils.hasText(dto.getUsername())) {
-                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "El username no puede ser vacío", null);
+            if (dto.getUsername() == null || dto.getUsername().trim().isEmpty()) {
+                return new ResponseDTO<>("El username no puede estar vacío", HttpStatus.BAD_REQUEST.toString(), null);
             }
-            if (!StringUtils.hasText(dto.getEmail())) {
-                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "El email no puede ser vacío", null);
+            if (dto.getEmail() == null || !dto.getEmail().matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
+                return new ResponseDTO<>("El email debe ser válido y pertenecer a Gmail.com",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getIdUser() == 0 && (dto.getPassword() == null || dto.getPassword().length() < 8)) {
+                return new ResponseDTO<>("La contraseña debe tener al menos 8 caracteres",
+                        HttpStatus.BAD_REQUEST.toString(), null);
             }
 
             user entity = convertToEntity(dto);
             if (dto.getIdUser() == 0) {
                 entity.setCreatedAt(LocalDateTime.now());
-
-                if (!StringUtils.hasText(entity.getPassword())) {
-                    entity.setPassword("defaultPassword"); 
-                }
             }
-
             iUser.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Usuario guardado correctamente", convertToDTO(entity));
 
+            return new ResponseDTO<>("Usuario guardado correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 
     private user convertToEntity(userDTO dto) {
+
         user.status userStatus;
-        try {
-            userStatus = user.status.valueOf(dto.getStatus().toLowerCase());
-        } catch (Exception e) {
+
+        if (dto.getIdUser() == 0) {
             userStatus = user.status.active;
+        } else {
+            userStatus = user.status.inactive;
         }
 
         return user.builder()
                 .idUser(dto.getIdUser())
                 .username(dto.getUsername())
                 .email(dto.getEmail())
+                .password(dto.getPassword())
                 .status(userStatus)
-                .createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now())
+                .createdAt(dto.getIdUser() == 0 ? LocalDateTime.now() : null)
                 .build();
     }
 
@@ -85,8 +91,7 @@ public class userService {
                 .idUser(entity.getIdUser())
                 .username(entity.getUsername())
                 .email(entity.getEmail())
-                .status(entity.getStatus().name())
-                .createdAt(entity.getCreatedAt())
+                .password(entity.getPassword())
                 .build();
     }
 }

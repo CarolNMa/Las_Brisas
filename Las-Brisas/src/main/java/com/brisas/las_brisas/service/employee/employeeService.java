@@ -13,6 +13,7 @@ import com.brisas.las_brisas.DTO.employee.employeeDTO;
 import com.brisas.las_brisas.model.employee.employee;
 import com.brisas.las_brisas.model.user.user;
 import com.brisas.las_brisas.repository.employee.Iemployee;
+import com.brisas.las_brisas.repository.user.Iuser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class employeeService {
 
     private final Iemployee iEmployee;
+    private final Iuser userRepo;
 
     public List<employee> getAllEmployees() {
         return iEmployee.findAll();
@@ -28,6 +30,14 @@ public class employeeService {
 
     public Optional<employee> findById(int id) {
         return iEmployee.findById(id);
+    }
+
+    public Optional<employee> findByEmail(String email) {
+        return iEmployee.findByEmail(email);
+    }
+
+    public employee saveEntity(employee emp) {
+        return iEmployee.save(emp);
     }
 
     public ResponseDTO<employeeDTO> deleteEmployee(int id) {
@@ -42,31 +52,34 @@ public class employeeService {
     public ResponseDTO<employeeDTO> save(employeeDTO dto) {
         try {
             if (!StringUtils.hasText(dto.getFirstName())) {
-                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "El nombre no puede estar vacío", null);
+                return new ResponseDTO<>("El nombre no puede estar vacío", HttpStatus.BAD_REQUEST.toString(), null);
             }
             if (!StringUtils.hasText(dto.getLastName())) {
-                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "El apellido no puede estar vacío", null);
+                return new ResponseDTO<>("El apellido no puede estar vacío", HttpStatus.BAD_REQUEST.toString(), null);
             }
-            if (!StringUtils.hasText(dto.getEmail())) {
-                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(), "El email no puede estar vacío", null);
+            if (dto.getEmail() == null || !dto.getEmail().matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
+                return new ResponseDTO<>("El email debe ser válido y pertenecer a Gmail.com",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getPhone() == null || !dto.getPhone().matches("3[0-9]{9}")) {
+                return new ResponseDTO<>("El teléfono debe empezar con 3 y tener 10 dígitos",
+                        HttpStatus.BAD_REQUEST.toString(), null);
             }
             if (!StringUtils.hasText(dto.getDocumentNumber())) {
-                return new ResponseDTO<>(HttpStatus.BAD_REQUEST.toString(),
-                        "El número de documento no puede estar vacío", null);
+                return new ResponseDTO<>("El número de documento no puede estar vacío",
+                        HttpStatus.BAD_REQUEST.toString(), null);
             }
 
             employee entity = convertToEntity(dto);
-
             if (dto.getId() == 0) {
                 entity.setCreatedAt(LocalDateTime.now());
             }
             entity.setUpdatedAt(LocalDateTime.now());
-
             iEmployee.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Empleado guardado correctamente", convertToDTO(entity));
 
+            return new ResponseDTO<>("Empleado guardado correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(),
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                     null);
         }
     }
@@ -93,8 +106,13 @@ public class employeeService {
             civilStatusEnum = employee.civil_status.single;
         }
 
-        user u = new user();
-        u.setIdUser(dto.getUserId());
+        user u = null;
+        if (dto.getUserId() != 0) {
+            u = userRepo.findById(dto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id " + dto.getUserId()));
+        } else {
+            throw new RuntimeException("El empleado debe estar vinculado a un usuario existente");
+        }
 
         return employee.builder()
                 .id(dto.getId())
@@ -113,6 +131,7 @@ public class employeeService {
                 .updatedAt(dto.getUpdatedAt())
                 .user(u)
                 .build();
+
     }
 
     private employeeDTO convertToDTO(employee entity) {

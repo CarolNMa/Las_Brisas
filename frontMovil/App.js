@@ -9,7 +9,6 @@ import {
   ImageBackground,
 } from "react-native";
 import LoginScreen from "./screens/login";
-import RegisterScreen from "./screens/register";
 import ForgotPasswordScreen from "./screens/forgotPass";
 import PrincipalScreen from "./screens/principal";
 import NewPassScreen from "./screens/newPass";
@@ -26,8 +25,6 @@ export default function App() {
 
   if (screen === "Login") {
     return <LoginScreen setScreen={setScreen} />;
-  } else if (screen === "Register") {
-    return <RegisterScreen setScreen={setScreen} />;
   } else if (screen === "ForgotPassword") {
     return <ForgotPasswordScreen setScreen={setScreen} />;
   }else if(screen === "Principal"){

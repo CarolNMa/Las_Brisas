@@ -39,11 +39,28 @@ public class InductionEmployeeService {
 
     public ResponseDTO<induction_employeeDTO> save(induction_employeeDTO dto) {
         try {
+            if (dto.getEmployeeId() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getInductionId() <= 0) {
+                return new ResponseDTO<>("El ID de la inducción es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getDeadline() == null) {
+                return new ResponseDTO<>("La fecha límite es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getPoints() < 0) {
+                return new ResponseDTO<>("Los puntos no pueden ser negativos", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
+           
             induction_employee entity = convertToEntity(dto);
             IintroduEmployee.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Asignación guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Asignación guardada correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

@@ -39,11 +39,20 @@ public class EmployeeAreaService {
 
     public ResponseDTO<employee_areaDTO> save(employee_areaDTO dto) {
         try {
+            if (dto.getEmployeeId() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getAreaId() <= 0) {
+                return new ResponseDTO<>("El ID del área es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             employee_area entity = convertToEntity(dto);
             iemployee_area.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Relación guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Relación guardada correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

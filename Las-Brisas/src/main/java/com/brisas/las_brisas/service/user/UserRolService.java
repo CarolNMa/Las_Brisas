@@ -37,16 +37,17 @@ public class UserRolService {
             return new ResponseDTO<>("La relación usuario-rol no existe", HttpStatus.NOT_FOUND.toString(), null);
         }
         userRolRepository.deleteById(id);
-        return new ResponseDTO<>("La relación usuario-rol ha sido eliminada correctamente", HttpStatus.OK.toString(), null);
+        return new ResponseDTO<>("La relación usuario-rol ha sido eliminada correctamente", HttpStatus.OK.toString(),
+                null);
     }
 
     public ResponseDTO<user_rolDTO> save(user_rolDTO dto) {
         try {
             if (dto.getIdUser() <= 0) {
-                return new ResponseDTO<>("El ID del usuario es requerido y debe ser mayor a 0", HttpStatus.BAD_REQUEST.toString(), null);
+                return new ResponseDTO<>("El ID del usuario es inválido", HttpStatus.BAD_REQUEST.toString(), null);
             }
             if (dto.getIdRol() <= 0) {
-                return new ResponseDTO<>("El ID del rol es requerido y debe ser mayor a 0", HttpStatus.BAD_REQUEST.toString(), null);
+                return new ResponseDTO<>("El ID del rol es inválido", HttpStatus.BAD_REQUEST.toString(), null);
             }
 
             Optional<user> userOpt = userRepository.findById(dto.getIdUser());
@@ -66,10 +67,11 @@ public class UserRolService {
             user_rol entity = convertToEntity(dto, userOpt.get(), rolOpt.get());
             user_rol savedEntity = userRolRepository.save(entity);
 
-            return new ResponseDTO<>("Relación usuario-rol guardada correctamente", HttpStatus.OK.toString(), convertToDTO(savedEntity));
-
+            return new ResponseDTO<>("Relación usuario-rol guardada correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(savedEntity));
         } catch (Exception e) {
-            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

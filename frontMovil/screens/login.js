@@ -48,13 +48,27 @@ export default function LoginScreen({ setScreen }) {
     return true;
   }
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (validate()) {
-      console.log("Email:", email);
-      console.log("Password:", password);
-      setScreen("Principal");
+      try {
+        const response = await fetch("http://localhost:8085/api/v1/user/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) throw new Error("Credenciales inválidas");
+
+        const data = await response.json();
+        console.log("Respuesta:", data);
+
+        setScreen("Principal");
+      } catch (error) {
+        Alert.alert("Error", error.message);
+      }
     }
   };
+
   return (
     <ImageBackground
       source={require("../assets/fondo.png")}

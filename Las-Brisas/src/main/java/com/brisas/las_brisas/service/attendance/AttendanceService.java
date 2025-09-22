@@ -38,11 +38,29 @@ public class AttendanceService {
 
     public ResponseDTO<attendanceDTO> save(attendanceDTO dto) {
         try {
+            if (dto.getEmployee() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getDate() == null) {
+                return new ResponseDTO<>("La fecha de la asistencia es obligatoria", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+            if (dto.getTimeStart() == null) {
+                return new ResponseDTO<>("La hora de inicio es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getTimeEnd() != null && dto.getTimeStart().isAfter(dto.getTimeEnd())) {
+                return new ResponseDTO<>("La hora de fin no puede ser anterior a la de inicio",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             attendance entity = convertToEntity(dto);
             iattendance.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Asistencia guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Asistencia guardada correctamente",
+                    HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 

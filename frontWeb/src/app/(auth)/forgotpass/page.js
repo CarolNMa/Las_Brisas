@@ -14,7 +14,7 @@ export default function ForgotPass() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("Email:", email);
-        console.log("Password:", password);
+      
 
         Swal.fire("Código Enviado","Se ha enviado un código de verificación a tu correo.");
         router.push("/newpass");

@@ -39,11 +39,20 @@ public class EmployeeLocationService {
 
     public ResponseDTO<emplo_locationDTO> save(emplo_locationDTO dto) {
         try {
+            if (dto.getEmployeeId() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getLocationId() <= 0) {
+                return new ResponseDTO<>("El ID de la ubicación es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             emplo_location entity = convertToEntity(dto);
             iemplo_location.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Relación guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Relación guardada correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

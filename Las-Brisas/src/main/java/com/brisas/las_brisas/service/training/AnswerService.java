@@ -38,11 +38,21 @@ public class AnswerService {
 
     public ResponseDTO<answerDTO> save(answerDTO dto) {
         try {
+            if (dto.getQuestionId() <= 0) {
+                return new ResponseDTO<>("El ID de la pregunta es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getAnswer() == null || dto.getAnswer().trim().isEmpty()) {
+                return new ResponseDTO<>("La respuesta no puede estar vacía", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             answer entity = convertToEntity(dto);
             ianswer.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Respuesta guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Respuesta guardada correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

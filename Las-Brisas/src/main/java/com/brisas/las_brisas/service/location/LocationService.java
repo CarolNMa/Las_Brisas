@@ -37,11 +37,23 @@ public class LocationService {
 
     public ResponseDTO<locationDTO> save(locationDTO dto) {
         try {
+            if (dto.getNameLocation() == null || dto.getNameLocation().trim().isEmpty()) {
+                return new ResponseDTO<>("El nombre de la ubicación es obligatorio",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getAddress() == null || dto.getAddress().trim().isEmpty()) {
+                return new ResponseDTO<>("La dirección es obligatoria",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             location entity = convertToEntity(dto);
             ilocation.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Ubicación guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Ubicación guardada correctamente",
+                    HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 

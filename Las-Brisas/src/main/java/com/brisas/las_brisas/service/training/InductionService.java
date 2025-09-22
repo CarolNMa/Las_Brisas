@@ -38,17 +38,29 @@ public class InductionService {
 
     public ResponseDTO<inductionDTO> save(inductionDTO dto) {
         try {
+         
+            if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+                return new ResponseDTO<>("El nombre de la inducción es obligatorio", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+            if (dto.getDescription() == null || dto.getDescription().trim().isEmpty()) {
+                return new ResponseDTO<>("La descripción es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
+        
             induction entity = convertToEntity(dto);
             if (dto.getId() == 0) {
                 entity.setDateCreate(LocalDateTime.now());
             } else {
                 entity.setDateUpdate(LocalDateTime.now());
             }
-
             iinduction.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Inducción guardada correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Inducción guardada correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

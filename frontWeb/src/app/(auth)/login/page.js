@@ -3,19 +3,42 @@
 import { useRouter } from "next/navigation";
 import "./style.css";
 import { useState } from "react";
+import Swal from 'sweetalert2'
+
 
 export default function Log() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Email:", email);
-        console.log("Password:", password);
 
-        router.push("/homes");
+        try {
+            const response = await fetch("http://localhost:8085/api/v1/user/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) throw new Error("Credenciales inválidas");
+
+            const data = await response.json();
+            console.log("Respuesta:", data);
+
+
+
+            router.push("/homes");
+        } catch (err) {
+            Swal.fire({
+                icon: "error",
+                title: "Error al iniciar sesión",
+                text: "Verifica tus credenciales",
+                confirmButtonColor: "rgba(221, 51, 51, 1)",
+            });
+        }
     };
+
 
     return (
         <div className="login-page">
@@ -55,8 +78,9 @@ export default function Log() {
                             required
                             minLength={8}
                             maxLength={20}
-                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
-                            title="Debe contener al menos una mayúscula, un número y 6 caracteres."
+                            pattern="^[A-Za-z0-9]{8,}$"
+
+                            title="Debe contener 8 caracteres."
                         />
                     </div>
 

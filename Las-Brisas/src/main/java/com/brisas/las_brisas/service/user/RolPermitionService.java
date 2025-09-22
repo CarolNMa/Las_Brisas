@@ -37,16 +37,20 @@ public class RolPermitionService {
             return new ResponseDTO<>("RolPermition no encontrado", HttpStatus.NOT_FOUND.toString(), null);
         }
         iRolPermition.deleteById(id);
-        return new ResponseDTO<>("RolPermition eliminado correctamente", HttpStatus.OK.toString(), convertToDTO(entityOpt.get()));
+        return new ResponseDTO<>("RolPermition eliminado correctamente", HttpStatus.OK.toString(),
+                convertToDTO(entityOpt.get()));
     }
 
     public ResponseDTO<rol_permitionDTO> save(rol_permitionDTO dto) {
         try {
+          
             if (dto.getRolId() <= 0) {
-                return new ResponseDTO<>("El ID del rol es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+                return new ResponseDTO<>("El ID del rol es requerido y debe ser mayor a 0",
+                        HttpStatus.BAD_REQUEST.toString(), null);
             }
             if (dto.getPermitionId() <= 0) {
-                return new ResponseDTO<>("El ID del permiso es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+                return new ResponseDTO<>("El ID del permiso es requerido y debe ser mayor a 0",
+                        HttpStatus.BAD_REQUEST.toString(), null);
             }
 
             Optional<rol> rolOpt = rolRepository.findById(dto.getRolId());
@@ -63,11 +67,12 @@ public class RolPermitionService {
                 return new ResponseDTO<>("Ya existe esta relación rol-permiso", HttpStatus.CONFLICT.toString(), null);
             }
 
+           
             rol_permition entity = convertToModel(dto, rolOpt.get(), permOpt.get());
             rol_permition saved = iRolPermition.save(entity);
 
-            return new ResponseDTO<>("RolPermition guardado correctamente", HttpStatus.OK.toString(), convertToDTO(saved));
-
+            return new ResponseDTO<>("RolPermition guardado correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(saved));
         } catch (Exception e) {
             return new ResponseDTO<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }

@@ -38,11 +38,25 @@ public class ModuleInductionService {
 
     public ResponseDTO<module_inductionDTO> save(module_inductionDTO dto) {
         try {
+            
+            if (dto.getInductionId() <= 0) {
+                return new ResponseDTO<>("El ID de la inducción es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+                return new ResponseDTO<>("El nombre del módulo es obligatorio", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+            if (dto.getVideoUrl() == null || !dto.getVideoUrl().startsWith("http")) {
+                return new ResponseDTO<>("La URL del video debe ser válida", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             moduleInduction entity = convertToEntity(dto);
             imodulInduction.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Módulo guardado correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Módulo guardado correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                    null);
         }
     }
 

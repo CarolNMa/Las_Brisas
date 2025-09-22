@@ -37,11 +37,23 @@ public class ApplicationTypeService {
 
     public ResponseDTO<application_typeDTO> save(application_typeDTO dto) {
         try {
+            if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+                return new ResponseDTO<>("El nombre del tipo de solicitud es obligatorio",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getName().length() < 3) {
+                return new ResponseDTO<>("El nombre del tipo de solicitud debe tener al menos 3 caracteres",
+                        HttpStatus.BAD_REQUEST.toString(), null);
+            }
+
             application_type entity = convertToEntity(dto);
             iapplication_type.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Tipo de solicitud guardado correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Tipo de solicitud guardado correctamente",
+                    HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 

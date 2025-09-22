@@ -38,11 +38,26 @@ public class CertificateService {
 
     public ResponseDTO<certificateDTO> save(certificateDTO dto) {
         try {
+            if (dto.getEmployee() <= 0) {
+                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            }
+            if (dto.getDocumentUrl() == null || dto.getDocumentUrl().trim().isEmpty()) {
+                return new ResponseDTO<>("La URL del documento es obligatoria", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+            if (dto.getDateCertificate() == null) {
+                return new ResponseDTO<>("La fecha del certificado es obligatoria", HttpStatus.BAD_REQUEST.toString(),
+                        null);
+            }
+
             certificate entity = convertToEntity(dto);
             icertificate.save(entity);
-            return new ResponseDTO<>(HttpStatus.OK.toString(), "Certificado guardado correctamente", convertToDTO(entity));
+
+            return new ResponseDTO<>("Certificado guardado correctamente",
+                    HttpStatus.OK.toString(), convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Error al guardar: " + e.getMessage(), null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 
