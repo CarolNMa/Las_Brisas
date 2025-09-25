@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Table from '../Comunes/tabla';
 import Modal from '../Layout/Modal';
 import { exportCSV } from '../Comunes/Utils/exportCSV';
+import Swal from 'sweetalert2';
 
 const uid = (prefix = '') => prefix + Math.random().toString(36).slice(2, 9);
 
@@ -32,12 +33,20 @@ export default function EmpleadosModule({
       areaId: areas[0]?.id ?? '',
       locationId: locations[0]?.id ?? '',
       status: 'ACTIVE',
+      isNew: true,
     });
     setModalOpen(true);
   }
 
   function save() {
-    if (!editing.firstName) return alert('Nombre es requerido');
+    if (!editing.firstName) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Nombre es requerido'
+      });
+      return;
+    }
     setEmpleados(prev => {
       const exists = prev.some(p => p.id === editing.id);
       if (exists) return prev.map(p => (p.id === editing.id ? editing : p));
@@ -47,8 +56,20 @@ export default function EmpleadosModule({
   }
 
   function remove(row) {
-    if (!confirm('Eliminar empleado?')) return;
-    setEmpleados(prev => prev.filter(p => p.id !== row.id));
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Eliminar empleado?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setEmpleados(prev => prev.filter(p => p.id !== row.id));
+      }
+    });
   }
 
   return (
@@ -82,7 +103,7 @@ export default function EmpleadosModule({
         onDelete={remove}
       />
 
-      <Modal open={modalOpen} title={editing ? 'Empleado' : 'Nuevo empleado'} onClose={() => setModalOpen(false)}>
+      <Modal open={modalOpen} title={editing?.isNew ? 'Nuevo empleado' : 'Empleado'} onClose={() => setModalOpen(false)}>
         {editing && (
           <div style={{ display: 'grid', gap: 8 }}>
             <input value={editing.firstName} onChange={e => setEditing({ ...editing, firstName: e.target.value })} placeholder="Nombre" />

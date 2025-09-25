@@ -203,7 +203,16 @@ export default function Dashboard({ user, onLogout }) {
           )}
 
           {active === 'empleados' && <EmpleadosModule empleados={empleados} setEmpleados={setEmpleados} areas={areas} positions={positions} locations={locations} />}
-          {active === 'areas' && <AreasModule areas={areas} setAreas={setAreas} />}
+          {active === 'areas' && (
+            <SimpleListModule
+              title="Áreas"
+              dataKey="areas"
+              items={areas}
+              setItems={setAreas}
+              columns={[{ key: 'name', title: 'Nombre' }]}
+              fields={[{ key: 'name', title: 'Nombre' }]}
+            />
+          )}
 
           {active === 'applications' && (
             <SimpleListModule
@@ -245,6 +254,7 @@ export default function Dashboard({ user, onLogout }) {
               items={users}
               setItems={setUsers}
               columns={[{ key: 'username', title: 'Usuario' }, { key: 'email', title: 'Email' }, { key: 'status', title: 'Estado' }]}
+              fields={[{ key: 'username', title: 'Usuario' }, { key: 'email', title: 'Email' }]}
             />
           )}
 
@@ -255,6 +265,7 @@ export default function Dashboard({ user, onLogout }) {
               items={roles}
               setItems={setRoles}
               columns={[{ key: 'name', title: 'Nombre' }]}
+              fields={[{ key: 'name', title: 'Nombre' }]}
             />
           )}
 
@@ -265,6 +276,7 @@ export default function Dashboard({ user, onLogout }) {
               items={permissions}
               setItems={setPermissions}
               columns={[{ key: 'name', title: 'Nombre' }]}
+              fields={[{ key: 'name', title: 'Nombre' }]}
             />
           )}
 
@@ -275,6 +287,7 @@ export default function Dashboard({ user, onLogout }) {
               items={positions}
               setItems={setPositions}
               columns={[{ key: 'name', title: 'Nombre' }, { key: 'description', title: 'Descripción' }]}
+              fields={[{ key: 'name', title: 'Nombre' }, { key: 'description', title: 'Descripción' }]}
             />
           )}
 
@@ -285,6 +298,7 @@ export default function Dashboard({ user, onLogout }) {
               items={locations}
               setItems={setLocations}
               columns={[{ key: 'name', title: 'Nombre' }, { key: 'address', title: 'Dirección' }]}
+              fields={[{ key: 'name', title: 'Nombre' }, { key: 'address', title: 'Dirección' }]}
             />
           )}
         </div>

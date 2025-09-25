@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Table from '../Comunes/tabla';
 import Modal from '../Layout/Modal';
 import { exportCSV } from '../Comunes/Utils/exportCSV';
+import Swal from 'sweetalert2';
 
 const uid = (prefix = '') => prefix + Math.random().toString(36).slice(2, 9);
 
@@ -13,7 +14,14 @@ export default function AreasModule({ areas, setAreas }) {
   const filtered = areas.filter(a => a.name && a.name.toLowerCase().includes(q.toLowerCase()));
 
   const save = () => {
-    if (!editing.name) return alert('Nombre requerido');
+    if (!editing.name) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Nombre requerido'
+      });
+      return;
+    }
     setAreas(prev =>
       prev.some(p => p.id === editing.id)
         ? prev.map(p => (p.id === editing.id ? editing : p))
@@ -23,8 +31,20 @@ export default function AreasModule({ areas, setAreas }) {
   };
 
   const remove = r => {
-    if (!confirm('Eliminar área?')) return;
-    setAreas(prev => prev.filter(p => p.id !== r.id));
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Eliminar área?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setAreas(prev => prev.filter(p => p.id !== r.id));
+      }
+    });
   };
 
   return (
@@ -33,7 +53,7 @@ export default function AreasModule({ areas, setAreas }) {
         <h2>Áreas</h2>
         <div style={{ display: 'flex', gap: 8 }}>
           <input placeholder="Buscar área" value={q} onChange={e => setQ(e.target.value)} style={styles.searchInput} />
-          <button onClick={() => { setEditing({ id: uid('area-'), name: '' }); setModalOpen(true); }} style={styles.btn}>Nueva</button>
+          <button onClick={() => { setEditing({ id: uid('area-'), name: '', isNew: true }); setModalOpen(true); }} style={styles.btn}>Nueva</button>
           <button onClick={() => exportCSV('areas.csv', areas)} style={styles.btnAlt}>Exportar CSV</button>
         </div>
       </div>
@@ -44,7 +64,7 @@ export default function AreasModule({ areas, setAreas }) {
         <Table columns={[{ key: 'name', title: 'Nombre' }]} data={filtered} onEdit={r => { setEditing(r); setModalOpen(true); }} onDelete={remove} />
       )}
 
-      <Modal open={modalOpen} title="Área" onClose={() => setModalOpen(false)}>
+      <Modal open={modalOpen} title={editing?.isNew ? 'Nueva área' : 'Área'} onClose={() => setModalOpen(false)}>
         {editing && (
           <div style={{ display: 'grid', gap: 8 }}>
             <input value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} placeholder="Nombre área" />

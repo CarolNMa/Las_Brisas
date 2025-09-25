@@ -2,17 +2,24 @@ import { useState } from 'react';
 import Table from '../Comunes/tabla';
 import Modal from '../Layout/Modal';
 import { exportCSV } from '../Comunes/Utils/exportCSV';
+import Swal from 'sweetalert2';
 
 const uid = (prefix = '') => prefix + Math.random().toString(36).slice(2, 9);
 
-export default function SimpleListModule({ title, dataKey, items, setItems, columns }) {
+export default function SimpleListModule({ title, dataKey, items, setItems, columns, fields }) {
     const [q, setQ] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState(null);
 
     const filtered = items.filter(i => JSON.stringify(i).toLowerCase().includes(q.toLowerCase()));
 
-    const openCreate = () => { setEditing({ id: uid(dataKey) }); setModalOpen(true); };
+    const openCreate = () => {
+        const fieldList = fields || columns;
+        const initial = { id: uid(dataKey), isNew: true };
+        fieldList.forEach(c => initial[c.key] = '');
+        setEditing(initial);
+        setModalOpen(true);
+    };
 
     const save = () => {
         setItems(prev =>
@@ -24,8 +31,20 @@ export default function SimpleListModule({ title, dataKey, items, setItems, colu
     };
 
     const remove = r => {
-        if (!confirm('Eliminar?')) return;
-        setItems(prev => prev.filter(p => p.id !== r.id));
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Eliminar?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setItems(prev => prev.filter(p => p.id !== r.id));
+            }
+        });
     };
 
     return (
@@ -41,11 +60,11 @@ export default function SimpleListModule({ title, dataKey, items, setItems, colu
 
             <Table columns={columns} data={filtered} onEdit={r => { setEditing(r); setModalOpen(true); }} onDelete={remove} />
 
-            <Modal open={modalOpen} title={title} onClose={() => setModalOpen(false)}>
+            <Modal open={modalOpen} title={editing?.isNew ? `Nuevo ${title.toLowerCase()}` : title} onClose={() => setModalOpen(false)}>
                 {editing && (
                     <div style={{ display: 'grid', gap: 8 }}>
-                        {Object.keys(editing).filter(k => k !== 'id').map(k => (
-                            <input key={k} value={editing[k] ?? ''} onChange={e => setEditing({ ...editing, [k]: e.target.value })} placeholder={k} />
+                        {(fields || columns).map(c => (
+                            <input key={c.key} value={editing[c.key] ?? ''} onChange={e => setEditing({ ...editing, [c.key]: e.target.value })} placeholder={c.title || c.key} />
                         ))}
                         <div style={{ display: 'flex', gap: 8 }}>
                             <button onClick={save} style={styles.btn}>Guardar</button>
