@@ -77,7 +77,7 @@ public class ApplicationService {
     }
 
     // aprobar/rechazar solicitud
-    public ResponseDTO<?> approve(int id, boolean approved) {
+    public ResponseDTO<Object> approve(int id, boolean approved) {
         application app = iapplication.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 

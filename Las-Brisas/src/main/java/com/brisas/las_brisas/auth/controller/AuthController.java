@@ -1,7 +1,7 @@
 package com.brisas.las_brisas.auth.controller;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 import com.brisas.las_brisas.auth.DTO.AuthRequestDTO;
+import com.brisas.las_brisas.auth.DTO.LoginResponseDTO;
 import com.brisas.las_brisas.auth.DTO.RegisterRequestDTO;
 import com.brisas.las_brisas.auth.service.CustomUserDetailsService;
 import com.brisas.las_brisas.model.user.rol;
@@ -41,14 +41,28 @@ public class AuthController {
     private final PasswordEncoder encoder;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequestDTO req) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody AuthRequestDTO req) {
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
 
-        UserDetails user = userDetailsService.loadUserByUsername(req.getEmail());
-        String token = jwtService.generateToken(user);
+        com.brisas.las_brisas.model.user.user usuario = usuarioRepo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        return ResponseEntity.ok(Map.of("token", token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(req.getEmail());
+        String token = jwtService.generateToken(userDetails);
+
+        List<String> roles = usuario.getRoles()
+                .stream()
+                .map(r -> r.getName()) 
+                .toList();
+
+        LoginResponseDTO response = new LoginResponseDTO(
+                token,
+                usuario.getEmail(),
+                usuario.getUsername(),
+                roles);
+
+        return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

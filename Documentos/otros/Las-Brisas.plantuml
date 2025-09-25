@@ -1,0 +1,3043 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AnswerController {
+  + AnswerController(AnswerService): 
+  - answerService: AnswerService
+  + save(answerDTO): ResponseEntity<?>
+  + delete(int): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+}
+class AnswerService {
+  + AnswerService(Ianswer): 
+  - ianswer: Ianswer
+  + findById(int): Optional<answer>
+  + delete(int): ResponseDTO<answerDTO>
+  + save(answerDTO): ResponseDTO<answerDTO>
+  - convertToDTO(answer): answerDTO
+  + getAll(): List<answer>
+  - convertToEntity(answerDTO): answer
+}
+class ApplicationController {
+  + ApplicationController(ApplicationService): 
+  - service: ApplicationService
+  + create(applicationDTO, Authentication): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + approve(int, boolean): ResponseEntity<?>
+  + getMyApplications(Authentication): ResponseEntity<?>
+}
+class ApplicationService {
+  + ApplicationService(Iapplication, Iemployee, Iapplication_type): 
+  - iapplication: Iapplication
+  - iemployee: Iemployee
+  - itype: Iapplication_type
+  + findByUserEmail(String): List<application>
+  + delete(int): ResponseDTO<applicationDTO>
+  + create(applicationDTO, String): ResponseDTO<applicationDTO>
+  - convertToDTO(application): applicationDTO
+  + approve(int, boolean): ResponseDTO<?>
+  + findById(int): Optional<application>
+  + getAll(): List<application>
+}
+class ApplicationTypeController {
+  + ApplicationTypeController(ApplicationTypeService): 
+  - applicationTypeService: ApplicationTypeService
+  + delete(int): ResponseEntity<?>
+  + save(application_typeDTO): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+}
+class ApplicationTypeService {
+  + ApplicationTypeService(Iapplication_type): 
+  - iapplication_type: Iapplication_type
+  + getAll(): List<application_type>
+  + findById(int): Optional<application_type>
+  + delete(int): ResponseDTO<application_typeDTO>
+  - convertToDTO(application_type): application_typeDTO
+  - convertToEntity(application_typeDTO): application_type
+  + save(application_typeDTO): ResponseDTO<application_typeDTO>
+}
+class AreaController {
+  + AreaController(AreaService): 
+  - areaService: AreaService
+  + getById(int): ResponseEntity<?>
+  + delete(int): ResponseEntity<?>
+  + save(areaDTO): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+}
+class AreaService {
+  + AreaService(Iarea): 
+  - iarea: Iarea
+  + findById(int): Optional<area>
+  + save(areaDTO): ResponseDTO<areaDTO>
+  + delete(int): ResponseDTO<areaDTO>
+  - convertToEntity(areaDTO): area
+  - convertToDTO(area): areaDTO
+  + getAll(): List<area>
+}
+class AttendanceController {
+  + AttendanceController(AttendanceService): 
+  - attendanceService: AttendanceService
+  + delete(int): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + save(attendanceDTO): ResponseEntity<?>
+}
+class AttendanceService {
+  + AttendanceService(Iattendance): 
+  - iattendance: Iattendance
+  - convertToEntity(attendanceDTO): attendance
+  + save(attendanceDTO): ResponseDTO<attendanceDTO>
+  + delete(int): ResponseDTO<attendanceDTO>
+  + getAll(): List<attendance>
+  - convertToDTO(attendance): attendanceDTO
+  + findById(int): Optional<attendance>
+}
+class AuthController {
+  + AuthController(AuthenticationManager, CustomUserDetailsService, JwtService, Iuser, Irol, PasswordEncoder): 
+  - jwtService: JwtService
+  - usuarioRepo: Iuser
+  - encoder: PasswordEncoder
+  - rolRepo: Irol
+  - userDetailsService: CustomUserDetailsService
+  - authManager: AuthenticationManager
+  + login(AuthRequestDTO): ResponseEntity<Map<String, String>>
+  + register(RegisterRequestDTO): ResponseEntity<String>
+}
+class AuthRequestDTO {
+  + AuthRequestDTO(): 
+  - email: String
+  - password: String
+  + getPassword(): String
+  + hashCode(): int
+  + toString(): String
+  # canEqual(Object): boolean
+  + setPassword(String): void
+  + setEmail(String): void
+  + equals(Object): boolean
+  + getEmail(): String
+}
+class CertificateController {
+  + CertificateController(CertificateService): 
+  - certificateService: CertificateService
+  + getById(int): ResponseEntity<?>
+  + save(certificateDTO): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + delete(int): ResponseEntity<?>
+}
+class CertificateService {
+  + CertificateService(Icertificate): 
+  - icertificate: Icertificate
+  + delete(int): ResponseDTO<certificateDTO>
+  + getAll(): List<certificate>
+  - convertToEntity(certificateDTO): certificate
+  - convertToDTO(certificate): certificateDTO
+  + findById(int): Optional<certificate>
+  + save(certificateDTO): ResponseDTO<certificateDTO>
+}
+class ContractController {
+  + ContractController(ContractService): 
+  - contractService: ContractService
+  + getMyContract(Authentication): ResponseEntity<?>
+  + delete(int): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+  + save(contractDTO): ResponseEntity<?>
+}
+class ContractService {
+  + ContractService(Icontract): 
+  - icontract: Icontract
+  + findByUserEmail(String): Optional<contract>
+  + findById(int): Optional<contract>
+  - convertToEntity(contractDTO): contract
+  - convertToDTO(contract): contractDTO
+  + save(contractDTO): ResponseDTO<contractDTO>
+  + getAll(): List<contract>
+  + delete(int): ResponseDTO<contractDTO>
+}
+class CustomUserDetailsService {
+  + CustomUserDetailsService(Iuser): 
+  - usuarioRepo: Iuser
+  + loadUserByUsername(String): UserDetails
+}
+class EmployeeAreaController {
+  + EmployeeAreaController(EmployeeAreaService): 
+  - employeeAreaService: EmployeeAreaService
+  + getById(int): ResponseEntity<?>
+  + save(employee_areaDTO): ResponseEntity<ResponseDTO<employee_areaDTO>>
+  + getAll(): ResponseEntity<List<employee_area>>
+  + delete(int): ResponseEntity<ResponseDTO<employee_areaDTO>>
+}
+class EmployeeAreaService {
+  + EmployeeAreaService(Iemployee_area): 
+  - iemployee_area: Iemployee_area
+  - convertToDTO(employee_area): employee_areaDTO
+  + delete(int): ResponseDTO<employee_areaDTO>
+  - convertToEntity(employee_areaDTO): employee_area
+  + findById(int): Optional<employee_area>
+  + save(employee_areaDTO): ResponseDTO<employee_areaDTO>
+  + getAll(): List<employee_area>
+}
+class EmployeeController {
+  + EmployeeController(employeeService): 
+  - employeeService: employeeService
+  + deleteEmployee(int): ResponseEntity<String>
+  + getMyProfile(Authentication): ResponseEntity<?>
+  + createEmployee(employeeDTO): ResponseEntity<ResponseDTO<employeeDTO>>
+  + getEmployeeById(int): ResponseEntity<?>
+  + getAllEmployees(): ResponseEntity<List<employee>>
+}
+class EmployeeLocationController {
+  + EmployeeLocationController(EmployeeLocationService): 
+  - employeeLocationService: EmployeeLocationService
+  + getById(int): ResponseEntity<?>
+  + delete(int): ResponseEntity<ResponseDTO<emplo_locationDTO>>
+  + save(emplo_locationDTO): ResponseEntity<ResponseDTO<emplo_locationDTO>>
+  + getAll(): ResponseEntity<List<emplo_location>>
+}
+class EmployeeLocationService {
+  + EmployeeLocationService(Iemplo_location): 
+  - iemplo_location: Iemplo_location
+  - convertToEntity(emplo_locationDTO): emplo_location
+  + findById(int): Optional<emplo_location>
+  + getAll(): List<emplo_location>
+  + save(emplo_locationDTO): ResponseDTO<emplo_locationDTO>
+  + delete(int): ResponseDTO<emplo_locationDTO>
+  - convertToDTO(emplo_location): emplo_locationDTO
+}
+class EmployeePostController {
+  + EmployeePostController(EmployeePostService): 
+  - employeePostService: EmployeePostService
+  + save(employee_postDTO): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + delete(int): ResponseEntity<?>
+}
+class EmployeePostService {
+  + EmployeePostService(Iemployee_post): 
+  - iemployeepost: Iemployee_post
+  + getAll(): List<employee_post>
+  - convertToEntity(employee_postDTO): employee_post
+  + save(employee_postDTO): ResponseDTO<employee_postDTO>
+  + findById(int): Optional<employee_post>
+  - convertToDTO(employee_post): employee_postDTO
+  + delete(int): ResponseDTO<employee_postDTO>
+}
+class EmployeeScheduleController {
+  + EmployeeScheduleController(EmployeeScheduleService): 
+  - employeeScheduleService: EmployeeScheduleService
+  + getById(int): ResponseEntity<?>
+  + create(emplo_scheduleDTO): ResponseEntity<ResponseDTO<emplo_scheduleDTO>>
+  + getAll(): ResponseEntity<List<emplo_schedule>>
+  + delete(int): ResponseEntity<ResponseDTO<emplo_scheduleDTO>>
+}
+class EmployeeScheduleService {
+  + EmployeeScheduleService(Iemplo_schedule): 
+  - iemplo_schedule: Iemplo_schedule
+  + getAll(): List<emplo_schedule>
+  + delete(int): ResponseDTO<emplo_scheduleDTO>
+  - convertToEntity(emplo_scheduleDTO): emplo_schedule
+  - convertToDTO(emplo_schedule): emplo_scheduleDTO
+  + findById(int): Optional<emplo_schedule>
+  + save(emplo_scheduleDTO): ResponseDTO<emplo_scheduleDTO>
+}
+interface Ianswer << interface >>
+interface Iapplication << interface >> {
+  + findByEmployee_User_Email(String): List<application>
+}
+interface Iapplication_type << interface >>
+interface Iarea << interface >>
+interface Iattendance << interface >>
+interface Icertificate << interface >>
+interface Icontract << interface >> {
+  + findByEmployee_User_Email(String): Optional<contract>
+}
+interface Idisciplinary_process << interface >>
+interface Iemplo_location << interface >>
+interface Iemplo_schedule << interface >>
+interface Iemployee << interface >> {
+  + findByEmail(String): Optional<employee>
+}
+interface Iemployee_area << interface >>
+interface Iemployee_post << interface >>
+interface Iinduction << interface >>
+interface Iinduction_employee << interface >>
+interface Ilocation << interface >>
+interface Imodule_induction << interface >>
+class InductionController {
+  + InductionController(InductionService): 
+  - inductionService: InductionService
+  + getAllInductions(): ResponseEntity<?>
+  + createOrUpdateInduction(inductionDTO): ResponseEntity<Object>
+  + deleteInduction(int): ResponseEntity<Object>
+  + getInductionById(int): ResponseEntity<?>
+}
+class InductionEmployeeController {
+  + InductionEmployeeController(InductionEmployeeService): 
+  - inductionEmployeeService: InductionEmployeeService
+  + getById(int): ResponseEntity<?>
+  + delete(int): ResponseEntity<?>
+  + save(induction_employeeDTO): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+}
+class InductionEmployeeService {
+  + InductionEmployeeService(Iinduction_employee): 
+  - IintroduEmployee: Iinduction_employee
+  - convertToDTO(induction_employee): induction_employeeDTO
+  + findById(int): Optional<induction_employee>
+  + delete(int): ResponseDTO<induction_employeeDTO>
+  - convertToEntity(induction_employeeDTO): induction_employee
+  + save(induction_employeeDTO): ResponseDTO<induction_employeeDTO>
+  + getAll(): List<induction_employee>
+}
+class InductionService {
+  + InductionService(Iinduction): 
+  - iinduction: Iinduction
+  + getAll(): List<induction>
+  - convertToDTO(induction): inductionDTO
+  + delete(int): ResponseDTO<inductionDTO>
+  + findById(int): Optional<induction>
+  - convertToEntity(inductionDTO): induction
+  + save(inductionDTO): ResponseDTO<inductionDTO>
+}
+interface Ipermition << interface >>
+interface Ipositions << interface >>
+interface Iquestion << interface >>
+interface Iresume << interface >>
+interface Irol << interface >> {
+  + findByName(String): Optional<rol>
+}
+interface Irol_permition << interface >> {
+  + findByRolId(int): List<rol_permition>
+  + existsByRolIdAndPermisionId(int, int): boolean
+  + findByPermisionId(int): List<rol_permition>
+  + findByRolIdAndPermisionId(int, int): Optional<rol_permition>
+}
+interface Ischedule << interface >>
+interface Iuser << interface >> {
+  + findByEmail(String): Optional<user>
+  + existsByEmail(String): boolean
+}
+interface Iuser_rol << interface >> {
+  + findByUserIdUserAndRolId(int, int): Optional<user_rol>
+  + existsByUserIdUserAndRolId(int, int): boolean
+  + findByUserIdUser(int): List<user_rol>
+  + findByRolId(int): List<user_rol>
+}
+class JwtAuthFilter {
+  + JwtAuthFilter(JwtService, CustomUserDetailsService): 
+  - jwtService: JwtService
+  - userDetailsService: CustomUserDetailsService
+  # doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain): void
+}
+class JwtService {
+  + JwtService(): 
+  - SECRET_KEY: String
+  + generateToken(UserDetails): String
+  + validateToken(String, UserDetails): boolean
+  + extractUsername(String): String
+}
+class LasBrisasApplication {
+  + LasBrisasApplication(): 
+  + main(String[]): void
+}
+class LasBrisasApplicationTests {
+  ~ LasBrisasApplicationTests(): 
+  ~ contextLoads(): void
+}
+class LocationController {
+  + LocationController(LocationService): 
+  - locationService: LocationService
+  + delete(int): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+  + save(locationDTO): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+}
+class LocationService {
+  + LocationService(Ilocation): 
+  - ilocation: Ilocation
+  + delete(int): ResponseDTO<locationDTO>
+  + save(locationDTO): ResponseDTO<locationDTO>
+  - convertToEntity(locationDTO): location
+  - convertToDTO(location): locationDTO
+  + findById(int): Optional<location>
+  + getAll(): List<location>
+}
+class ModuleInductionController {
+  + ModuleInductionController(ModuleInductionService): 
+  - moduleInductionService: ModuleInductionService
+  + getById(int): ResponseEntity<?>
+  + save(module_inductionDTO): ResponseEntity<ResponseDTO<module_inductionDTO>>
+  + getAll(): ResponseEntity<List<moduleInduction>>
+  + delete(int): ResponseEntity<ResponseDTO<module_inductionDTO>>
+}
+class ModuleInductionService {
+  + ModuleInductionService(Imodule_induction): 
+  - imodulInduction: Imodule_induction
+  + delete(int): ResponseDTO<module_inductionDTO>
+  + findById(int): Optional<moduleInduction>
+  - convertToEntity(module_inductionDTO): moduleInduction
+  + save(module_inductionDTO): ResponseDTO<module_inductionDTO>
+  - convertToDTO(moduleInduction): module_inductionDTO
+  + getAll(): List<moduleInduction>
+}
+class PermitionController {
+  + PermitionController(PermitionService): 
+  - permitionService: PermitionService
+  + createOrUpdatePermition(permitionDTO): ResponseEntity<Object>
+  + deletePermition(int): ResponseEntity<Object>
+  + getAllPermitions(): ResponseEntity<?>
+  + getPermitionById(int): ResponseEntity<?>
+}
+class PermitionService {
+  + PermitionService(Ipermition): 
+  - iPermition: Ipermition
+  + save(permitionDTO): ResponseDTO<permitionDTO>
+  + findById(int): Optional<permition>
+  - convertToModel(permitionDTO): permition
+  - convertToDTO(permition): permitionDTO
+  + getAllPermitions(): List<permition>
+  + deletePermition(int): ResponseDTO<permitionDTO>
+}
+class PositionsController {
+  + PositionsController(PositionsService): 
+  - positionsService: PositionsService
+  + delete(int): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+  + save(positionsDTO): ResponseEntity<?>
+}
+class PositionsService {
+  + PositionsService(Ipositions): 
+  - ipositions: Ipositions
+  + findById(int): Optional<positions>
+  + save(positionsDTO): ResponseDTO<positionsDTO>
+  + delete(int): ResponseDTO<positionsDTO>
+  - convertToEntity(positionsDTO): positions
+  - convertToDTO(positions): positionsDTO
+  + getAll(): List<positions>
+}
+class QuestionController {
+  + QuestionController(QuestionService): 
+  - questionService: QuestionService
+  + save(questionDTO): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + delete(int): ResponseEntity<?>
+}
+class QuestionService {
+  + QuestionService(Iquestion): 
+  - iquestion: Iquestion
+  - convertToDTO(question): questionDTO
+  + delete(int): ResponseDTO<questionDTO>
+  + getAll(): List<question>
+  + save(questionDTO): ResponseDTO<questionDTO>
+  + findById(int): Optional<question>
+  - convertToEntity(questionDTO): question
+}
+class RegisterRequestDTO {
+  + RegisterRequestDTO(String, String, String, String): 
+  - email: String
+  - password: String
+  - rol: String
+  - username: String
+  + setEmail(String): void
+  + getUsername(): String
+  + setPassword(String): void
+  + setUsername(String): void
+  + equals(Object): boolean
+  + toString(): String
+  # canEqual(Object): boolean
+  + setRol(String): void
+  + getPassword(): String
+  + getRol(): String
+  + getEmail(): String
+  + hashCode(): int
+}
+class ResponseDTO<T> {
+  + ResponseDTO(String, String, T): 
+  + ResponseDTO(): 
+  - data: T
+  - status: String
+  - message: String
+  + getData(): T
+  + hashCode(): int
+  + builder(): ResponseDTOBuilder<T>
+  + setData(T): void
+  + setMessage(String): void
+  + getStatus(): String
+  + toString(): String
+  + setStatus(String): void
+  + equals(Object): boolean
+  + getMessage(): String
+  # canEqual(Object): boolean
+}
+class ResponseDTOBuilder<T> {
+  ~ ResponseDTOBuilder(): 
+  - message: String
+  - data: T
+  - status: String
+  + message(String): ResponseDTOBuilder<T>
+  + status(String): ResponseDTOBuilder<T>
+  + data(T): ResponseDTOBuilder<T>
+  + toString(): String
+  + build(): ResponseDTO<T>
+}
+class ResumeController {
+  + ResumeController(resumeService): 
+  - resumeService: resumeService
+  + getResumeById(int): ResponseEntity<?>
+  + deleteResume(int): ResponseEntity<ResponseDTO<resumeDTO>>
+  + saveResume(resumeDTO): ResponseEntity<ResponseDTO<resumeDTO>>
+  + getAllResumes(): ResponseEntity<List<resume>>
+}
+class RolController {
+  + RolController(RolService): 
+  - rolService: RolService
+  + getAllRoles(): ResponseEntity<?>
+  + createRole(rolDTO): ResponseEntity<Object>
+  + deleteRole(int): ResponseEntity<Object>
+  + getRoleById(int): ResponseEntity<?>
+}
+class RolPermitionController {
+  + RolPermitionController(RolPermitionService): 
+  - rolPermitionService: RolPermitionService
+  + getRolPermitionById(int): ResponseEntity<?>
+  + getPermitionsByRolId(int): ResponseEntity<?>
+  + getAllRolPermitions(): ResponseEntity<?>
+  + deleteRolPermition(int): ResponseEntity<Object>
+  + getRolesByPermitionId(int): ResponseEntity<?>
+  + createOrUpdateRolPermition(rol_permitionDTO): ResponseEntity<Object>
+}
+class RolPermitionService {
+  + RolPermitionService(Irol_permition, Irol, Ipermition): 
+  - iRolPermition: Irol_permition
+  - rolRepository: Irol
+  - permitionRepository: Ipermition
+  + getAll(): List<rol_permition>
+  + findById(int): Optional<rol_permition>
+  + delete(int): ResponseDTO<rol_permitionDTO>
+  - convertToDTO(rol_permition): rol_permitionDTO
+  + findPermitionsByRolId(int): List<rol_permition>
+  - convertToModel(rol_permitionDTO, rol, permition): rol_permition
+  + save(rol_permitionDTO): ResponseDTO<rol_permitionDTO>
+  + findRolesByPermitionId(int): List<rol_permition>
+}
+class RolService {
+  + RolService(Irol): 
+  - iRol: Irol
+  + save(rolDTO): ResponseDTO<rolDTO>
+  + getAllRoles(): List<rol>
+  + deleteRole(int): ResponseDTO<rolDTO>
+  - convertToEntity(rolDTO): rol
+  - convertToDTO(rol): rolDTO
+  + findById(int): Optional<rol>
+}
+class ScheduleController {
+  + ScheduleController(ScheduleService): 
+  - scheduleService: ScheduleService
+  + delete(int): ResponseEntity<?>
+  + save(scheduleDTO): ResponseEntity<?>
+  + getAll(): ResponseEntity<?>
+  + getById(int): ResponseEntity<?>
+}
+class ScheduleService {
+  + ScheduleService(Ischedule): 
+  - ischedule: Ischedule
+  + delete(int): ResponseDTO<scheduleDTO>
+  - convertToEntity(scheduleDTO): schedule
+  - convertToDTO(schedule): scheduleDTO
+  + getAll(): List<schedule>
+  + save(scheduleDTO): ResponseDTO<scheduleDTO>
+  + findById(int): Optional<schedule>
+}
+class SecurityConfig {
+  + SecurityConfig(JwtAuthFilter): 
+  - jwtAuthFilter: JwtAuthFilter
+  + authenticationManager(AuthenticationConfiguration): AuthenticationManager
+  + passwordEncoder(): PasswordEncoder
+  + filterChain(HttpSecurity): SecurityFilterChain
+}
+class SwaggerConfig {
+  + SwaggerConfig(): 
+  + customOpenAPI(): OpenAPI
+}
+class UserController {
+  + UserController(userService): 
+  - userService: userService
+  + getMyProfile(Authentication): ResponseEntity<?>
+  + createUser(userDTO): ResponseEntity<Object>
+  + getAllUsers(): ResponseEntity<?>
+  + deleteUser(int): ResponseEntity<Object>
+}
+class UserRolController {
+  + UserRolController(UserRolService): 
+  - userRolService: UserRolService
+  + removeRoleFromUser(int, int): ResponseEntity<Object>
+  + assignRoleToUser(int, int): ResponseEntity<Object>
+  + deleteUserRol(int): ResponseEntity<Object>
+  + createUserRol(user_rolDTO): ResponseEntity<Object>
+  + getAllUserRoles(): ResponseEntity<?>
+  + getUserRolById(int): ResponseEntity<?>
+}
+class UserRolService {
+  + UserRolService(Iuser_rol, Iuser, Irol): 
+  - rolRepository: Irol
+  - userRolRepository: Iuser_rol
+  - userRepository: Iuser
+  + assignRoleToUser(int, int): ResponseDTO<user_rolDTO>
+  - convertToDTO(user_rol): user_rolDTO
+  + save(user_rolDTO): ResponseDTO<user_rolDTO>
+  + removeRoleFromUser(int, int): ResponseDTO<user_rolDTO>
+  + findUsersByRolId(int): List<user_rol>
+  + existsUserRolRelation(int, int): boolean
+  - convertToEntity(user_rolDTO, user, rol): user_rol
+  + deleteUserRol(int): ResponseDTO<user_rolDTO>
+  + getAllUserRoles(): List<user_rol>
+  + findById(int): Optional<user_rol>
+  + findRolesByUserId(int): List<user_rol>
+}
+class answer {
+  + answer(int, String, boolean, question): 
+  + answer(): 
+  - question: question
+  - id: int
+  - response_correct: boolean
+  - answer: String
+  + toString(): String
+  + equals(Object): boolean
+  + setQuestion(question): void
+  + isResponse_correct(): boolean
+  + getQuestion(): question
+  + getAnswer(): String
+  # canEqual(Object): boolean
+  + setId(int): void
+  + setAnswer(String): void
+  + setResponse_correct(boolean): void
+  + getId(): int
+  + builder(): answerBuilder
+  + hashCode(): int
+}
+class answerBuilder {
+  ~ answerBuilder(): 
+  - question: question
+  - answer: String
+  - response_correct: boolean
+  - id: int
+  + toString(): String
+  + question(question): answerBuilder
+  + answer(String): answerBuilder
+  + id(int): answerBuilder
+  + build(): answer
+  + response_correct(boolean): answerBuilder
+}
+class answerDTO {
+  + answerDTO(int, String, boolean, int): 
+  + answerDTO(): 
+  - answer: String
+  - responseCorrect: boolean
+  - id: int
+  - questionId: int
+  + isResponseCorrect(): boolean
+  + getId(): int
+  # canEqual(Object): boolean
+  + setAnswer(String): void
+  + toString(): String
+  + getAnswer(): String
+  + hashCode(): int
+  + setQuestionId(int): void
+  + builder(): answerDTOBuilder
+  + equals(Object): boolean
+  + getQuestionId(): int
+  + setResponseCorrect(boolean): void
+  + setId(int): void
+}
+class answerDTOBuilder {
+  ~ answerDTOBuilder(): 
+  - id: int
+  - answer: String
+  - questionId: int
+  - responseCorrect: boolean
+  + responseCorrect(boolean): answerDTOBuilder
+  + questionId(int): answerDTOBuilder
+  + id(int): answerDTOBuilder
+  + answer(String): answerDTOBuilder
+  + build(): answerDTO
+  + toString(): String
+}
+class application {
+  + application(int, LocalDateTime, LocalDateTime, LocalDateTime, String, String, status, employee, application_type): 
+  + application(): 
+  - reason: String
+  - documentUrl: String
+  - application_type: application_type
+  - date_end: LocalDateTime
+  - date_create: LocalDateTime
+  - date_start: LocalDateTime
+  - id: int
+  - employee: employee
+  - status: status
+  + setStatus(status): void
+  + builder(): applicationBuilder
+  + setDocumentUrl(String): void
+  + hashCode(): int
+  + equals(Object): boolean
+  + getStatus(): status
+  + getApplication_type(): application_type
+  + setDate_start(LocalDateTime): void
+  + getDate_end(): LocalDateTime
+  + setReason(String): void
+  + getReason(): String
+  + toString(): String
+  + setId(int): void
+  + getId(): int
+  + getEmployee(): employee
+  + setDate_end(LocalDateTime): void
+  # canEqual(Object): boolean
+  + getDate_create(): LocalDateTime
+  + setEmployee(employee): void
+  + setDate_create(LocalDateTime): void
+  + getDate_start(): LocalDateTime
+  + setApplication_type(application_type): void
+  + getDocumentUrl(): String
+}
+class applicationBuilder {
+  ~ applicationBuilder(): 
+  - documentUrl: String
+  - employee: employee
+  - date_start: LocalDateTime
+  - reason: String
+  - date_end: LocalDateTime
+  - status: status
+  - application_type: application_type
+  - id: int
+  - date_create: LocalDateTime
+  + documentUrl(String): applicationBuilder
+  + id(int): applicationBuilder
+  + date_create(LocalDateTime): applicationBuilder
+  + date_start(LocalDateTime): applicationBuilder
+  + build(): application
+  + status(status): applicationBuilder
+  + application_type(application_type): applicationBuilder
+  + reason(String): applicationBuilder
+  + employee(employee): applicationBuilder
+  + toString(): String
+  + date_end(LocalDateTime): applicationBuilder
+}
+class applicationDTO {
+  + applicationDTO(int, LocalDateTime, LocalDateTime, LocalDateTime, String, String, String, int, int): 
+  + applicationDTO(): 
+  - id: int
+  - dateStart: LocalDateTime
+  - dateCreate: LocalDateTime
+  - dateEnd: LocalDateTime
+  - documentUrl: String
+  - employeeId: int
+  - applicationTypeid: int
+  - status: String
+  - reason: String
+  + getDateEnd(): LocalDateTime
+  + getEmployeeId(): int
+  + getApplicationTypeid(): int
+  + setDateEnd(LocalDateTime): void
+  + builder(): applicationDTOBuilder
+  + getId(): int
+  + getStatus(): String
+  + setApplicationTypeid(int): void
+  + getReason(): String
+  + setDocumentUrl(String): void
+  + hashCode(): int
+  + setEmployeeId(int): void
+  + getDateCreate(): LocalDateTime
+  + setDateCreate(LocalDateTime): void
+  + getDateStart(): LocalDateTime
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + setStatus(String): void
+  + setReason(String): void
+  + getDocumentUrl(): String
+  + setDateStart(LocalDateTime): void
+  + setId(int): void
+  + toString(): String
+}
+class applicationDTOBuilder {
+  ~ applicationDTOBuilder(): 
+  - dateEnd: LocalDateTime
+  - documentUrl: String
+  - id: int
+  - employeeId: int
+  - reason: String
+  - status: String
+  - dateStart: LocalDateTime
+  - applicationTypeid: int
+  - dateCreate: LocalDateTime
+  + status(String): applicationDTOBuilder
+  + documentUrl(String): applicationDTOBuilder
+  + reason(String): applicationDTOBuilder
+  + employeeId(int): applicationDTOBuilder
+  + dateStart(LocalDateTime): applicationDTOBuilder
+  + id(int): applicationDTOBuilder
+  + dateEnd(LocalDateTime): applicationDTOBuilder
+  + build(): applicationDTO
+  + applicationTypeid(int): applicationDTOBuilder
+  + toString(): String
+  + dateCreate(LocalDateTime): applicationDTOBuilder
+}
+class application_type {
+  + application_type(): 
+  + application_type(int, String, boolean): 
+  - name: String
+  - required: boolean
+  - id: int
+  + hashCode(): int
+  + toString(): String
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + isRequired(): boolean
+  + getId(): int
+  + setRequired(boolean): void
+  + builder(): application_typeBuilder
+  + setId(int): void
+  + getName(): String
+  + setName(String): void
+}
+class application_typeBuilder {
+  ~ application_typeBuilder(): 
+  - name: String
+  - id: int
+  - required: boolean
+  + id(int): application_typeBuilder
+  + required(boolean): application_typeBuilder
+  + name(String): application_typeBuilder
+  + build(): application_type
+  + toString(): String
+}
+class application_typeDTO {
+  + application_typeDTO(int, String, boolean): 
+  + application_typeDTO(): 
+  - id: int
+  - name: String
+  - required: boolean
+  + builder(): application_typeDTOBuilder
+  + setRequired(boolean): void
+  + equals(Object): boolean
+  + setName(String): void
+  + toString(): String
+  + hashCode(): int
+  + isRequired(): boolean
+  + setId(int): void
+  # canEqual(Object): boolean
+  + getId(): int
+  + getName(): String
+}
+class application_typeDTOBuilder {
+  ~ application_typeDTOBuilder(): 
+  - name: String
+  - required: boolean
+  - id: int
+  + required(boolean): application_typeDTOBuilder
+  + toString(): String
+  + name(String): application_typeDTOBuilder
+  + build(): application_typeDTO
+  + id(int): application_typeDTOBuilder
+}
+class area {
+  + area(): 
+  + area(int, String, String): 
+  - nameArea: String
+  - description: String
+  - id: int
+  + setDescription(String): void
+  # canEqual(Object): boolean
+  + toString(): String
+  + getDescription(): String
+  + setNameArea(String): void
+  + setId(int): void
+  + getNameArea(): String
+  + getId(): int
+  + hashCode(): int
+  + builder(): areaBuilder
+  + equals(Object): boolean
+}
+class areaBuilder {
+  ~ areaBuilder(): 
+  - id: int
+  - description: String
+  - nameArea: String
+  + build(): area
+  + id(int): areaBuilder
+  + toString(): String
+  + description(String): areaBuilder
+  + nameArea(String): areaBuilder
+}
+class areaDTO {
+  + areaDTO(int, String, String): 
+  + areaDTO(): 
+  - description: String
+  - id: int
+  - name: String
+  + getDescription(): String
+  + setDescription(String): void
+  + getName(): String
+  + setId(int): void
+  + toString(): String
+  + hashCode(): int
+  + builder(): areaDTOBuilder
+  + getId(): int
+  + setName(String): void
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+}
+class areaDTOBuilder {
+  ~ areaDTOBuilder(): 
+  - id: int
+  - name: String
+  - description: String
+  + toString(): String
+  + name(String): areaDTOBuilder
+  + build(): areaDTO
+  + id(int): areaDTOBuilder
+  + description(String): areaDTOBuilder
+}
+class attendance {
+  + attendance(): 
+  + attendance(int, LocalDate, LocalTime, LocalTime, status, employee): 
+  - time_end: LocalTime
+  - id: int
+  - date: LocalDate
+  - time_start: LocalTime
+  - status: status
+  - employee: employee
+  + setTime_start(LocalTime): void
+  # canEqual(Object): boolean
+  + getTime_end(): LocalTime
+  + getStatus(): status
+  + setEmployee(employee): void
+  + getId(): int
+  + getTime_start(): LocalTime
+  + equals(Object): boolean
+  + setId(int): void
+  + getEmployee(): employee
+  + setStatus(status): void
+  + toString(): String
+  + hashCode(): int
+  + builder(): attendanceBuilder
+  + setTime_end(LocalTime): void
+  + setDate(LocalDate): void
+  + getDate(): LocalDate
+}
+class attendanceBuilder {
+  ~ attendanceBuilder(): 
+  - date: LocalDate
+  - employee: employee
+  - id: int
+  - status: status
+  - time_start: LocalTime
+  - time_end: LocalTime
+  + employee(employee): attendanceBuilder
+  + date(LocalDate): attendanceBuilder
+  + status(status): attendanceBuilder
+  + id(int): attendanceBuilder
+  + time_end(LocalTime): attendanceBuilder
+  + build(): attendance
+  + time_start(LocalTime): attendanceBuilder
+  + toString(): String
+}
+class attendanceDTO {
+  + attendanceDTO(int, LocalDate, LocalTime, LocalTime, String, int): 
+  + attendanceDTO(): 
+  - id: int
+  - date: LocalDate
+  - employee: int
+  - timeEnd: LocalTime
+  - timeStart: LocalTime
+  - status: String
+  + getEmployee(): int
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + setDate(LocalDate): void
+  + setTimeStart(LocalTime): void
+  + setId(int): void
+  + setTimeEnd(LocalTime): void
+  + setEmployee(int): void
+  + getTimeStart(): LocalTime
+  + builder(): attendanceDTOBuilder
+  + getTimeEnd(): LocalTime
+  + hashCode(): int
+  + getStatus(): String
+  + getDate(): LocalDate
+  + setStatus(String): void
+  + toString(): String
+  + getId(): int
+}
+class attendanceDTOBuilder {
+  ~ attendanceDTOBuilder(): 
+  - date: LocalDate
+  - id: int
+  - status: String
+  - timeStart: LocalTime
+  - timeEnd: LocalTime
+  - employee: int
+  + build(): attendanceDTO
+  + timeStart(LocalTime): attendanceDTOBuilder
+  + id(int): attendanceDTOBuilder
+  + employee(int): attendanceDTOBuilder
+  + date(LocalDate): attendanceDTOBuilder
+  + timeEnd(LocalTime): attendanceDTOBuilder
+  + status(String): attendanceDTOBuilder
+  + toString(): String
+}
+class certificate {
+  + certificate(int, LocalDateTime, String, status, type, employee): 
+  + certificate(): 
+  - dateCertificate: LocalDateTime
+  - status: status
+  - documentUrl: String
+  - idCertificate: int
+  - employee: employee
+  - type: type
+  + setIdCertificate(int): void
+  + setDateCertificate(LocalDateTime): void
+  + setEmployee(employee): void
+  + equals(Object): boolean
+  + getType(): type
+  + getEmployee(): employee
+  + hashCode(): int
+  # canEqual(Object): boolean
+  + toString(): String
+  + getDateCertificate(): LocalDateTime
+  + getDocumentUrl(): String
+  + setDocumentUrl(String): void
+  + getStatus(): status
+  + setStatus(status): void
+  + builder(): certificateBuilder
+  + setType(type): void
+  + getIdCertificate(): int
+}
+class certificateBuilder {
+  ~ certificateBuilder(): 
+  - idCertificate: int
+  - dateCertificate: LocalDateTime
+  - employee: employee
+  - documentUrl: String
+  - status: status
+  - type: type
+  + type(type): certificateBuilder
+  + employee(employee): certificateBuilder
+  + idCertificate(int): certificateBuilder
+  + toString(): String
+  + status(status): certificateBuilder
+  + build(): certificate
+  + dateCertificate(LocalDateTime): certificateBuilder
+  + documentUrl(String): certificateBuilder
+}
+class certificateDTO {
+  + certificateDTO(): 
+  + certificateDTO(int, LocalDateTime, String, String, String, int): 
+  - documentUrl: String
+  - employee: int
+  - status: String
+  - type: String
+  - id: int
+  - dateCertificate: LocalDateTime
+  # canEqual(Object): boolean
+  + getEmployee(): int
+  + setDateCertificate(LocalDateTime): void
+  + builder(): certificateDTOBuilder
+  + equals(Object): boolean
+  + setEmployee(int): void
+  + setDocumentUrl(String): void
+  + setStatus(String): void
+  + hashCode(): int
+  + toString(): String
+  + getId(): int
+  + getStatus(): String
+  + setId(int): void
+  + getType(): String
+  + getDocumentUrl(): String
+  + getDateCertificate(): LocalDateTime
+  + setType(String): void
+}
+class certificateDTOBuilder {
+  ~ certificateDTOBuilder(): 
+  - dateCertificate: LocalDateTime
+  - documentUrl: String
+  - employee: int
+  - status: String
+  - id: int
+  - type: String
+  + id(int): certificateDTOBuilder
+  + documentUrl(String): certificateDTOBuilder
+  + employee(int): certificateDTOBuilder
+  + type(String): certificateDTOBuilder
+  + toString(): String
+  + dateCertificate(LocalDateTime): certificateDTOBuilder
+  + status(String): certificateDTOBuilder
+  + build(): certificateDTO
+}
+enum civil_status << enumeration >> {
+  - civil_status(): 
+  + single: 
+  + widowed: 
+  + married: 
+  + divorced: 
+  + values(): civil_status[]
+  + valueOf(String): civil_status
+}
+class contract {
+  + contract(): 
+  + contract(int, LocalDateTime, LocalDateTime, LocalDateTime, type, status, employee): 
+  - fechaFin: LocalDateTime
+  - fechaInicio: LocalDateTime
+  - id: int
+  - status: status
+  - employee: employee
+  - type: type
+  - fechaRenovacion: LocalDateTime
+  + setType(type): void
+  + hashCode(): int
+  + getFechaFin(): LocalDateTime
+  + setId(int): void
+  + setStatus(status): void
+  # canEqual(Object): boolean
+  + getId(): int
+  + equals(Object): boolean
+  + getStatus(): status
+  + setFechaFin(LocalDateTime): void
+  + builder(): contractBuilder
+  + setEmployee(employee): void
+  + setFechaRenovacion(LocalDateTime): void
+  + setFechaInicio(LocalDateTime): void
+  + getFechaInicio(): LocalDateTime
+  + getEmployee(): employee
+  + getFechaRenovacion(): LocalDateTime
+  + getType(): type
+  + toString(): String
+}
+class contractBuilder {
+  ~ contractBuilder(): 
+  - status: status
+  - type: type
+  - fechaRenovacion: LocalDateTime
+  - fechaInicio: LocalDateTime
+  - fechaFin: LocalDateTime
+  - employee: employee
+  - id: int
+  + fechaInicio(LocalDateTime): contractBuilder
+  + fechaRenovacion(LocalDateTime): contractBuilder
+  + status(status): contractBuilder
+  + employee(employee): contractBuilder
+  + type(type): contractBuilder
+  + fechaFin(LocalDateTime): contractBuilder
+  + id(int): contractBuilder
+  + build(): contract
+  + toString(): String
+}
+class contractDTO {
+  + contractDTO(): 
+  + contractDTO(int, LocalDateTime, LocalDateTime, LocalDateTime, String, String, int): 
+  - id: int
+  - type: String
+  - status: String
+  - dateEnd: LocalDateTime
+  - dateStart: LocalDateTime
+  - employee: int
+  - dateUpdate: LocalDateTime
+  + equals(Object): boolean
+  + getType(): String
+  + setDateUpdate(LocalDateTime): void
+  + getId(): int
+  + setStatus(String): void
+  + getStatus(): String
+  # canEqual(Object): boolean
+  + setId(int): void
+  + getDateUpdate(): LocalDateTime
+  + getEmployee(): int
+  + builder(): contractDTOBuilder
+  + getDateStart(): LocalDateTime
+  + setType(String): void
+  + setDateEnd(LocalDateTime): void
+  + toString(): String
+  + getDateEnd(): LocalDateTime
+  + setDateStart(LocalDateTime): void
+  + hashCode(): int
+  + setEmployee(int): void
+}
+class contractDTOBuilder {
+  ~ contractDTOBuilder(): 
+  - dateStart: LocalDateTime
+  - dateUpdate: LocalDateTime
+  - status: String
+  - id: int
+  - dateEnd: LocalDateTime
+  - type: String
+  - employee: int
+  + dateEnd(LocalDateTime): contractDTOBuilder
+  + id(int): contractDTOBuilder
+  + status(String): contractDTOBuilder
+  + employee(int): contractDTOBuilder
+  + toString(): String
+  + type(String): contractDTOBuilder
+  + build(): contractDTO
+  + dateUpdate(LocalDateTime): contractDTOBuilder
+  + dateStart(LocalDateTime): contractDTOBuilder
+}
+class corsConfig {
+  + corsConfig(): 
+  + corsFilter(): CorsFilter
+}
+enum day_week << enumeration >> {
+  - day_week(): 
+  + jueves: 
+  + sabado: 
+  + miercoles: 
+  + domingo: 
+  + martes: 
+  + viernes: 
+  + lunes: 
+  + valueOf(String): day_week
+  + values(): day_week[]
+}
+class disciplinary_process {
+  + disciplinary_process(): 
+  + disciplinary_process(int, String, String, LocalDateTime, status, type, employee, resume): 
+  - status: status
+  - type: type
+  - id: int
+  - employee: employee
+  - resume: resume
+  - description: String
+  - documentUrl: String
+  - date: LocalDateTime
+  + setDate(LocalDateTime): void
+  + builder(): disciplinary_processBuilder
+  + toString(): String
+  + getDescription(): String
+  + getResume(): resume
+  + getDocumentUrl(): String
+  + setId(int): void
+  + setType(type): void
+  + getDate(): LocalDateTime
+  + setDescription(String): void
+  + getEmployee(): employee
+  + setStatus(status): void
+  # canEqual(Object): boolean
+  + setResume(resume): void
+  + getId(): int
+  + setDocumentUrl(String): void
+  + setEmployee(employee): void
+  + getStatus(): status
+  + getType(): type
+  + hashCode(): int
+  + equals(Object): boolean
+}
+class disciplinary_processBuilder {
+  ~ disciplinary_processBuilder(): 
+  - description: String
+  - documentUrl: String
+  - status: status
+  - employee: employee
+  - resume: resume
+  - id: int
+  - date: LocalDateTime
+  - type: type
+  + build(): disciplinary_process
+  + id(int): disciplinary_processBuilder
+  + type(type): disciplinary_processBuilder
+  + status(status): disciplinary_processBuilder
+  + date(LocalDateTime): disciplinary_processBuilder
+  + documentUrl(String): disciplinary_processBuilder
+  + resume(resume): disciplinary_processBuilder
+  + description(String): disciplinary_processBuilder
+  + employee(employee): disciplinary_processBuilder
+  + toString(): String
+}
+class disciplinary_processController {
+  + disciplinary_processController(disciplinary_processService): 
+  - processService: disciplinary_processService
+  + delete(int): ResponseEntity<ResponseDTO<disciplinary_processDTO>>
+  + getById(int): ResponseEntity<?>
+  + getAll(): ResponseEntity<List<disciplinary_process>>
+  + save(disciplinary_processDTO): ResponseEntity<ResponseDTO<disciplinary_processDTO>>
+}
+class disciplinary_processDTO {
+  + disciplinary_processDTO(int, String, String, LocalDateTime, String, String, int, int): 
+  + disciplinary_processDTO(): 
+  - documentUrl: String
+  - description: String
+  - status: String
+  - type: String
+  - id: int
+  - employeeId: int
+  - date: LocalDateTime
+  - resumeId: int
+  + hashCode(): int
+  + getType(): String
+  + getId(): int
+  + getDate(): LocalDateTime
+  + setDescription(String): void
+  + setType(String): void
+  + getDocumentUrl(): String
+  + getDescription(): String
+  + getEmployeeId(): int
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + setId(int): void
+  + toString(): String
+  + setDate(LocalDateTime): void
+  + setEmployeeId(int): void
+  + setDocumentUrl(String): void
+  + builder(): disciplinary_processDTOBuilder
+  + setStatus(String): void
+  + setResumeId(int): void
+  + getStatus(): String
+  + getResumeId(): int
+}
+class disciplinary_processDTOBuilder {
+  ~ disciplinary_processDTOBuilder(): 
+  - documentUrl: String
+  - date: LocalDateTime
+  - id: int
+  - resumeId: int
+  - type: String
+  - employeeId: int
+  - status: String
+  - description: String
+  + status(String): disciplinary_processDTOBuilder
+  + build(): disciplinary_processDTO
+  + resumeId(int): disciplinary_processDTOBuilder
+  + description(String): disciplinary_processDTOBuilder
+  + type(String): disciplinary_processDTOBuilder
+  + documentUrl(String): disciplinary_processDTOBuilder
+  + id(int): disciplinary_processDTOBuilder
+  + employeeId(int): disciplinary_processDTOBuilder
+  + date(LocalDateTime): disciplinary_processDTOBuilder
+  + toString(): String
+}
+class disciplinary_processService {
+  + disciplinary_processService(Idisciplinary_process): 
+  - iProcess: Idisciplinary_process
+  + save(disciplinary_processDTO): ResponseDTO<disciplinary_processDTO>
+  + delete(int): ResponseDTO<disciplinary_processDTO>
+  + getAllProcesses(): List<disciplinary_process>
+  - convertToEntity(disciplinary_processDTO): disciplinary_process
+  - convertToDTO(disciplinary_process): disciplinary_processDTO
+  + findById(int): Optional<disciplinary_process>
+}
+class emailConfig {
+  + emailConfig(): 
+  - password: String
+  - port: String
+  - host: String
+  - username: String
+  + javaMailSender(): JavaMailSender
+}
+class emailController {
+  + emailController(): 
+}
+class emailService {
+  + emailService(): 
+}
+class emplo_location {
+  + emplo_location(): 
+  + emplo_location(int, employee, location): 
+  - employee: employee
+  - location: location
+  - id: int
+  + builder(): emplo_locationBuilder
+  + getLocation(): location
+  + setId(int): void
+  + hashCode(): int
+  + equals(Object): boolean
+  + getEmployee(): employee
+  + setEmployee(employee): void
+  + setLocation(location): void
+  + toString(): String
+  + getId(): int
+  # canEqual(Object): boolean
+}
+class emplo_locationBuilder {
+  ~ emplo_locationBuilder(): 
+  - employee: employee
+  - id: int
+  - location: location
+  + id(int): emplo_locationBuilder
+  + toString(): String
+  + employee(employee): emplo_locationBuilder
+  + location(location): emplo_locationBuilder
+  + build(): emplo_location
+}
+class emplo_locationDTO {
+  + emplo_locationDTO(int, int, int): 
+  + emplo_locationDTO(): 
+  - locationId: int
+  - employeeId: int
+  - id: int
+  + getLocationId(): int
+  + builder(): emplo_locationDTOBuilder
+  + setLocationId(int): void
+  + getEmployeeId(): int
+  # canEqual(Object): boolean
+  + setEmployeeId(int): void
+  + getId(): int
+  + equals(Object): boolean
+  + setId(int): void
+  + toString(): String
+  + hashCode(): int
+}
+class emplo_locationDTOBuilder {
+  ~ emplo_locationDTOBuilder(): 
+  - id: int
+  - employeeId: int
+  - locationId: int
+  + employeeId(int): emplo_locationDTOBuilder
+  + toString(): String
+  + locationId(int): emplo_locationDTOBuilder
+  + id(int): emplo_locationDTOBuilder
+  + build(): emplo_locationDTO
+}
+class emplo_schedule {
+  + emplo_schedule(): 
+  + emplo_schedule(int, employee, schedule): 
+  - schedule: schedule
+  - id: int
+  - employee: employee
+  + setEmployee(employee): void
+  + setId(int): void
+  + getEmployee(): employee
+  + setSchedule(schedule): void
+  + getSchedule(): schedule
+  + equals(Object): boolean
+  + getId(): int
+  + builder(): emplo_scheduleBuilder
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+}
+class emplo_scheduleBuilder {
+  ~ emplo_scheduleBuilder(): 
+  - id: int
+  - employee: employee
+  - schedule: schedule
+  + employee(employee): emplo_scheduleBuilder
+  + id(int): emplo_scheduleBuilder
+  + build(): emplo_schedule
+  + toString(): String
+  + schedule(schedule): emplo_scheduleBuilder
+}
+class emplo_scheduleDTO {
+  + emplo_scheduleDTO(): 
+  + emplo_scheduleDTO(int, int, int): 
+  - scheduleId: int
+  - id: int
+  - employeeId: int
+  + builder(): emplo_scheduleDTOBuilder
+  + getId(): int
+  + hashCode(): int
+  + getScheduleId(): int
+  + setEmployeeId(int): void
+  + getEmployeeId(): int
+  # canEqual(Object): boolean
+  + toString(): String
+  + setId(int): void
+  + equals(Object): boolean
+  + setScheduleId(int): void
+}
+class emplo_scheduleDTOBuilder {
+  ~ emplo_scheduleDTOBuilder(): 
+  - employeeId: int
+  - id: int
+  - scheduleId: int
+  + id(int): emplo_scheduleDTOBuilder
+  + employeeId(int): emplo_scheduleDTOBuilder
+  + build(): emplo_scheduleDTO
+  + scheduleId(int): emplo_scheduleDTOBuilder
+  + toString(): String
+}
+class employee {
+  + employee(int, String, String, tipo_documento, String, LocalDate, String, gender, String, String, civil_status, String, LocalDateTime, LocalDateTime, user): 
+  + employee(): 
+  - id: int
+  - photoProfile: String
+  - createdAt: LocalDateTime
+  - address: String
+  - birthdate: LocalDate
+  - user: user
+  - documentNumber: String
+  - firstName: String
+  - gender: gender
+  - civilStatus: civil_status
+  - phone: String
+  - tipoDocumento: tipo_documento
+  - lastName: String
+  - updatedAt: LocalDateTime
+  - email: String
+  + getDocumentNumber(): String
+  + getAddress(): String
+  + getCreatedAt(): LocalDateTime
+  + getUpdatedAt(): LocalDateTime
+  + setDocumentNumber(String): void
+  + getFirstName(): String
+  + setTipoDocumento(tipo_documento): void
+  + setPhone(String): void
+  + getGender(): gender
+  + toString(): String
+  + hashCode(): int
+  + getUser(): user
+  + getId(): int
+  + getPhotoProfile(): String
+  + setCreatedAt(LocalDateTime): void
+  # canEqual(Object): boolean
+  + getPhone(): String
+  + equals(Object): boolean
+  + getEmail(): String
+  + setId(int): void
+  + setUser(user): void
+  + getTipoDocumento(): tipo_documento
+  + getBirthdate(): LocalDate
+  + setUpdatedAt(LocalDateTime): void
+  + setGender(gender): void
+  + setAddress(String): void
+  + setEmail(String): void
+  + builder(): employeeBuilder
+  + getLastName(): String
+  + setCivilStatus(civil_status): void
+  + setLastName(String): void
+  + setBirthdate(LocalDate): void
+  + getCivilStatus(): civil_status
+  + setFirstName(String): void
+  + setPhotoProfile(String): void
+}
+class employeeBuilder {
+  ~ employeeBuilder(): 
+  - createdAt: LocalDateTime
+  - civilStatus: civil_status
+  - documentNumber: String
+  - email: String
+  - firstName: String
+  - id: int
+  - lastName: String
+  - updatedAt: LocalDateTime
+  - birthdate: LocalDate
+  - phone: String
+  - gender: gender
+  - address: String
+  - photoProfile: String
+  - tipoDocumento: tipo_documento
+  - user: user
+  + firstName(String): employeeBuilder
+  + gender(gender): employeeBuilder
+  + id(int): employeeBuilder
+  + email(String): employeeBuilder
+  + updatedAt(LocalDateTime): employeeBuilder
+  + phone(String): employeeBuilder
+  + build(): employee
+  + user(user): employeeBuilder
+  + toString(): String
+  + createdAt(LocalDateTime): employeeBuilder
+  + tipoDocumento(tipo_documento): employeeBuilder
+  + civilStatus(civil_status): employeeBuilder
+  + lastName(String): employeeBuilder
+  + documentNumber(String): employeeBuilder
+  + birthdate(LocalDate): employeeBuilder
+  + photoProfile(String): employeeBuilder
+  + address(String): employeeBuilder
+}
+class employeeDTO {
+  + employeeDTO(int, String, String, String, String, LocalDate, String, String, String, String, String, String, LocalDateTime, LocalDateTime, int): 
+  + employeeDTO(): 
+  - createdAt: LocalDateTime
+  - tipoDocumento: String
+  - phone: String
+  - email: String
+  - id: int
+  - updatedAt: LocalDateTime
+  - address: String
+  - photoProfile: String
+  - gender: String
+  - lastName: String
+  - birthdate: LocalDate
+  - firstName: String
+  - civilStatus: String
+  - userId: int
+  - documentNumber: String
+  + setUserId(int): void
+  + builder(): employeeDTOBuilder
+  + getBirthdate(): LocalDate
+  + setEmail(String): void
+  + setTipoDocumento(String): void
+  + setLastName(String): void
+  + getFirstName(): String
+  + setFirstName(String): void
+  + setId(int): void
+  + getUpdatedAt(): LocalDateTime
+  + getId(): int
+  + setPhone(String): void
+  + toString(): String
+  + setPhotoProfile(String): void
+  + getLastName(): String
+  + getUserId(): int
+  + getDocumentNumber(): String
+  + setBirthdate(LocalDate): void
+  + setCivilStatus(String): void
+  + setDocumentNumber(String): void
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+  + getGender(): String
+  + setUpdatedAt(LocalDateTime): void
+  + getPhotoProfile(): String
+  + getEmail(): String
+  + setCreatedAt(LocalDateTime): void
+  + getCivilStatus(): String
+  + getAddress(): String
+  + getPhone(): String
+  + setGender(String): void
+  + setAddress(String): void
+  + getTipoDocumento(): String
+  + hashCode(): int
+  + getCreatedAt(): LocalDateTime
+}
+class employeeDTOBuilder {
+  ~ employeeDTOBuilder(): 
+  - lastName: String
+  - gender: String
+  - id: int
+  - userId: int
+  - civilStatus: String
+  - documentNumber: String
+  - createdAt: LocalDateTime
+  - birthdate: LocalDate
+  - phone: String
+  - email: String
+  - tipoDocumento: String
+  - updatedAt: LocalDateTime
+  - photoProfile: String
+  - address: String
+  - firstName: String
+  + firstName(String): employeeDTOBuilder
+  + updatedAt(LocalDateTime): employeeDTOBuilder
+  + lastName(String): employeeDTOBuilder
+  + address(String): employeeDTOBuilder
+  + tipoDocumento(String): employeeDTOBuilder
+  + email(String): employeeDTOBuilder
+  + toString(): String
+  + id(int): employeeDTOBuilder
+  + gender(String): employeeDTOBuilder
+  + createdAt(LocalDateTime): employeeDTOBuilder
+  + photoProfile(String): employeeDTOBuilder
+  + civilStatus(String): employeeDTOBuilder
+  + birthdate(LocalDate): employeeDTOBuilder
+  + phone(String): employeeDTOBuilder
+  + userId(int): employeeDTOBuilder
+  + documentNumber(String): employeeDTOBuilder
+  + build(): employeeDTO
+}
+class employeeService {
+  + employeeService(Iemployee, Iuser): 
+  - iEmployee: Iemployee
+  - userRepo: Iuser
+  + getAllEmployees(): List<employee>
+  + saveEntity(employee): employee
+  + save(employeeDTO): ResponseDTO<employeeDTO>
+  + findById(int): Optional<employee>
+  + deleteEmployee(int): ResponseDTO<employeeDTO>
+  - convertToDTO(employee): employeeDTO
+  + findByEmail(String): Optional<employee>
+  - convertToEntity(employeeDTO): employee
+}
+class employee_area {
+  + employee_area(): 
+  + employee_area(int, employee, area): 
+  - id: int
+  - employee: employee
+  - area: area
+  + setArea(area): void
+  + getId(): int
+  + getArea(): area
+  + toString(): String
+  + equals(Object): boolean
+  + setId(int): void
+  + getEmployee(): employee
+  # canEqual(Object): boolean
+  + setEmployee(employee): void
+  + hashCode(): int
+  + builder(): employee_areaBuilder
+}
+class employee_areaBuilder {
+  ~ employee_areaBuilder(): 
+  - employee: employee
+  - id: int
+  - area: area
+  + employee(employee): employee_areaBuilder
+  + build(): employee_area
+  + toString(): String
+  + id(int): employee_areaBuilder
+  + area(area): employee_areaBuilder
+}
+class employee_areaDTO {
+  + employee_areaDTO(int, int, int): 
+  + employee_areaDTO(): 
+  - employeeId: int
+  - areaId: int
+  - id: int
+  + setId(int): void
+  + setEmployeeId(int): void
+  + hashCode(): int
+  + getAreaId(): int
+  + getEmployeeId(): int
+  + toString(): String
+  + setAreaId(int): void
+  # canEqual(Object): boolean
+  + builder(): employee_areaDTOBuilder
+  + getId(): int
+  + equals(Object): boolean
+}
+class employee_areaDTOBuilder {
+  ~ employee_areaDTOBuilder(): 
+  - employeeId: int
+  - areaId: int
+  - id: int
+  + build(): employee_areaDTO
+  + employeeId(int): employee_areaDTOBuilder
+  + toString(): String
+  + id(int): employee_areaDTOBuilder
+  + areaId(int): employee_areaDTOBuilder
+}
+class employee_post {
+  + employee_post(): 
+  + employee_post(int, employee, positions): 
+  - employee: employee
+  - post: positions
+  - id: int
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+  + getPost(): positions
+  + toString(): String
+  + builder(): employee_postBuilder
+  + setEmployee(employee): void
+  + setId(int): void
+  + getId(): int
+  + hashCode(): int
+  + getEmployee(): employee
+  + setPost(positions): void
+}
+class employee_postBuilder {
+  ~ employee_postBuilder(): 
+  - id: int
+  - post: positions
+  - employee: employee
+  + id(int): employee_postBuilder
+  + employee(employee): employee_postBuilder
+  + toString(): String
+  + post(positions): employee_postBuilder
+  + build(): employee_post
+}
+class employee_postDTO {
+  + employee_postDTO(int, int, int): 
+  + employee_postDTO(): 
+  - id: int
+  - employeeId: int
+  - postId: int
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + getPostId(): int
+  + setPostId(int): void
+  + getEmployeeId(): int
+  + hashCode(): int
+  + setEmployeeId(int): void
+  + getId(): int
+  + setId(int): void
+  + toString(): String
+  + builder(): employee_postDTOBuilder
+}
+class employee_postDTOBuilder {
+  ~ employee_postDTOBuilder(): 
+  - employeeId: int
+  - postId: int
+  - id: int
+  + id(int): employee_postDTOBuilder
+  + build(): employee_postDTO
+  + toString(): String
+  + postId(int): employee_postDTOBuilder
+  + employeeId(int): employee_postDTOBuilder
+}
+enum gender << enumeration >> {
+  - gender(): 
+  + male: 
+  + female: 
+  + other: 
+  + valueOf(String): gender
+  + values(): gender[]
+}
+class induction {
+  + induction(int, String, String, type, status, LocalDateTime, LocalDateTime): 
+  + induction(): 
+  - dateUpdate: LocalDateTime
+  - description: String
+  - name: String
+  - id: int
+  - status: status
+  - type: type
+  - dateCreate: LocalDateTime
+  + getDateCreate(): LocalDateTime
+  + toString(): String
+  + setDescription(String): void
+  + setId(int): void
+  + getStatus(): status
+  # canEqual(Object): boolean
+  + builder(): inductionBuilder
+  + setName(String): void
+  + setType(type): void
+  + hashCode(): int
+  + getDateUpdate(): LocalDateTime
+  + getDescription(): String
+  + setStatus(status): void
+  + getName(): String
+  + equals(Object): boolean
+  + getId(): int
+  + setDateCreate(LocalDateTime): void
+  + getType(): type
+  + setDateUpdate(LocalDateTime): void
+}
+class inductionBuilder {
+  ~ inductionBuilder(): 
+  - status: status
+  - id: int
+  - dateCreate: LocalDateTime
+  - description: String
+  - name: String
+  - type: type
+  - dateUpdate: LocalDateTime
+  + id(int): inductionBuilder
+  + name(String): inductionBuilder
+  + status(status): inductionBuilder
+  + description(String): inductionBuilder
+  + dateCreate(LocalDateTime): inductionBuilder
+  + build(): induction
+  + toString(): String
+  + type(type): inductionBuilder
+  + dateUpdate(LocalDateTime): inductionBuilder
+}
+class inductionDTO {
+  + inductionDTO(): 
+  + inductionDTO(int, String, String, String, String, LocalDateTime, LocalDateTime): 
+  - description: String
+  - dateUpdate: LocalDateTime
+  - status: String
+  - type: String
+  - id: int
+  - dateCreate: LocalDateTime
+  - name: String
+  + getStatus(): String
+  + getDateUpdate(): LocalDateTime
+  + toString(): String
+  + hashCode(): int
+  + setStatus(String): void
+  # canEqual(Object): boolean
+  + setId(int): void
+  + getId(): int
+  + getType(): String
+  + getDateCreate(): LocalDateTime
+  + setName(String): void
+  + setType(String): void
+  + setDescription(String): void
+  + builder(): inductionDTOBuilder
+  + equals(Object): boolean
+  + getName(): String
+  + getDescription(): String
+  + setDateUpdate(LocalDateTime): void
+  + setDateCreate(LocalDateTime): void
+}
+class inductionDTOBuilder {
+  ~ inductionDTOBuilder(): 
+  - id: int
+  - type: String
+  - status: String
+  - dateCreate: LocalDateTime
+  - dateUpdate: LocalDateTime
+  - name: String
+  - description: String
+  + toString(): String
+  + build(): inductionDTO
+  + dateUpdate(LocalDateTime): inductionDTOBuilder
+  + id(int): inductionDTOBuilder
+  + dateCreate(LocalDateTime): inductionDTOBuilder
+  + type(String): inductionDTOBuilder
+  + name(String): inductionDTOBuilder
+  + status(String): inductionDTOBuilder
+  + description(String): inductionDTOBuilder
+}
+class induction_employee {
+  + induction_employee(int, induction, employee, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, status, visto, int): 
+  + induction_employee(): 
+  - dateComplete: LocalDateTime
+  - id: int
+  - employee: employee
+  - visto: visto
+  - dateAssignment: LocalDateTime
+  - status: status
+  - points: int
+  - deadline: LocalDateTime
+  - induction: induction
+  - dateSeen: LocalDateTime
+  + setPoints(int): void
+  + setStatus(status): void
+  + toString(): String
+  + setDateAssignment(LocalDateTime): void
+  # canEqual(Object): boolean
+  + setDateSeen(LocalDateTime): void
+  + getId(): int
+  + getVisto(): visto
+  + equals(Object): boolean
+  + setId(int): void
+  + setDateComplete(LocalDateTime): void
+  + setVisto(visto): void
+  + builder(): induction_employeeBuilder
+  + getDeadline(): LocalDateTime
+  + getInduction(): induction
+  + getDateAssignment(): LocalDateTime
+  + getStatus(): status
+  + setEmployee(employee): void
+  + getDateSeen(): LocalDateTime
+  + setInduction(induction): void
+  + getPoints(): int
+  + hashCode(): int
+  + getDateComplete(): LocalDateTime
+  + setDeadline(LocalDateTime): void
+  + getEmployee(): employee
+}
+class induction_employeeBuilder {
+  ~ induction_employeeBuilder(): 
+  - dateComplete: LocalDateTime
+  - induction: induction
+  - status: status
+  - points: int
+  - id: int
+  - deadline: LocalDateTime
+  - dateSeen: LocalDateTime
+  - employee: employee
+  - dateAssignment: LocalDateTime
+  - visto: visto
+  + id(int): induction_employeeBuilder
+  + dateComplete(LocalDateTime): induction_employeeBuilder
+  + visto(visto): induction_employeeBuilder
+  + toString(): String
+  + employee(employee): induction_employeeBuilder
+  + deadline(LocalDateTime): induction_employeeBuilder
+  + points(int): induction_employeeBuilder
+  + status(status): induction_employeeBuilder
+  + build(): induction_employee
+  + dateSeen(LocalDateTime): induction_employeeBuilder
+  + induction(induction): induction_employeeBuilder
+  + dateAssignment(LocalDateTime): induction_employeeBuilder
+}
+class induction_employeeDTO {
+  + induction_employeeDTO(): 
+  + induction_employeeDTO(int, int, int, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, String, String, int): 
+  - dateSeen: LocalDateTime
+  - dateAssignment: LocalDateTime
+  - dateComplete: LocalDateTime
+  - points: int
+  - employeeId: int
+  - status: String
+  - visto: String
+  - id: int
+  - deadline: LocalDateTime
+  - inductionId: int
+  + getVisto(): String
+  + toString(): String
+  + setDateComplete(LocalDateTime): void
+  + getDeadline(): LocalDateTime
+  + setPoints(int): void
+  + getDateComplete(): LocalDateTime
+  + setDeadline(LocalDateTime): void
+  + equals(Object): boolean
+  + setDateSeen(LocalDateTime): void
+  + getId(): int
+  + getInductionId(): int
+  + setInductionId(int): void
+  + setVisto(String): void
+  + getPoints(): int
+  + setEmployeeId(int): void
+  # canEqual(Object): boolean
+  + builder(): induction_employeeDTOBuilder
+  + hashCode(): int
+  + setStatus(String): void
+  + setId(int): void
+  + getStatus(): String
+  + getDateAssignment(): LocalDateTime
+  + setDateAssignment(LocalDateTime): void
+  + getDateSeen(): LocalDateTime
+  + getEmployeeId(): int
+}
+class induction_employeeDTOBuilder {
+  ~ induction_employeeDTOBuilder(): 
+  - dateSeen: LocalDateTime
+  - status: String
+  - id: int
+  - dateComplete: LocalDateTime
+  - dateAssignment: LocalDateTime
+  - deadline: LocalDateTime
+  - points: int
+  - inductionId: int
+  - employeeId: int
+  - visto: String
+  + dateComplete(LocalDateTime): induction_employeeDTOBuilder
+  + employeeId(int): induction_employeeDTOBuilder
+  + points(int): induction_employeeDTOBuilder
+  + dateAssignment(LocalDateTime): induction_employeeDTOBuilder
+  + deadline(LocalDateTime): induction_employeeDTOBuilder
+  + toString(): String
+  + id(int): induction_employeeDTOBuilder
+  + build(): induction_employeeDTO
+  + dateSeen(LocalDateTime): induction_employeeDTOBuilder
+  + visto(String): induction_employeeDTOBuilder
+  + inductionId(int): induction_employeeDTOBuilder
+  + status(String): induction_employeeDTOBuilder
+}
+class location {
+  + location(): 
+  + location(int, String, String): 
+  - nameLocation: String
+  - address: String
+  - id: int
+  + toString(): String
+  + getAddress(): String
+  + hashCode(): int
+  + setNameLocation(String): void
+  + builder(): locationBuilder
+  + getId(): int
+  + setAddress(String): void
+  + equals(Object): boolean
+  + setId(int): void
+  + getNameLocation(): String
+  # canEqual(Object): boolean
+}
+class locationBuilder {
+  ~ locationBuilder(): 
+  - id: int
+  - nameLocation: String
+  - address: String
+  + build(): location
+  + nameLocation(String): locationBuilder
+  + address(String): locationBuilder
+  + id(int): locationBuilder
+  + toString(): String
+}
+class locationDTO {
+  + locationDTO(int, String, String): 
+  + locationDTO(): 
+  - id: int
+  - nameLocation: String
+  - address: String
+  + getNameLocation(): String
+  + setAddress(String): void
+  # canEqual(Object): boolean
+  + setNameLocation(String): void
+  + setId(int): void
+  + builder(): locationDTOBuilder
+  + hashCode(): int
+  + toString(): String
+  + equals(Object): boolean
+  + getAddress(): String
+  + getId(): int
+}
+class locationDTOBuilder {
+  ~ locationDTOBuilder(): 
+  - address: String
+  - id: int
+  - nameLocation: String
+  + address(String): locationDTOBuilder
+  + nameLocation(String): locationDTOBuilder
+  + id(int): locationDTOBuilder
+  + build(): locationDTO
+  + toString(): String
+}
+class moduleInduction {
+  + moduleInduction(int, String, String, String, induction): 
+  + moduleInduction(): 
+  - id: int
+  - induction: induction
+  - description: String
+  - video_url: String
+  - name: String
+  + toString(): String
+  + getInduction(): induction
+  + equals(Object): boolean
+  + setName(String): void
+  + setInduction(induction): void
+  + getDescription(): String
+  + builder(): moduleInductionBuilder
+  + setVideo_url(String): void
+  + getId(): int
+  + setDescription(String): void
+  + getName(): String
+  + getVideo_url(): String
+  + setId(int): void
+  # canEqual(Object): boolean
+  + hashCode(): int
+}
+class moduleInductionBuilder {
+  ~ moduleInductionBuilder(): 
+  - induction: induction
+  - name: String
+  - video_url: String
+  - description: String
+  - id: int
+  + toString(): String
+  + build(): moduleInduction
+  + description(String): moduleInductionBuilder
+  + name(String): moduleInductionBuilder
+  + id(int): moduleInductionBuilder
+  + induction(induction): moduleInductionBuilder
+  + video_url(String): moduleInductionBuilder
+}
+class module_inductionDTO {
+  + module_inductionDTO(): 
+  + module_inductionDTO(int, String, String, String, int): 
+  - name: String
+  - description: String
+  - id: int
+  - inductionId: int
+  - videoUrl: String
+  + setVideoUrl(String): void
+  # canEqual(Object): boolean
+  + toString(): String
+  + getName(): String
+  + setName(String): void
+  + setId(int): void
+  + getInductionId(): int
+  + getVideoUrl(): String
+  + builder(): module_inductionDTOBuilder
+  + getDescription(): String
+  + setInductionId(int): void
+  + equals(Object): boolean
+  + getId(): int
+  + setDescription(String): void
+  + hashCode(): int
+}
+class module_inductionDTOBuilder {
+  ~ module_inductionDTOBuilder(): 
+  - name: String
+  - description: String
+  - id: int
+  - videoUrl: String
+  - inductionId: int
+  + videoUrl(String): module_inductionDTOBuilder
+  + description(String): module_inductionDTOBuilder
+  + toString(): String
+  + build(): module_inductionDTO
+  + name(String): module_inductionDTOBuilder
+  + id(int): module_inductionDTOBuilder
+  + inductionId(int): module_inductionDTOBuilder
+}
+class permition {
+  + permition(int, String, String): 
+  + permition(): 
+  - name: String
+  - id: int
+  - description: String
+  + hashCode(): int
+  + toString(): String
+  + builder(): permitionBuilder
+  + getId(): int
+  + equals(Object): boolean
+  + getName(): String
+  + setName(String): void
+  + setDescription(String): void
+  # canEqual(Object): boolean
+  + setId(int): void
+  + getDescription(): String
+}
+class permitionBuilder {
+  ~ permitionBuilder(): 
+  - name: String
+  - description: String
+  - id: int
+  + name(String): permitionBuilder
+  + description(String): permitionBuilder
+  + build(): permition
+  + toString(): String
+  + id(int): permitionBuilder
+}
+class permitionDTO {
+  + permitionDTO(): 
+  + permitionDTO(int, String, String): 
+  - id: int
+  - description: String
+  - name: String
+  + builder(): permitionDTOBuilder
+  + getId(): int
+  + hashCode(): int
+  + equals(Object): boolean
+  + setDescription(String): void
+  + getDescription(): String
+  + toString(): String
+  + setName(String): void
+  # canEqual(Object): boolean
+  + setId(int): void
+  + getName(): String
+}
+class permitionDTOBuilder {
+  ~ permitionDTOBuilder(): 
+  - name: String
+  - description: String
+  - id: int
+  + toString(): String
+  + id(int): permitionDTOBuilder
+  + build(): permitionDTO
+  + description(String): permitionDTOBuilder
+  + name(String): permitionDTOBuilder
+}
+class positions {
+  + positions(int, String, String, String, String): 
+  + positions(): 
+  - namePost: String
+  - requirements: String
+  - description: String
+  - id: int
+  - jon_function: String
+  + toString(): String
+  + getDescription(): String
+  + setJon_function(String): void
+  + getJon_function(): String
+  + setRequirements(String): void
+  + equals(Object): boolean
+  + setDescription(String): void
+  # canEqual(Object): boolean
+  + setNamePost(String): void
+  + setId(int): void
+  + hashCode(): int
+  + builder(): positionsBuilder
+  + getNamePost(): String
+  + getRequirements(): String
+  + getId(): int
+}
+class positionsBuilder {
+  ~ positionsBuilder(): 
+  - id: int
+  - jon_function: String
+  - description: String
+  - namePost: String
+  - requirements: String
+  + build(): positions
+  + description(String): positionsBuilder
+  + toString(): String
+  + requirements(String): positionsBuilder
+  + namePost(String): positionsBuilder
+  + jon_function(String): positionsBuilder
+  + id(int): positionsBuilder
+}
+class positionsDTO {
+  + positionsDTO(int, String, String, String, String): 
+  + positionsDTO(): 
+  - description: String
+  - jobFunction: String
+  - namePost: String
+  - requirements: String
+  - id: int
+  + getId(): int
+  + toString(): String
+  + setNamePost(String): void
+  + setDescription(String): void
+  + setRequirements(String): void
+  + setId(int): void
+  + getNamePost(): String
+  # canEqual(Object): boolean
+  + getRequirements(): String
+  + setJobFunction(String): void
+  + builder(): positionsDTOBuilder
+  + getJobFunction(): String
+  + hashCode(): int
+  + equals(Object): boolean
+  + getDescription(): String
+}
+class positionsDTOBuilder {
+  ~ positionsDTOBuilder(): 
+  - id: int
+  - requirements: String
+  - namePost: String
+  - description: String
+  - jobFunction: String
+  + namePost(String): positionsDTOBuilder
+  + build(): positionsDTO
+  + jobFunction(String): positionsDTOBuilder
+  + toString(): String
+  + requirements(String): positionsDTOBuilder
+  + id(int): positionsDTOBuilder
+  + description(String): positionsDTOBuilder
+}
+class question {
+  + question(int, String, type, moduleInduction): 
+  + question(): 
+  - type: type
+  - id: int
+  - question: String
+  - moduleInduction: moduleInduction
+  + getId(): int
+  + setId(int): void
+  + toString(): String
+  + getQuestion(): String
+  + getModuleInduction(): moduleInduction
+  + setQuestion(String): void
+  + builder(): questionBuilder
+  # canEqual(Object): boolean
+  + setType(type): void
+  + setModuleInduction(moduleInduction): void
+  + hashCode(): int
+  + getType(): type
+  + equals(Object): boolean
+}
+class questionBuilder {
+  ~ questionBuilder(): 
+  - moduleInduction: moduleInduction
+  - id: int
+  - type: type
+  - question: String
+  + id(int): questionBuilder
+  + type(type): questionBuilder
+  + moduleInduction(moduleInduction): questionBuilder
+  + question(String): questionBuilder
+  + build(): question
+  + toString(): String
+}
+class questionDTO {
+  + questionDTO(int, String, String, int): 
+  + questionDTO(): 
+  - id: int
+  - type: String
+  - moduleInductionId: int
+  - question: String
+  + getId(): int
+  + setId(int): void
+  + equals(Object): boolean
+  + getQuestion(): String
+  + hashCode(): int
+  + builder(): questionDTOBuilder
+  + setQuestion(String): void
+  # canEqual(Object): boolean
+  + setType(String): void
+  + toString(): String
+  + getType(): String
+  + setModuleInductionId(int): void
+  + getModuleInductionId(): int
+}
+class questionDTOBuilder {
+  ~ questionDTOBuilder(): 
+  - type: String
+  - moduleInductionId: int
+  - id: int
+  - question: String
+  + type(String): questionDTOBuilder
+  + build(): questionDTO
+  + question(String): questionDTOBuilder
+  + moduleInductionId(int): questionDTOBuilder
+  + id(int): questionDTOBuilder
+  + toString(): String
+}
+class resume {
+  + resume(int, LocalDateTime, LocalDateTime, String, String, employee): 
+  + resume(): 
+  - id: int
+  - document_url: String
+  - date_create: LocalDateTime
+  - date_update: LocalDateTime
+  - observations: String
+  - employee: employee
+  + hashCode(): int
+  + toString(): String
+  + builder(): resumeBuilder
+  + setDate_update(LocalDateTime): void
+  + setDate_create(LocalDateTime): void
+  + setDocument_url(String): void
+  + setObservations(String): void
+  + getDate_create(): LocalDateTime
+  + getObservations(): String
+  + setEmployee(employee): void
+  + getEmployee(): employee
+  + equals(Object): boolean
+  + getDocument_url(): String
+  + getDate_update(): LocalDateTime
+  # canEqual(Object): boolean
+  + setId(int): void
+  + getId(): int
+}
+class resumeBuilder {
+  ~ resumeBuilder(): 
+  - date_create: LocalDateTime
+  - id: int
+  - observations: String
+  - employee: employee
+  - date_update: LocalDateTime
+  - document_url: String
+  + employee(employee): resumeBuilder
+  + document_url(String): resumeBuilder
+  + build(): resume
+  + date_create(LocalDateTime): resumeBuilder
+  + toString(): String
+  + id(int): resumeBuilder
+  + date_update(LocalDateTime): resumeBuilder
+  + observations(String): resumeBuilder
+}
+class resumeDTO {
+  + resumeDTO(int, LocalDateTime, LocalDateTime, String, String, int): 
+  + resumeDTO(): 
+  - id: int
+  - documentUrl: String
+  - employeeId: int
+  - dateUpdate: LocalDateTime
+  - dateCreate: LocalDateTime
+  - observations: String
+  + setDocumentUrl(String): void
+  + getDateCreate(): LocalDateTime
+  + toString(): String
+  + getObservations(): String
+  # canEqual(Object): boolean
+  + getId(): int
+  + getEmployeeId(): int
+  + setId(int): void
+  + builder(): resumeDTOBuilder
+  + getDocumentUrl(): String
+  + equals(Object): boolean
+  + setObservations(String): void
+  + setDateCreate(LocalDateTime): void
+  + setDateUpdate(LocalDateTime): void
+  + hashCode(): int
+  + setEmployeeId(int): void
+  + getDateUpdate(): LocalDateTime
+}
+class resumeDTOBuilder {
+  ~ resumeDTOBuilder(): 
+  - dateUpdate: LocalDateTime
+  - observations: String
+  - employeeId: int
+  - id: int
+  - documentUrl: String
+  - dateCreate: LocalDateTime
+  + employeeId(int): resumeDTOBuilder
+  + build(): resumeDTO
+  + toString(): String
+  + documentUrl(String): resumeDTOBuilder
+  + id(int): resumeDTOBuilder
+  + dateUpdate(LocalDateTime): resumeDTOBuilder
+  + dateCreate(LocalDateTime): resumeDTOBuilder
+  + observations(String): resumeDTOBuilder
+}
+class resumeService {
+  + resumeService(Iresume): 
+  - iResume: Iresume
+  - convertToEntity(resumeDTO): resume
+  + deleteResume(int): ResponseDTO<resumeDTO>
+  - convertToDTO(resume): resumeDTO
+  + getAllResumes(): List<resume>
+  + save(resumeDTO): ResponseDTO<resumeDTO>
+  + findById(int): Optional<resume>
+}
+class rol {
+  + rol(): 
+  + rol(int, String, String): 
+  - description: String
+  - id: int
+  - name: String
+  + setName(String): void
+  + getId(): int
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + getDescription(): String
+  + setDescription(String): void
+  + setId(int): void
+  + toString(): String
+  + getName(): String
+  + equals(Object): boolean
+  + builder(): rolBuilder
+}
+class rolBuilder {
+  ~ rolBuilder(): 
+  - name: String
+  - id: int
+  - description: String
+  + id(int): rolBuilder
+  + build(): rol
+  + toString(): String
+  + name(String): rolBuilder
+  + description(String): rolBuilder
+}
+class rolDTO {
+  + rolDTO(): 
+  + rolDTO(int, String, String): 
+  - name: String
+  - description: String
+  - id: int
+  + setDescription(String): void
+  + hashCode(): int
+  + setId(int): void
+  + getId(): int
+  + setName(String): void
+  + getName(): String
+  + equals(Object): boolean
+  + toString(): String
+  # canEqual(Object): boolean
+  + builder(): rolDTOBuilder
+  + getDescription(): String
+}
+class rolDTOBuilder {
+  ~ rolDTOBuilder(): 
+  - description: String
+  - name: String
+  - id: int
+  + name(String): rolDTOBuilder
+  + build(): rolDTO
+  + description(String): rolDTOBuilder
+  + id(int): rolDTOBuilder
+  + toString(): String
+}
+class rol_permition {
+  + rol_permition(int, rol, permition): 
+  + rol_permition(): 
+  - id: int
+  - rol: rol
+  - permision: permition
+  + hashCode(): int
+  + builder(): rol_permitionBuilder
+  + setRol(rol): void
+  + getRol(): rol
+  + getPermision(): permition
+  + toString(): String
+  + setId(int): void
+  + equals(Object): boolean
+  + getId(): int
+  # canEqual(Object): boolean
+  + setPermision(permition): void
+}
+class rol_permitionBuilder {
+  ~ rol_permitionBuilder(): 
+  - permision: permition
+  - id: int
+  - rol: rol
+  + permision(permition): rol_permitionBuilder
+  + toString(): String
+  + rol(rol): rol_permitionBuilder
+  + build(): rol_permition
+  + id(int): rol_permitionBuilder
+}
+class rol_permitionDTO {
+  + rol_permitionDTO(int, int, int): 
+  + rol_permitionDTO(): 
+  - rolId: int
+  - id: int
+  - permitionId: int
+  + getId(): int
+  + getPermitionId(): int
+  + getRolId(): int
+  + toString(): String
+  + builder(): rol_permitionDTOBuilder
+  + setPermitionId(int): void
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + equals(Object): boolean
+  + setId(int): void
+  + setRolId(int): void
+}
+class rol_permitionDTOBuilder {
+  ~ rol_permitionDTOBuilder(): 
+  - permitionId: int
+  - id: int
+  - rolId: int
+  + id(int): rol_permitionDTOBuilder
+  + toString(): String
+  + permitionId(int): rol_permitionDTOBuilder
+  + rolId(int): rol_permitionDTOBuilder
+  + build(): rol_permitionDTO
+}
+class schedule {
+  + schedule(): 
+  + schedule(int, LocalTime, LocalTime, shift, String, LocalTime, day_week): 
+  - shift: shift
+  - overtime: LocalTime
+  - time_end: LocalTime
+  - id: int
+  - documentUrl: String
+  - time_start: LocalTime
+  - day_week: day_week
+  + setDay_week(day_week): void
+  + getId(): int
+  + hashCode(): int
+  + setTime_end(LocalTime): void
+  + setShift(shift): void
+  + builder(): scheduleBuilder
+  + getTime_start(): LocalTime
+  + setTime_start(LocalTime): void
+  + setDocumentUrl(String): void
+  + getTime_end(): LocalTime
+  + getShift(): shift
+  + getOvertime(): LocalTime
+  + getDay_week(): day_week
+  + setId(int): void
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + getDocumentUrl(): String
+  + setOvertime(LocalTime): void
+  + toString(): String
+}
+class scheduleBuilder {
+  ~ scheduleBuilder(): 
+  - id: int
+  - shift: shift
+  - day_week: day_week
+  - time_start: LocalTime
+  - time_end: LocalTime
+  - documentUrl: String
+  - overtime: LocalTime
+  + shift(shift): scheduleBuilder
+  + day_week(day_week): scheduleBuilder
+  + documentUrl(String): scheduleBuilder
+  + time_end(LocalTime): scheduleBuilder
+  + overtime(LocalTime): scheduleBuilder
+  + build(): schedule
+  + id(int): scheduleBuilder
+  + time_start(LocalTime): scheduleBuilder
+  + toString(): String
+}
+class scheduleDTO {
+  + scheduleDTO(int, LocalTime, LocalTime, String, String, LocalTime, String): 
+  + scheduleDTO(): 
+  - shift: String
+  - overtime: LocalTime
+  - time_start: LocalTime
+  - documentUrl: String
+  - id: int
+  - time_end: LocalTime
+  - day_week: String
+  + hashCode(): int
+  + setOvertime(LocalTime): void
+  + setTime_start(LocalTime): void
+  + getTime_end(): LocalTime
+  + toString(): String
+  + getDay_week(): String
+  + setDocumentUrl(String): void
+  + equals(Object): boolean
+  + builder(): scheduleDTOBuilder
+  # canEqual(Object): boolean
+  + getTime_start(): LocalTime
+  + getId(): int
+  + getDocumentUrl(): String
+  + setTime_end(LocalTime): void
+  + getOvertime(): LocalTime
+  + getShift(): String
+  + setId(int): void
+  + setShift(String): void
+  + setDay_week(String): void
+}
+class scheduleDTOBuilder {
+  ~ scheduleDTOBuilder(): 
+  - day_week: String
+  - shift: String
+  - id: int
+  - overtime: LocalTime
+  - time_start: LocalTime
+  - documentUrl: String
+  - time_end: LocalTime
+  + overtime(LocalTime): scheduleDTOBuilder
+  + time_end(LocalTime): scheduleDTOBuilder
+  + shift(String): scheduleDTOBuilder
+  + toString(): String
+  + build(): scheduleDTO
+  + day_week(String): scheduleDTOBuilder
+  + time_start(LocalTime): scheduleDTOBuilder
+  + documentUrl(String): scheduleDTOBuilder
+  + id(int): scheduleDTOBuilder
+}
+enum shift << enumeration >> {
+  - shift(): 
+  + tarde: 
+  + noche: 
+  + mañana: 
+  + valueOf(String): shift
+  + values(): shift[]
+}
+enum status << enumeration >> {
+  - status(): 
+  + ausente: 
+  + tarde: 
+  + presente: 
+  + values(): status[]
+  + valueOf(String): status
+}
+enum status << enumeration >> {
+  - status(): 
+  + inactive: 
+  + active: 
+  + valueOf(String): status
+  + values(): status[]
+}
+enum status << enumeration >> {
+  - status(): 
+  + Pendiente: 
+  + Aprobado: 
+  + Rechazado: 
+  + values(): status[]
+  + valueOf(String): status
+}
+enum status << enumeration >> {
+  - status(): 
+  + pendiente: 
+  + rechazado: 
+  + aprobado: 
+  + values(): status[]
+  + valueOf(String): status
+}
+enum status << enumeration >> {
+  - status(): 
+  + validado: 
+  + generado: 
+  + enviado: 
+  + values(): status[]
+  + valueOf(String): status
+}
+enum status << enumeration >> {
+  - status(): 
+  + activo: 
+  + expirado: 
+  + terminado: 
+  + valueOf(String): status
+  + values(): status[]
+}
+enum status << enumeration >> {
+  - status(): 
+  + aprobado: 
+  + pendiente: 
+  + rechazado: 
+  + valueOf(String): status
+  + values(): status[]
+}
+enum status << enumeration >> {
+  - status(): 
+  + pendiente: 
+  + aprobado: 
+  + rechazado: 
+  + values(): status[]
+  + valueOf(String): status
+}
+enum tipo_documento << enumeration >> {
+  - tipo_documento(): 
+  + dni: 
+  + cc: 
+  + ti: 
+  + pasaporte: 
+  + valueOf(String): tipo_documento
+  + values(): tipo_documento[]
+}
+enum type << enumeration >> {
+  - type(): 
+  + acta: 
+  + suspension: 
+  + llamado_atencion: 
+  + valueOf(String): type
+  + values(): type[]
+}
+enum type << enumeration >> {
+  - type(): 
+  + singlechoice: 
+  + open: 
+  + multiplechoice: 
+  + values(): type[]
+  + valueOf(String): type
+}
+enum type << enumeration >> {
+  - type(): 
+  + practicas: 
+  + temporal: 
+  + permanente: 
+  + valueOf(String): type
+  + values(): type[]
+}
+enum type << enumeration >> {
+  - type(): 
+  + induction: 
+  + capacitacion: 
+  + values(): type[]
+  + valueOf(String): type
+}
+enum type << enumeration >> {
+  - type(): 
+  + laboral: 
+  + values(): type[]
+  + valueOf(String): type
+}
+class user {
+  + user(): 
+  + user(int, String, String, String, status, LocalDateTime, Set<rol>): 
+  - roles: Set<rol>
+  - idUser: int
+  - createdAt: LocalDateTime
+  - status: status
+  - username: String
+  - email: String
+  - password: String
+  + setPassword(String): void
+  + setIdUser(int): void
+  + equals(Object): boolean
+  + getEmail(): String
+  + setCreatedAt(LocalDateTime): void
+  + getIdUser(): int
+  + builder(): userBuilder
+  + setEmail(String): void
+  + setStatus(status): void
+  - $default$roles(): Set<rol>
+  + getUsername(): String
+  + getRoles(): Set<rol>
+  + getStatus(): status
+  + setRoles(Set<rol>): void
+  + hashCode(): int
+  # canEqual(Object): boolean
+  + getCreatedAt(): LocalDateTime
+  + setUsername(String): void
+  + getPassword(): String
+  + toString(): String
+}
+class userBuilder {
+  ~ userBuilder(): 
+  - username: String
+  - roles$value: Set<rol>
+  - idUser: int
+  - status: status
+  - password: String
+  - createdAt: LocalDateTime
+  - email: String
+  - roles$set: boolean
+  + password(String): userBuilder
+  + idUser(int): userBuilder
+  + roles(Set<rol>): userBuilder
+  + username(String): userBuilder
+  + build(): user
+  + status(status): userBuilder
+  + toString(): String
+  + createdAt(LocalDateTime): userBuilder
+  + email(String): userBuilder
+}
+class userDTO {
+  + userDTO(): 
+  + userDTO(int, String, String, String): 
+  - email: String
+  - idUser: int
+  - username: String
+  - password: String
+  + getEmail(): String
+  + getPassword(): String
+  + setPassword(String): void
+  + builder(): userDTOBuilder
+  + setEmail(String): void
+  + getUsername(): String
+  + setIdUser(int): void
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + setUsername(String): void
+  + getIdUser(): int
+  + equals(Object): boolean
+  + toString(): String
+}
+class userDTOBuilder {
+  ~ userDTOBuilder(): 
+  - password: String
+  - idUser: int
+  - username: String
+  - email: String
+  + email(String): userDTOBuilder
+  + username(String): userDTOBuilder
+  + toString(): String
+  + password(String): userDTOBuilder
+  + idUser(int): userDTOBuilder
+  + build(): userDTO
+}
+class userService {
+  + userService(Iuser): 
+  - iUser: Iuser
+  - convertToEntity(userDTO): user
+  + getAllUsers(): List<user>
+  + findByEmail(String): Optional<user>
+  + findById(int): Optional<user>
+  - convertToDTO(user): userDTO
+  + deleteUser(int): ResponseDTO<userDTO>
+  + save(userDTO): ResponseDTO<userDTO>
+}
+class user_rol {
+  + user_rol(): 
+  + user_rol(int, user, rol): 
+  - rol: rol
+  - user: user
+  - id: int
+  + setId(int): void
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+  + hashCode(): int
+  + setRol(rol): void
+  + getUser(): user
+  + getRol(): rol
+  + builder(): user_rolBuilder
+  + getId(): int
+  + toString(): String
+  + setUser(user): void
+}
+class user_rolBuilder {
+  ~ user_rolBuilder(): 
+  - id: int
+  - rol: rol
+  - user: user
+  + rol(rol): user_rolBuilder
+  + build(): user_rol
+  + user(user): user_rolBuilder
+  + id(int): user_rolBuilder
+  + toString(): String
+}
+class user_rolDTO {
+  + user_rolDTO(int, int, int): 
+  + user_rolDTO(): 
+  - id: int
+  - idUser: int
+  - idRol: int
+  + getIdRol(): int
+  + getId(): int
+  + setId(int): void
+  + setIdUser(int): void
+  + hashCode(): int
+  + builder(): user_rolDTOBuilder
+  + equals(Object): boolean
+  + getIdUser(): int
+  # canEqual(Object): boolean
+  + setIdRol(int): void
+  + toString(): String
+}
+class user_rolDTOBuilder {
+  ~ user_rolDTOBuilder(): 
+  - idRol: int
+  - id: int
+  - idUser: int
+  + id(int): user_rolDTOBuilder
+  + idRol(int): user_rolDTOBuilder
+  + toString(): String
+  + build(): user_rolDTO
+  + idUser(int): user_rolDTOBuilder
+}
+enum visto << enumeration >> {
+  - visto(): 
+  + no: 
+  + si: 
+  + valueOf(String): visto
+  + values(): visto[]
+}
+
+ResponseDTOBuilder              +-[#820000,plain]-  ResponseDTO                    
+answerBuilder                   +-[#820000,plain]-  answer                         
+answerDTOBuilder                +-[#820000,plain]-  answerDTO                      
+application                    "1" *-[#595959,plain]-> "status\n1" status                         
+applicationBuilder              +-[#820000,plain]-  application                    
+applicationBuilder             "1" *-[#595959,plain]-> "status\n1" status                         
+applicationDTOBuilder           +-[#820000,plain]-  applicationDTO                 
+application_typeBuilder         +-[#820000,plain]-  application_type               
+application_typeDTOBuilder      +-[#820000,plain]-  application_typeDTO            
+areaBuilder                     +-[#820000,plain]-  area                           
+areaDTOBuilder                  +-[#820000,plain]-  areaDTO                        
+attendance                     "1" *-[#595959,plain]-> "status\n1" status                         
+attendanceBuilder               +-[#820000,plain]-  attendance                     
+attendanceBuilder              "1" *-[#595959,plain]-> "status\n1" status                         
+attendanceDTOBuilder            +-[#820000,plain]-  attendanceDTO                  
+certificate                    "1" *-[#595959,plain]-> "status\n1" status                         
+certificate                    "1" *-[#595959,plain]-> "type\n1" type                           
+certificateBuilder              +-[#820000,plain]-  certificate                    
+certificateBuilder             "1" *-[#595959,plain]-> "status\n1" status                         
+certificateBuilder             "1" *-[#595959,plain]-> "type\n1" type                           
+certificateDTOBuilder           +-[#820000,plain]-  certificateDTO                 
+civil_status                    +-[#820000,plain]-  employee                       
+contract                       "1" *-[#595959,plain]-> "status\n1" status                         
+contract                       "1" *-[#595959,plain]-> "type\n1" type                           
+contractBuilder                 +-[#820000,plain]-  contract                       
+contractBuilder                "1" *-[#595959,plain]-> "status\n1" status                         
+contractBuilder                "1" *-[#595959,plain]-> "type\n1" type                           
+contractDTOBuilder              +-[#820000,plain]-  contractDTO                    
+day_week                        +-[#820000,plain]-  schedule                       
+disciplinary_process           "1" *-[#595959,plain]-> "status\n1" status                         
+disciplinary_process           "1" *-[#595959,plain]-> "type\n1" type                           
+disciplinary_processBuilder     +-[#820000,plain]-  disciplinary_process           
+disciplinary_processBuilder    "1" *-[#595959,plain]-> "status\n1" status                         
+disciplinary_processBuilder    "1" *-[#595959,plain]-> "type\n1" type                           
+disciplinary_processDTOBuilder  +-[#820000,plain]-  disciplinary_processDTO        
+emplo_locationBuilder           +-[#820000,plain]-  emplo_location                 
+emplo_locationDTOBuilder        +-[#820000,plain]-  emplo_locationDTO              
+emplo_scheduleBuilder           +-[#820000,plain]-  emplo_schedule                 
+emplo_scheduleDTOBuilder        +-[#820000,plain]-  emplo_scheduleDTO              
+employee                       "1" *-[#595959,plain]-> "civilStatus\n1" civil_status                   
+employee                       "1" *-[#595959,plain]-> "gender\n1" gender                         
+employee                       "1" *-[#595959,plain]-> "tipoDocumento\n1" tipo_documento                 
+employeeBuilder                "1" *-[#595959,plain]-> "civilStatus\n1" civil_status                   
+employeeBuilder                 +-[#820000,plain]-  employee                       
+employeeBuilder                "1" *-[#595959,plain]-> "gender\n1" gender                         
+employeeBuilder                "1" *-[#595959,plain]-> "tipoDocumento\n1" tipo_documento                 
+employeeDTOBuilder              +-[#820000,plain]-  employeeDTO                    
+employee_areaBuilder            +-[#820000,plain]-  employee_area                  
+employee_areaDTOBuilder         +-[#820000,plain]-  employee_areaDTO               
+employee_postBuilder            +-[#820000,plain]-  employee_post                  
+employee_postDTOBuilder         +-[#820000,plain]-  employee_postDTO               
+gender                          +-[#820000,plain]-  employee                       
+induction                      "1" *-[#595959,plain]-> "status\n1" status                         
+induction                      "1" *-[#595959,plain]-> "type\n1" type                           
+inductionBuilder                +-[#820000,plain]-  induction                      
+inductionBuilder               "1" *-[#595959,plain]-> "status\n1" status                         
+inductionBuilder               "1" *-[#595959,plain]-> "type\n1" type                           
+inductionDTOBuilder             +-[#820000,plain]-  inductionDTO                   
+induction_employee             "1" *-[#595959,plain]-> "status\n1" status                         
+induction_employee             "1" *-[#595959,plain]-> "visto\n1" visto                          
+induction_employeeBuilder       +-[#820000,plain]-  induction_employee             
+induction_employeeBuilder      "1" *-[#595959,plain]-> "status\n1" status                         
+induction_employeeBuilder      "1" *-[#595959,plain]-> "visto\n1" visto                          
+induction_employeeDTOBuilder    +-[#820000,plain]-  induction_employeeDTO          
+locationBuilder                 +-[#820000,plain]-  location                       
+locationDTOBuilder              +-[#820000,plain]-  locationDTO                    
+moduleInductionBuilder          +-[#820000,plain]-  moduleInduction                
+module_inductionDTOBuilder      +-[#820000,plain]-  module_inductionDTO            
+permitionBuilder                +-[#820000,plain]-  permition                      
+permitionDTOBuilder             +-[#820000,plain]-  permitionDTO                   
+positionsBuilder                +-[#820000,plain]-  positions                      
+positionsDTOBuilder             +-[#820000,plain]-  positionsDTO                   
+question                       "1" *-[#595959,plain]-> "type\n1" type                           
+questionBuilder                 +-[#820000,plain]-  question                       
+questionBuilder                "1" *-[#595959,plain]-> "type\n1" type                           
+questionDTOBuilder              +-[#820000,plain]-  questionDTO                    
+resumeBuilder                   +-[#820000,plain]-  resume                         
+resumeDTOBuilder                +-[#820000,plain]-  resumeDTO                      
+rolBuilder                      +-[#820000,plain]-  rol                            
+rolDTOBuilder                   +-[#820000,plain]-  rolDTO                         
+rol_permitionBuilder            +-[#820000,plain]-  rol_permition                  
+rol_permitionDTOBuilder         +-[#820000,plain]-  rol_permitionDTO               
+schedule                       "1" *-[#595959,plain]-> "day_week\n1" day_week                       
+schedule                       "1" *-[#595959,plain]-> "shift\n1" shift                          
+scheduleBuilder                "1" *-[#595959,plain]-> "day_week\n1" day_week                       
+scheduleBuilder                 +-[#820000,plain]-  schedule                       
+scheduleBuilder                "1" *-[#595959,plain]-> "shift\n1" shift                          
+scheduleDTOBuilder              +-[#820000,plain]-  scheduleDTO                    
+shift                           +-[#820000,plain]-  schedule                       
+status                          +-[#820000,plain]-  application                    
+status                          +-[#820000,plain]-  attendance                     
+status                          +-[#820000,plain]-  certificate                    
+status                          +-[#820000,plain]-  contract                       
+status                          +-[#820000,plain]-  disciplinary_process           
+status                          +-[#820000,plain]-  induction                      
+status                          +-[#820000,plain]-  induction_employee             
+status                          +-[#820000,plain]-  user                           
+tipo_documento                  +-[#820000,plain]-  employee                       
+type                            +-[#820000,plain]-  certificate                    
+type                            +-[#820000,plain]-  contract                       
+type                            +-[#820000,plain]-  disciplinary_process           
+type                            +-[#820000,plain]-  induction                      
+type                            +-[#820000,plain]-  question                       
+user                           "1" *-[#595959,plain]-> "status\n1" status                         
+userBuilder                    "1" *-[#595959,plain]-> "status\n1" status                         
+userBuilder                     +-[#820000,plain]-  user                           
+userDTOBuilder                  +-[#820000,plain]-  userDTO                        
+user_rolBuilder                 +-[#820000,plain]-  user_rol                       
+user_rolDTOBuilder              +-[#820000,plain]-  user_rolDTO                    
+visto                           +-[#820000,plain]-  induction_employee             
+@enduml

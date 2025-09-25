@@ -3,7 +3,7 @@ package com.brisas.las_brisas.service.position;
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.position.employee_postDTO;
 import com.brisas.las_brisas.model.employee.employee;
-import com.brisas.las_brisas.model.position.employee_post;
+import com.brisas.las_brisas.model.position.EmployeePost;
 import com.brisas.las_brisas.model.position.positions;
 import com.brisas.las_brisas.repository.position.Iemployee_post;
 
@@ -20,16 +20,16 @@ public class EmployeePostService {
 
     private final Iemployee_post iemployeepost;
 
-    public List<employee_post> getAll() {
+    public List<EmployeePost> getAll() {
         return iemployeepost.findAll();
     }
 
-    public Optional<employee_post> findById(int id) {
+    public Optional<EmployeePost> findById(int id) {
         return iemployeepost.findById(id);
     }
 
     public ResponseDTO<employee_postDTO> delete(int id) {
-        Optional<employee_post> opt = iemployeepost.findById(id);
+        Optional<EmployeePost> opt = iemployeepost.findById(id);
         if (opt.isEmpty()) {
             return new ResponseDTO<>("La relación empleado-puesto no existe", HttpStatus.NOT_FOUND.toString(), null);
         }
@@ -46,7 +46,7 @@ public class EmployeePostService {
                 return new ResponseDTO<>("El ID del puesto es requerido", HttpStatus.BAD_REQUEST.toString(), null);
             }
 
-            employee_post entity = convertToEntity(dto);
+            EmployeePost entity = convertToEntity(dto);
             iemployeepost.save(entity);
 
             return new ResponseDTO<>("Relación guardada correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
@@ -56,21 +56,21 @@ public class EmployeePostService {
         }
     }
 
-    private employee_post convertToEntity(employee_postDTO dto) {
+    private EmployeePost convertToEntity(employee_postDTO dto) {
         employee e = new employee();
         e.setId(dto.getEmployeeId());
 
         positions p = new positions();
         p.setId(dto.getPostId());
 
-        return employee_post.builder()
+        return EmployeePost.builder()
                 .id(dto.getId())
                 .employee(e)
                 .post(p)
                 .build();
     }
 
-    private employee_postDTO convertToDTO(employee_post entity) {
+    private employee_postDTO convertToDTO(EmployeePost entity) {
         return employee_postDTO.builder()
                 .id(entity.getId())
                 .employeeId(entity.getEmployee() != null ? entity.getEmployee().getId() : 0)

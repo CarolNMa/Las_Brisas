@@ -1,11 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-// Cambiamos la importación: apuntamos al componente que pegaste
-import Dashboard from './components/inicio.jsx'
-import './index.css' // deja esto si existe
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';  // Importamos App que ya tiene Router configurado
+import './index.css';         // Si tienes estilos globales
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Dashboard />
+    <App />
   </React.StrictMode>
-)
+);
