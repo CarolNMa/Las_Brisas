@@ -60,6 +60,7 @@ export default function EmpleadosModule({
             placeholder="Buscar empleado"
             value={q}
             onChange={e => setQ(e.target.value)}
+            style={styles.searchInput}
           />
           <button onClick={openCreate} style={styles.btn}>Nuevo</button>
           <button onClick={() => exportCSV('empleados.csv', empleados)} style={styles.btnAlt}>Exportar CSV</button>
@@ -113,24 +114,32 @@ export default function EmpleadosModule({
 }
 
 const styles = {
-  moduleHeader: { 
-    display: 'flex', 
+  moduleHeader: {
+    display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center' 
-},
-  btn: { 
-    padding: '8px 12px', 
-    background: '#2563eb', 
-    color: '#fff', 
-    border: 'none', 
-    borderRadius: 6, 
-    cursor: 'pointer' 
-},
+    alignItems: 'center'
+  },
+  searchInput: {
+    background: '#fff',
+    color: '#000',
+    border: '1px solid #ccc',
+    borderRadius: 6,
+    padding: '8px 12px',
+    fontSize: 14,
+  },
+  btn: {
+    padding: '8px 12px',
+    background: '#2563eb',
+    color: '#fff',
+    border: 'none',
+    borderRadius: 6,
+    cursor: 'pointer'
+  },
   btnAlt: {
-    padding: '8px 12px', 
-    background: '#ff0101ff', 
-    border: '1px solid #ddd', 
-    borderRadius: 6, 
-    cursor: 'pointer' 
-},
+    padding: '8px 12px',
+    background: '#ff0101ff',
+    border: '1px solid #ddd',
+    borderRadius: 6,
+    cursor: 'pointer'
+  },
 };

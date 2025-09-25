@@ -25,6 +25,6 @@ export default function Table({ columns, data, onEdit, onDelete, idKey = 'id' })
 }
 
 const styles = {
-  table: { width: '100%', borderCollapse: 'collapse', marginTop: 12, background: '#fff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' },
+  table: { width: '100%', borderCollapse: 'collapse', marginTop: 12, background: '#fff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', color: '#111' },
   btnSmall: { padding: '6px 8px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' },
 };

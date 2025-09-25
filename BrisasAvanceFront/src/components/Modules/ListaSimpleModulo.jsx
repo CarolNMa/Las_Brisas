@@ -33,7 +33,7 @@ export default function SimpleListModule({ title, dataKey, items, setItems, colu
             <div style={styles.moduleHeader}>
                 <h2>{title}</h2>
                 <div style={{ display: 'flex', gap: 8 }}>
-                    <input placeholder={`Buscar ${title}`} value={q} onChange={e => setQ(e.target.value)} />
+                    <input placeholder={`Buscar ${title}`} value={q} onChange={e => setQ(e.target.value)} style={styles.searchInput} />
                     <button onClick={openCreate} style={styles.btn}>Nuevo</button>
                     <button onClick={() => exportCSV(`${dataKey}.csv`, items)} style={styles.btnAlt}>Exportar CSV</button>
                 </div>
@@ -59,24 +59,32 @@ export default function SimpleListModule({ title, dataKey, items, setItems, colu
 }
 
 const styles = {
-    moduleHeader: { 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center' 
+    moduleHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
-    btn: { 
-        padding: '8px 12px', 
-        background: '#2563eb', 
-        color: '#fff', 
-        border: 'none', 
-        borderRadius: 6, 
+    searchInput: {
+        background: '#fff',
+        color: '#000',
+        border: '1px solid #ccc',
+        borderRadius: 6,
+        padding: '8px 12px',
+        fontSize: 14,
+    },
+    btn: {
+        padding: '8px 12px',
+        background: '#2563eb',
+        color: '#fff',
+        border: 'none',
+        borderRadius: 6,
         cursor: 'pointer'
     },
-    btnAlt: { 
-        padding: '8px 12px', 
-        background: '#ff0101ff', 
-        border: '1px solid #ddd', 
-        borderRadius: 6, 
-        cursor: 'pointer',  
+    btnAlt: {
+        padding: '8px 12px',
+        background: '#ff0101ff',
+        border: '1px solid #ddd',
+        borderRadius: 6,
+        cursor: 'pointer',
     },
 };

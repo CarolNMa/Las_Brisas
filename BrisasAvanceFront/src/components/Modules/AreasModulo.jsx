@@ -10,7 +10,7 @@ export default function AreasModule({ areas, setAreas }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  const filtered = areas.filter(a => a.name.toLowerCase().includes(q.toLowerCase()));
+  const filtered = areas.filter(a => a.name && a.name.toLowerCase().includes(q.toLowerCase()));
 
   const save = () => {
     if (!editing.name) return alert('Nombre requerido');
@@ -32,13 +32,17 @@ export default function AreasModule({ areas, setAreas }) {
       <div style={styles.moduleHeader}>
         <h2>Áreas</h2>
         <div style={{ display: 'flex', gap: 8 }}>
-          <input placeholder="Buscar área" value={q} onChange={e => setQ(e.target.value)} />
+          <input placeholder="Buscar área" value={q} onChange={e => setQ(e.target.value)} style={styles.searchInput} />
           <button onClick={() => { setEditing({ id: uid('area-'), name: '' }); setModalOpen(true); }} style={styles.btn}>Nueva</button>
           <button onClick={() => exportCSV('areas.csv', areas)} style={styles.btnAlt}>Exportar CSV</button>
         </div>
       </div>
 
-      <Table columns={[{ key: 'name', title: 'Nombre' }]} data={filtered} onEdit={r => { setEditing(r); setModalOpen(true); }} onDelete={remove} />
+      {filtered.length === 0 ? (
+        <p style={{ textAlign: 'center', marginTop: 20, color: '#666' }}>No hay áreas disponibles</p>
+      ) : (
+        <Table columns={[{ key: 'name', title: 'Nombre' }]} data={filtered} onEdit={r => { setEditing(r); setModalOpen(true); }} onDelete={remove} />
+      )}
 
       <Modal open={modalOpen} title="Área" onClose={() => setModalOpen(false)}>
         {editing && (
@@ -56,24 +60,32 @@ export default function AreasModule({ areas, setAreas }) {
 }
 
 const styles = {
-  moduleHeader: { 
-    display: 'flex', 
-    justifyContent: 'space-between', 
+  moduleHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
     alignItems: 'center'
- },
-  btn: { 
-    padding: '8px 12px', 
-    background: '#2563eb', 
-    color: '#fff', 
-    border: 'none', 
-    borderRadius: 6, 
+  },
+  searchInput: {
+    background: '#fff',
+    color: '#000',
+    border: '1px solid #ccc',
+    borderRadius: 6,
+    padding: '8px 12px',
+    fontSize: 14,
+  },
+  btn: {
+    padding: '8px 12px',
+    background: '#2563eb',
+    color: '#fff',
+    border: 'none',
+    borderRadius: 6,
     cursor: 'pointer'
- },
-  btnAlt: { 
-    padding: '8px 12px', 
-    background: '#ff0101ff', 
-    border: '1px solid #ddd', 
-    borderRadius: 6, 
+  },
+  btnAlt: {
+    padding: '8px 12px',
+    background: '#ff0101ff',
+    border: '1px solid #ddd',
+    borderRadius: 6,
     cursor: 'pointer'
- },
+  },
 };
