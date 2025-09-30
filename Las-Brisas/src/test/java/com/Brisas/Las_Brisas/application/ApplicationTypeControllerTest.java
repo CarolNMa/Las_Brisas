@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.application;
+package com.brisas.Las_Brisas.application;
 
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.application.application_typeDTO;

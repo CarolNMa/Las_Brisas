@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.training;
+package com.brisas.Las_Brisas.training;
 
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.training.inductionDTO;

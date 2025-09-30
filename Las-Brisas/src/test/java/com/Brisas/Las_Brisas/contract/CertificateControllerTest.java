@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.contract;
+package com.brisas.Las_Brisas.contract;
 
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.contract.certificateDTO;

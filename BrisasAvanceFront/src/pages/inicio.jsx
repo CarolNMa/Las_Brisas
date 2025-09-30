@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 // Layout
 import Topbar from '../components/Layout/BarraSuperior';
 import Sidebar from '../components/Layout/BarraLateral';
 import Card from '../components/Layout/Tarjeta';
+import Modal from '../components/Layout/Modal';
 
 // Common
 import { useLocalState } from '../components/Comunes/Hooks/UseLocalState';
@@ -88,6 +89,10 @@ export default function Dashboard({ user, onLogout }) {
   const [applicationTypes, setApplicationTypes] = useLocalState('brisas:applicationTypes', initialApplicationTypes);
 
   const [active, setActive] = useLocalState('brisas:active', 'dashboard');
+
+  // Map modal state
+  const [mapModalOpen, setMapModalOpen] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState('');
 
   // Sidebar items
   const items = useMemo(() => ([
@@ -297,11 +302,43 @@ export default function Dashboard({ user, onLogout }) {
               dataKey="locations"
               items={locations}
               setItems={setLocations}
-              columns={[{ key: 'name', title: 'Nombre' }, { key: 'address', title: 'Dirección' }]}
+              columns={[
+                { key: 'name', title: 'Nombre' },
+                {
+                  key: 'address',
+                  title: 'Dirección',
+                  render: (address) => (
+                    <span>
+                      {address}
+                      <img
+                        src="/assets/img/location.png"
+                        alt="Ver mapa"
+                        style={{ width: 16, height: 16, marginLeft: 8, cursor: 'pointer' }}
+                        onClick={() => {
+                          setSelectedAddress(address);
+                          setMapModalOpen(true);
+                        }}
+                      />
+                    </span>
+                  )
+                }
+              ]}
               fields={[{ key: 'name', title: 'Nombre' }, { key: 'address', title: 'Dirección' }]}
             />
           )}
         </div>
+
+        <Modal open={mapModalOpen} title={`Mapa de ${selectedAddress}`} onClose={() => setMapModalOpen(false)}>
+          <iframe
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(selectedAddress)}&output=embed`}
+            width="100%"
+            height="400"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </Modal>
       </div>
     </div>
   );
@@ -353,6 +390,7 @@ export const styles = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
+    marginLeft: 250,
   },
   content: {
     padding: 20,
