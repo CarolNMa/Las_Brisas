@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.employee;
+package com.brisas.Las_Brisas.employee;
 
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.employee.emplo_scheduleDTO;

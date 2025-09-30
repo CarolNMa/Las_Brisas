@@ -1,8 +1,10 @@
+
 import { useState } from 'react';
-import Table from '../Comunes/tabla';
 import Modal from '../Layout/Modal';
+import Table from '../Comunes/tabla';
 import { exportCSV } from '../Comunes/Utils/exportCSV';
 import Swal from 'sweetalert2';
+import { useSpring, animated, useTransition } from 'react-spring';
 
 const uid = (prefix = '') => prefix + Math.random().toString(36).slice(2, 9);
 
@@ -10,6 +12,8 @@ export default function SimpleListModule({ title, dataKey, items, setItems, colu
     const [q, setQ] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState(null);
+    const [viewing, setViewing] = useState(null);
+    const [viewModalOpen, setViewModalOpen] = useState(false);
 
     const filtered = items.filter(i => JSON.stringify(i).toLowerCase().includes(q.toLowerCase()));
 
@@ -47,6 +51,13 @@ export default function SimpleListModule({ title, dataKey, items, setItems, colu
         });
     };
 
+
+    const viewTransitions = useTransition(viewModalOpen, {
+        from: { opacity: 0, transform: 'translateY(-20px)' },
+        enter: { opacity: 1, transform: 'translateY(0)' },
+        leave: { opacity: 0, transform: 'translateY(-20px)' },
+    });
+
     return (
         <div>
             <div style={styles.moduleHeader}>
@@ -58,7 +69,13 @@ export default function SimpleListModule({ title, dataKey, items, setItems, colu
                 </div>
             </div>
 
-            <Table columns={columns} data={filtered} onEdit={r => { setEditing(r); setModalOpen(true); }} onDelete={remove} />
+            <Table
+                columns={columns}
+                data={filtered}
+                onEdit={(row) => { setEditing(row); setModalOpen(true); }}
+                onDelete={remove}
+                onRowClick={(row) => { setViewing(row); setViewModalOpen(true); }}
+            />
 
             <Modal open={modalOpen} title={editing?.isNew ? `Nuevo ${title.toLowerCase()}` : title} onClose={() => setModalOpen(false)}>
                 {editing && (
@@ -73,6 +90,31 @@ export default function SimpleListModule({ title, dataKey, items, setItems, colu
                     </div>
                 )}
             </Modal>
+
+            {viewTransitions((style, item) => item && (
+                <animated.div style={{ ...styles.modalOverlay, ...style }} onClick={() => setViewModalOpen(false)}>
+                    <div style={styles.modal} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ margin: 0 }}>{`Detalles de ${title.toLowerCase()}`}</h3>
+                        </div>
+                        <div style={{ marginTop: 12 }}>
+                            {viewing && (
+                                <div style={{ display: 'grid', gap: 8 }}>
+                                    {columns.map(c => (
+                                        <div key={c.key}>
+                                            <strong>{c.title || c.key}:</strong> {viewing[c.key]}
+                                        </div>
+                                    ))}
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <button onClick={() => { setEditing(viewing); setViewModalOpen(false); setModalOpen(true); }} style={styles.btn}>Editar</button>
+                                        <button onClick={() => setViewModalOpen(false)} style={styles.btnAlt}>Cerrar</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </animated.div>
+            ))}
         </div>
     );
 }
@@ -81,7 +123,8 @@ const styles = {
     moduleHeader: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 16,
     },
     searchInput: {
         background: '#fff',
@@ -97,13 +140,35 @@ const styles = {
         color: '#fff',
         border: 'none',
         borderRadius: 6,
-        cursor: 'pointer'
+        cursor: 'pointer',
     },
     btnAlt: {
         padding: '8px 12px',
         background: '#ff0101ff',
+        color: '#fff',
         border: '1px solid #ddd',
         borderRadius: 6,
         cursor: 'pointer',
     },
+    modalOverlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+    },
+    modal: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 20,
+        maxWidth: 500,
+        width: '100%',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+    },
+
 };

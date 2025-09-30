@@ -1,6 +1,6 @@
 export default function Sidebar({ items, active, onChange }) {
     return (
-        <div style={styles.sidebar}>
+        <div className="sidebar" style={styles.sidebar}>
             <h3 style={{ margin: 0 }}>Brisas</h3>
             <nav style={{ marginTop: 12 }}>
                 {items.map(i => (
@@ -21,10 +21,16 @@ const styles = {
     sidebar: {
         width: 250,
         padding: 18,
-        borderRight: "1px solid #e6e9ef",
-        background: "#fff",
+        borderRight: "1px solid var(--border-color)",
+        background: "var(--bg-primary)",
         overflowY: "auto",
-        color: "#111",
+        color: "var(--text-primary)",
+        position: "fixed",
+        height: "100vh",
+        left: 0,
+        top: 0,
+        zIndex: 1000,
+        boxSizing: 'border-box',
     },
     navItem: {
         padding: '12px 8px',
@@ -32,12 +38,14 @@ const styles = {
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        marginBottom: 4
+        marginBottom: 4,
+        color: "var(--text-secondary)",
+        fontWeight: 500,
+        transition: 'background 0.2s, color 0.2s',
     },
     navItemActive: {
         background: "#e6f4ff",
         fontWeight: 700,
         color: "#2563eb",
     },
-
 };

@@ -1,4 +1,4 @@
-package com.brisas.las_brisas;
+package com.brisas.Las_Brisas;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

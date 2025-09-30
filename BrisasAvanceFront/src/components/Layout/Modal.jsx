@@ -14,6 +14,6 @@ export default function Modal({ open, title, onClose, children }) {
 
 const styles = {
   modalOverlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 },
-  modal: { width: 640, maxWidth: '95%', background: '#fff', padding: 18, borderRadius: 8 },
+  modal: { width: 640, maxWidth: '95%', background: 'var(--bg-primary)', color: 'var(--text-primary)', padding: 18, borderRadius: 8 },
   btnSmall: { padding: '6px 8px', background: 'red', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' },
 };

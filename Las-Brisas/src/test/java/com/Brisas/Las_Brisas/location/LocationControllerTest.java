@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.location;
+package com.brisas.Las_Brisas.location;
 
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.location.locationDTO;

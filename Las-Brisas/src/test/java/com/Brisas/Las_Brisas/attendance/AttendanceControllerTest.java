@@ -1,4 +1,4 @@
-package com.brisas.las_brisas.attendance;
+package com.brisas.Las_Brisas.attendance;
 
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.attendance.attendanceDTO;

@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/inicio";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
@@ -38,6 +41,7 @@ function App() {
   };
 
   return (
+<<<<<<< HEAD
     <Router>
       <Routes>
         {/* Página de login */}
@@ -84,6 +88,41 @@ function App() {
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
+=======
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          {/* Página de login */}
+          <Route
+            path="/login"
+            element={
+              user ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
+          />
+
+          {/* Dashboard */}
+          <Route
+            path="/dashboard"
+            element={
+              user ? (
+                <Dashboard user={user} onLogout={handleLogout} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          {/* Redirección por defecto */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+      <ToastContainer />
+    </ThemeProvider>
+>>>>>>> 2b4aff0b3571d6526333dae71b2448b65cc9f06e
   );
 }
 
