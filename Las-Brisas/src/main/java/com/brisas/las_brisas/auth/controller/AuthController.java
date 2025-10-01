@@ -19,9 +19,11 @@ import com.brisas.las_brisas.auth.DTO.AuthRequestDTO;
 import com.brisas.las_brisas.auth.DTO.LoginResponseDTO;
 import com.brisas.las_brisas.auth.DTO.RegisterRequestDTO;
 import com.brisas.las_brisas.auth.service.CustomUserDetailsService;
+import com.brisas.las_brisas.model.employee.employee;
 import com.brisas.las_brisas.model.user.rol;
 import com.brisas.las_brisas.model.user.user;
 import com.brisas.las_brisas.model.user.user.status;
+import com.brisas.las_brisas.repository.employee.Iemployee; 
 import com.brisas.las_brisas.repository.user.Irol;
 import com.brisas.las_brisas.repository.user.Iuser;
 import com.brisas.las_brisas.security.JwtService;
@@ -33,58 +35,70 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authManager;
-    private final CustomUserDetailsService userDetailsService;
-    private final JwtService jwtService;
-    private final Iuser usuarioRepo;
-    private final Irol rolRepo;
-    private final PasswordEncoder encoder;
+        private final AuthenticationManager authManager;
+        private final CustomUserDetailsService userDetailsService;
+        private final JwtService jwtService;
+        private final Iuser usuarioRepo;
+        private final Irol rolRepo;
+        private final PasswordEncoder encoder;
+        private final Iemployee employeeRepo; 
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody AuthRequestDTO req) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+        @PostMapping("/login")
+        public ResponseEntity<LoginResponseDTO> login(@RequestBody AuthRequestDTO req) {
+                authManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
 
-        com.brisas.las_brisas.model.user.user usuario = usuarioRepo.findByEmail(req.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                user usuario = usuarioRepo.findByEmail(req.getEmail())
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(req.getEmail());
-        String token = jwtService.generateToken(userDetails);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(req.getEmail());
+                String token = jwtService.generateToken(userDetails);
 
-        List<String> roles = usuario.getRoles()
-                .stream()
-                .map(r -> r.getName()) 
-                .toList();
+                List<String> roles = usuario.getRoles()
+                                .stream()
+                                .map(r -> r.getName())
+                                .toList();
 
-        LoginResponseDTO response = new LoginResponseDTO(
-                token,
-                usuario.getEmail(),
-                usuario.getUsername(),
-                roles);
+                LoginResponseDTO response = new LoginResponseDTO(
+                                token,
+                                usuario.getEmail(),
+                                usuario.getUsername(),
+                                roles);
 
-        return ResponseEntity.ok(response);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDTO req) {
-        if (usuarioRepo.findByEmail(req.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("El email ya está registrado.");
+                return ResponseEntity.ok(response);
         }
 
-        rol rol = rolRepo.findByName(req.getRol().toUpperCase())
-                .orElseThrow(() -> new RuntimeException("Rol no existe"));
+        @PreAuthorize("hasRole('ADMIN')")
+        @PostMapping("/register")
+        public ResponseEntity<String> register(@RequestBody RegisterRequestDTO req) {
+                if (usuarioRepo.findByEmail(req.getEmail()).isPresent()) {
+                        return ResponseEntity.badRequest().body("El email ya está registrado.");
+                }
 
-        user nuevo = user.builder()
-                .username(req.getUsername())
-                .email(req.getEmail())
-                .password(encoder.encode(req.getPassword()))
-                .status(status.active)
-                .createdAt(LocalDateTime.now())
-                .roles(Set.of(rol))
-                .build();
+                rol rol = rolRepo.findByName(req.getRol().toUpperCase())
+                                .orElseThrow(() -> new RuntimeException("Rol no existe"));
 
-        usuarioRepo.save(nuevo);
-        return ResponseEntity.ok("Usuario registrado con rol: " + rol.getName());
-    }
+                user nuevo = user.builder()
+                                .username(req.getUsername())
+                                .email(req.getEmail())
+                                .password(encoder.encode(req.getPassword()))
+                                .status(status.active)
+                                .createdAt(LocalDateTime.now())
+                                .roles(Set.of(rol))
+                                .build();
+
+                usuarioRepo.save(nuevo);
+
+                employee nuevoEmpleado = employee.builder()
+                                .firstName(req.getUsername())
+                                .lastName("")
+                                .email(req.getEmail())
+                                .createdAt(LocalDateTime.now())
+                                .user(nuevo) 
+                                .build();
+
+                employeeRepo.save(nuevoEmpleado);
+
+                return ResponseEntity.ok("Usuario y empleado registrados con rol: " + rol.getName());
+        }
 }
