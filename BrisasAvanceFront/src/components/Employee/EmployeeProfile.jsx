@@ -82,6 +82,7 @@ export default function EmployeeProfile() {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     loadProfile();
@@ -112,7 +113,35 @@ export default function EmployeeProfile() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.firstName || formData.firstName.trim().length < 2) {
+      newErrors.firstName = "El nombre es obligatorio y debe tener al menos 2 caracteres.";
+    }
+
+    if (!formData.lastName || formData.lastName.trim().length < 2) {
+      newErrors.lastName = "El apellido es obligatorio y debe tener al menos 2 caracteres.";
+    }
+
+    const phoneRegex = /^\+?[0-9\s\-\(\)]{7,15}$/;
+    if (!formData.phone || !phoneRegex.test(formData.phone)) {
+      newErrors.phone = "Debe ingresar un número de teléfono válido.";
+    }
+
+    if (!formData.address || formData.address.trim().length < 5) {
+      newErrors.address = "La dirección es obligatoria y debe tener al menos 5 caracteres.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSave = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const updated = await api.updateMyProfile(formData);
       setProfile(updated);
@@ -148,16 +177,40 @@ export default function EmployeeProfile() {
           {editMode ? (
             <>
               <label>Nombre:</label>
-              <input name="firstName" value={formData.firstName} onChange={handleChange} />
+              <input
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                style={{ border: errors.firstName ? "1px solid red" : "1px solid #ccc" }}
+              />
+              {errors.firstName && <span style={{ color: "red", fontSize: "12px" }}>{errors.firstName}</span>}
 
               <label>Apellido:</label>
-              <input name="lastName" value={formData.lastName} onChange={handleChange} />
+              <input
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                style={{ border: errors.lastName ? "1px solid red" : "1px solid #ccc" }}
+              />
+              {errors.lastName && <span style={{ color: "red", fontSize: "12px" }}>{errors.lastName}</span>}
 
               <label>Teléfono:</label>
-              <input name="phone" value={formData.phone} onChange={handleChange} />
+              <input
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                style={{ border: errors.phone ? "1px solid red" : "1px solid #ccc" }}
+              />
+              {errors.phone && <span style={{ color: "red", fontSize: "12px" }}>{errors.phone}</span>}
 
               <label>Dirección:</label>
-              <input name="address" value={formData.address} onChange={handleChange} />
+              <input
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                style={{ border: errors.address ? "1px solid red" : "1px solid #ccc" }}
+              />
+              {errors.address && <span style={{ color: "red", fontSize: "12px" }}>{errors.address}</span>}
 
               <label>Estado civil:</label>
               <select name="civilStatus" value={formData.civilStatus} onChange={handleChange}>
@@ -185,7 +238,7 @@ export default function EmployeeProfile() {
               <div style={styles.detailItem}><FaPhone style={styles.icon} /><strong>Teléfono:</strong> {profile?.phone}</div>
               <div style={styles.detailItem}><FaUser style={styles.icon} /><strong>Estado Civil:</strong> {profile?.civilStatus}</div>
               <div style={styles.detailItem}><FaMapMarkerAlt style={styles.icon} /><strong>Dirección:</strong> {profile?.address}</div>
-              <button onClick={() => setEditMode(true)}>Editar información personal</button>
+              <button onClick={() => { setEditMode(true); setErrors({}); }}>Editar información personal</button>
             </>
           )}
 

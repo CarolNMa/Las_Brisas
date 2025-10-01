@@ -11,6 +11,7 @@ export default function PositionsModule() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingPosition, setEditingPosition] = useState(null);
     const [form, setForm] = useState({ namePost: "", description: "", jobFunction: "", requirements: "" });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadData();
@@ -45,10 +46,26 @@ export default function PositionsModule() {
     const handleOpenModal = (position = null) => {
         setEditingPosition(position);
         setForm(position || { namePost: "", description: "", jobFunction: "", requirements: "" });
+        setErrors({});
         setModalOpen(true);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!form.namePost || form.namePost.trim().length < 2) {
+            newErrors.namePost = "El nombre de la posición es obligatorio y debe tener al menos 2 caracteres.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             if (editingPosition) {
                 await ApiService.updatePosition(editingPosition.id, form);
@@ -122,8 +139,9 @@ export default function PositionsModule() {
                                 type="text"
                                 value={form.namePost}
                                 onChange={(e) => setForm({ ...form, namePost: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.namePost ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.namePost && <span style={{ color: "red", fontSize: "12px" }}>{errors.namePost}</span>}
                         </label>
                         <label>
                             Descripción:

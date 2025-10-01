@@ -9,9 +9,15 @@ import com.brisas.las_brisas.repository.contract.Icontract;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +75,32 @@ public class ContractService {
         }
     }
 
+    public ResponseDTO<contractDTO> saveWithDocument(contractDTO dto, MultipartFile document) {
+        try {
+            contract entity = convertToEntity(dto);
+
+            if (document != null && !document.isEmpty()) {
+                Path uploadDir = Paths.get("uploads/contracts");
+                if (!Files.exists(uploadDir)) {
+                    Files.createDirectories(uploadDir);
+                }
+
+                String fileName = UUID.randomUUID() + "_" + document.getOriginalFilename();
+                Path filePath = uploadDir.resolve(fileName);
+                Files.copy(document.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                entity.setDocumentoUrl("uploads/contracts/" + fileName);
+            }
+
+            contract saved = icontract.save(entity);
+            return new ResponseDTO<>("Contrato guardado correctamente", "200", convertToDTO(saved));
+
+        } catch (Exception e) {
+            return new ResponseDTO<>("Error al guardar contrato: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
+        }
+    }
+
     private contract convertToEntity(contractDTO dto) {
         employee e = new employee();
         e.setId(dto.getEmployee());
@@ -86,17 +118,17 @@ public class ContractService {
         } catch (Exception s) {
             statusEnum = contract.status.activo;
         }
-
         return contract.builder()
                 .id(dto.getId())
                 .fechaInicio(dto.getDateStart())
                 .fechaFin(dto.getDateEnd())
-                .fechaRenovacion(dto.getDateUpdate())
+                .fechaRenovacion(dto.getDateUpdate() != null ? dto.getDateUpdate() : dto.getDateEnd())
                 .documentoUrl(dto.getDocumentUrl())
                 .type(typeEnum)
                 .status(statusEnum)
                 .employee(e)
                 .build();
+
     }
 
     public contractDTO convertToDTO(contract entity) {

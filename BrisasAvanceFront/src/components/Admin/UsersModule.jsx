@@ -18,6 +18,7 @@ export default function UsersModule() {
         status: "ACTIVE",
         rol: "", // importante: este nombre coincide con RegisterRequestDTO
     });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadData();
@@ -61,10 +62,39 @@ export default function UsersModule() {
                 rol: "",
             }
         );
+        setErrors({});
         setModalOpen(true);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!form.username || form.username.trim().length < 3) {
+            newErrors.username = "El nombre de usuario es obligatorio y debe tener al menos 3 caracteres.";
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!form.email || !emailRegex.test(form.email)) {
+            newErrors.email = "Debe ingresar un correo electrónico válido.";
+        }
+
+        if (!editing && (!form.password || form.password.length < 6)) {
+            newErrors.password = "La contraseña es obligatoria y debe tener al menos 6 caracteres.";
+        }
+
+        if (!form.rol) {
+            newErrors.rol = "Debe seleccionar un rol.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             if (editing) {
                 // Editar usuario existente
@@ -72,7 +102,7 @@ export default function UsersModule() {
                 setUsers(users.map((u) => (u.idUser === editing.idUser ? { ...u, ...form } : u)));
             } else {
                 // Registrar nuevo usuario vía auth/register
-                const newUser = await ApiService.registerUser(form);
+                const newUser = await ApiService.registerUser({ ...form, status: "ACTIVE" });
                 setUsers([...users, newUser.data || newUser]);
             }
             setModalOpen(false);
@@ -142,50 +172,111 @@ export default function UsersModule() {
                     onClose={() => setModalOpen(false)}
                 >
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        <input
-                            placeholder="Usuario"
-                            value={form.username}
-                            onChange={(e) => setForm({ ...form, username: e.target.value })}
-                        />
-                        <input
-                            type="email"
-                            placeholder="Correo"
-                            value={form.email}
-                            onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        />
+                        <div>
+                            <input
+                                placeholder="Usuario"
+                                value={form.username}
+                                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                                style={{
+                                    width: "100%",
+                                    padding: 6,
+                                    border: errors.username ? "1px solid red" : "1px solid #ddd",
+                                    borderRadius: 4,
+                                }}
+                            />
+                            {errors.username && (
+                                <span style={{ color: "red", fontSize: "12px" }}>{errors.username}</span>
+                            )}
+                        </div>
+
+                        <div>
+                            <input
+                                type="email"
+                                placeholder="Correo"
+                                value={form.email}
+                                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                style={{
+                                    width: "100%",
+                                    padding: 6,
+                                    border: errors.email ? "1px solid red" : "1px solid #ddd",
+                                    borderRadius: 4,
+                                }}
+                            />
+                            {errors.email && (
+                                <span style={{ color: "red", fontSize: "12px" }}>{errors.email}</span>
+                            )}
+                        </div>
 
                         {/* Contraseña solo en nuevo */}
                         {!editing && (
-                            <input
-                                type="password"
-                                placeholder="Contraseña"
-                                value={form.password}
-                                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                            />
+                            <div>
+                                <input
+                                    type="password"
+                                    placeholder="Contraseña"
+                                    value={form.password}
+                                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                                    style={{
+                                        width: "100%",
+                                        padding: 6,
+                                        border: errors.password ? "1px solid red" : "1px solid #ddd",
+                                        borderRadius: 4,
+                                    }}
+                                />
+                                {errors.password && (
+                                    <span style={{ color: "red", fontSize: "12px" }}>{errors.password}</span>
+                                )}
+                            </div>
                         )}
 
                         {/* Roles */}
-                        <select
-                            value={form.rol}
-                            onChange={(e) => setForm({ ...form, rol: e.target.value })}
-                            style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
-                        >
-                            <option value="">-- Selecciona un rol --</option>
-                            {roles.map((r) => (
-                                <option key={r.id} value={r.name}>
-                                    {r.name}
-                                </option>
-                            ))}
-                        </select>
+                        <div>
+                            <select
+                                value={form.rol}
+                                onChange={(e) => setForm({ ...form, rol: e.target.value })}
+                                style={{
+                                    width: "100%",
+                                    padding: 6,
+                                    border: errors.rol ? "1px solid red" : "1px solid #ddd",
+                                    borderRadius: 4,
+                                }}
+                            >
+                                <option value="">-- Selecciona un rol --</option>
+                                {roles.map((r) => (
+                                    <option key={r.id} value={r.name}>
+                                        {r.name}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.rol && (
+                                <span style={{ color: "red", fontSize: "12px" }}>{errors.rol}</span>
+                            )}
+                        </div>
 
-                        <select
-                            value={form.status}
-                            onChange={(e) => setForm({ ...form, status: e.target.value })}
-                            style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
-                        >
-                            <option value="ACTIVE">Activo</option>
-                            <option value="INACTIVE">Inactivo</option>
-                        </select>
+                        {/* Estado */}
+                        {editing ? (
+                            <div>
+                                <select
+                                    value={form.status}
+                                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                                    style={{
+                                        width: "100%",
+                                        padding: 6,
+                                        border: "1px solid #ddd",
+                                        borderRadius: 4,
+                                    }}
+                                >
+                                    <option value="ACTIVE">Activo</option>
+                                    <option value="INACTIVE">Inactivo</option>
+                                </select>
+                            </div>
+                        ) : (
+                            <div>
+                                <input type="hidden" value="ACTIVE" />
+                                <p style={{ margin: 0, fontSize: "14px", color: "#555" }}>
+                                    Estado: <strong>Activo</strong>
+                                </p>
+                            </div>
+                        )}
 
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                             <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>

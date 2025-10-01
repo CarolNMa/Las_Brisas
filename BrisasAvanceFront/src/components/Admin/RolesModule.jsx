@@ -11,6 +11,7 @@ export default function RolesModule() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingRole, setEditingRole] = useState(null);
     const [form, setForm] = useState({ name: "", description: "" });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadData();
@@ -45,10 +46,26 @@ export default function RolesModule() {
     const handleOpenModal = (role = null) => {
         setEditingRole(role);
         setForm(role || { name: "", description: "" });
+        setErrors({});
         setModalOpen(true);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!form.name || form.name.trim().length < 2) {
+            newErrors.name = "El nombre del rol es obligatorio y debe tener al menos 2 caracteres.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             if (editingRole) {
                 await ApiService.updateRole(editingRole.id, form);
@@ -120,8 +137,9 @@ export default function RolesModule() {
                                 type="text"
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.name ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.name && <span style={{ color: "red", fontSize: "12px" }}>{errors.name}</span>}
                         </label>
                         <label>
                             Descripción:

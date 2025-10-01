@@ -25,6 +25,7 @@ export default function EmployeesModule() {
         civilStatus: "single",
         address: "",
     });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadData();
@@ -70,10 +71,56 @@ export default function EmployeesModule() {
                 address: "",
             }
         );
+        setErrors({});
         setModalOpen(true);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!form.userId) {
+            newErrors.userId = "Debe seleccionar un usuario.";
+        }
+
+        if (!form.firstName || form.firstName.trim().length < 2) {
+            newErrors.firstName = "El nombre es obligatorio y debe tener al menos 2 caracteres.";
+        }
+
+        if (!form.lastName || form.lastName.trim().length < 2) {
+            newErrors.lastName = "El apellido es obligatorio y debe tener al menos 2 caracteres.";
+        }
+
+        if (!form.documentNumber || form.documentNumber.trim().length < 5) {
+            newErrors.documentNumber = "El número de documento es obligatorio y debe tener al menos 5 caracteres.";
+        }
+
+        if (!form.birthdate) {
+            newErrors.birthdate = "La fecha de nacimiento es obligatoria.";
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!form.email || !emailRegex.test(form.email)) {
+            newErrors.email = "Debe ingresar un correo electrónico válido.";
+        }
+
+        const phoneRegex = /^\+?[0-9\s\-\(\)]{7,15}$/;
+        if (!form.phone || !phoneRegex.test(form.phone)) {
+            newErrors.phone = "Debe ingresar un número de teléfono válido.";
+        }
+
+        if (!form.address || form.address.trim().length < 5) {
+            newErrors.address = "La dirección es obligatoria y debe tener al menos 5 caracteres.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         if (editing) {
             await ApiService.updateEmployee(editing.id, form);
             setEmployees(employees.map((e) => (e.id === editing.id ? { ...e, ...form } : e)));
@@ -147,29 +194,40 @@ export default function EmployeesModule() {
                     onClose={() => setModalOpen(false)}
                 >
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        <select
-                            value={form.userId}
-                            onChange={(e) => setForm({ ...form, userId: parseInt(e.target.value) })}
-                            style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
-                        >
-                            <option value="">-- Selecciona un usuario --</option>
-                            {users.map((u) => (
-                                <option key={u.idUser} value={u.idUser}>
-                                    {u.username} ({u.email})
-                                </option>
-                            ))}
-                        </select>
+                        <div>
+                            <select
+                                value={form.userId}
+                                onChange={(e) => setForm({ ...form, userId: parseInt(e.target.value) })}
+                                style={{ width: "100%", padding: 6, border: errors.userId ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                            >
+                                <option value="">-- Selecciona un usuario --</option>
+                                {users.map((u) => (
+                                    <option key={u.idUser} value={u.idUser}>
+                                        {u.username} ({u.email})
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.userId && <span style={{ color: "red", fontSize: "12px" }}>{errors.userId}</span>}
+                        </div>
 
-                        <input
-                            placeholder="Nombre"
-                            value={form.firstName}
-                            onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                        />
-                        <input
-                            placeholder="Apellido"
-                            value={form.lastName}
-                            onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                        />
+                        <div>
+                            <input
+                                placeholder="Nombre"
+                                value={form.firstName}
+                                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                                style={{ width: "100%", padding: 6, border: errors.firstName ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                            />
+                            {errors.firstName && <span style={{ color: "red", fontSize: "12px" }}>{errors.firstName}</span>}
+                        </div>
+                        <div>
+                            <input
+                                placeholder="Apellido"
+                                value={form.lastName}
+                                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                                style={{ width: "100%", padding: 6, border: errors.lastName ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                            />
+                            {errors.lastName && <span style={{ color: "red", fontSize: "12px" }}>{errors.lastName}</span>}
+                        </div>
                         <select
                             value={form.tipoDocumento}
                             onChange={(e) => setForm({ ...form, tipoDocumento: e.target.value })}
@@ -180,16 +238,24 @@ export default function EmployeesModule() {
                             <option value="dni">DNI</option>
                             <option value="pasaporte">Pasaporte</option>
                         </select>
-                        <input
-                            placeholder="Número Documento"
-                            value={form.documentNumber}
-                            onChange={(e) => setForm({ ...form, documentNumber: e.target.value })}
-                        />
-                        <input
-                            type="date"
-                            value={form.birthdate}
-                            onChange={(e) => setForm({ ...form, birthdate: e.target.value })}
-                        />
+                        <div>
+                            <input
+                                placeholder="Número Documento"
+                                value={form.documentNumber}
+                                onChange={(e) => setForm({ ...form, documentNumber: e.target.value })}
+                                style={{ width: "100%", padding: 6, border: errors.documentNumber ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                            />
+                            {errors.documentNumber && <span style={{ color: "red", fontSize: "12px" }}>{errors.documentNumber}</span>}
+                        </div>
+                        <div>
+                            <input
+                                type="date"
+                                value={form.birthdate}
+                                onChange={(e) => setForm({ ...form, birthdate: e.target.value })}
+                                style={{ width: "100%", padding: 6, border: errors.birthdate ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                            />
+                            {errors.birthdate && <span style={{ color: "red", fontSize: "12px" }}>{errors.birthdate}</span>}
+                        </div>
                         <input
                             placeholder="Foto perfil"
                             value={form.photoProfile}
@@ -204,17 +270,25 @@ export default function EmployeesModule() {
                             <option value="female">Femenino</option>
                             <option value="other">Otro</option>
                         </select>
-                        <input
-                            placeholder="Teléfono"
-                            value={form.phone}
-                            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                        />
-                        <input
-                            type="email"
-                            placeholder="Correo"
-                            value={form.email}
-                            onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        />
+                        <div>
+                            <input
+                                placeholder="Teléfono"
+                                value={form.phone}
+                                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                style={{ width: "100%", padding: 6, border: errors.phone ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                            />
+                            {errors.phone && <span style={{ color: "red", fontSize: "12px" }}>{errors.phone}</span>}
+                        </div>
+                        <div>
+                            <input
+                                type="email"
+                                placeholder="Correo"
+                                value={form.email}
+                                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                style={{ width: "100%", padding: 6, border: errors.email ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                            />
+                            {errors.email && <span style={{ color: "red", fontSize: "12px" }}>{errors.email}</span>}
+                        </div>
                         <select
                             value={form.civilStatus}
                             onChange={(e) => setForm({ ...form, civilStatus: e.target.value })}
@@ -225,11 +299,15 @@ export default function EmployeesModule() {
                             <option value="divorced">Divorciado</option>
                             <option value="widowed">Viudo</option>
                         </select>
-                        <input
-                            placeholder="Dirección"
-                            value={form.address}
-                            onChange={(e) => setForm({ ...form, address: e.target.value })}
-                        />
+                        <div>
+                            <input
+                                placeholder="Dirección"
+                                value={form.address}
+                                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                                style={{ width: "100%", padding: 6, border: errors.address ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                            />
+                            {errors.address && <span style={{ color: "red", fontSize: "12px" }}>{errors.address}</span>}
+                        </div>
 
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                             <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>

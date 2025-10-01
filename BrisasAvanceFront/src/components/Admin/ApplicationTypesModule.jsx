@@ -10,7 +10,8 @@ export default function ApplicationTypesModule() {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingType, setEditingType] = useState(null);
-    const [form, setForm] = useState({ name: "" });
+    const [form, setForm] = useState({ name: "", required: false });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadData();
@@ -22,7 +23,7 @@ export default function ApplicationTypesModule() {
             const data = await ApiService.getAllApplicationTypes();
             setTypes(data.data || data);
         } catch (err) {
-            console.error("Error cargando tipos de solicitud:", err);
+            console.error("Error cargando tipos:", err);
         } finally {
             setLoading(false);
         }
@@ -34,21 +35,32 @@ export default function ApplicationTypesModule() {
             await ApiService.deleteApplicationType(id);
             setTypes(types.filter((t) => t.id !== id));
         } catch (err) {
-            console.error("Error eliminando tipo de solicitud:", err);
+            console.error("Error eliminando tipo:", err);
         }
     };
 
     const handleExport = () => {
-        exportCSV("tipos_solicitud.csv", types);
+        exportCSV("tipos_solicitudes.csv", types);
     };
 
     const handleOpenModal = (type = null) => {
         setEditingType(type);
-        setForm(type || { name: "" });
+        setForm(type || { name: "", required: false });
+        setErrors({});
         setModalOpen(true);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (!form.name || form.name.trim().length < 3) {
+            newErrors.name = "El nombre es obligatorio y debe tener al menos 3 caracteres.";
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) return;
         try {
             if (editingType) {
                 await ApiService.updateApplicationType(editingType.id, form);
@@ -59,11 +71,11 @@ export default function ApplicationTypesModule() {
             }
             setModalOpen(false);
         } catch (err) {
-            console.error("Error guardando tipo de solicitud:", err);
+            console.error("Error guardando tipo:", err);
         }
     };
 
-    if (loading) return <p>Cargando tipos de solicitud...</p>;
+    if (loading) return <p>Cargando tipos...</p>;
 
     return (
         <div style={styles.card}>
@@ -85,6 +97,7 @@ export default function ApplicationTypesModule() {
                 <thead>
                     <tr>
                         <th style={styles.th}>Nombre</th>
+                        <th style={styles.th}>Requiere Documento</th>
                         <th style={styles.th}>Acciones</th>
                     </tr>
                 </thead>
@@ -92,19 +105,17 @@ export default function ApplicationTypesModule() {
                     {types.map((t) => (
                         <tr key={t.id} style={styles.tr}>
                             <td style={styles.td}>{t.name}</td>
+                            <td style={styles.td}>{t.required ? "Sí" : "No"}</td>
                             <td style={styles.td}>
-                                <button style={styles.btnSmall} onClick={() => handleOpenModal(t)}>
-                                    Editar
-                                </button>{" "}
-                                <button style={styles.btnAlt} onClick={() => handleDelete(t.id)}>
-                                    Eliminar
-                                </button>
+                                <button style={styles.btnSmall} onClick={() => handleOpenModal(t)}>Editar</button>{" "}
+                                <button style={styles.btnAlt} onClick={() => handleDelete(t.id)}>Eliminar</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
 
+            {/* Modal */}
             {modalOpen && (
                 <Modal
                     open={modalOpen}
@@ -118,16 +129,26 @@ export default function ApplicationTypesModule() {
                                 type="text"
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{
+                                    width: "100%",
+                                    padding: 6,
+                                    border: errors.name ? "1px solid red" : "1px solid #ddd",
+                                    borderRadius: 4,
+                                }}
                             />
+                            {errors.name && <span style={{ color: "red", fontSize: "12px" }}>{errors.name}</span>}
+                        </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={form.required}
+                                onChange={(e) => setForm({ ...form, required: e.target.checked })}
+                            />
+                            Requiere documento adjunto
                         </label>
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
-                            <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>
-                                Cancelar
-                            </button>
-                            <button style={styles.btn} onClick={handleSave}>
-                                Guardar
-                            </button>
+                            <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>Cancelar</button>
+                            <button style={styles.btn} onClick={handleSave}>Guardar</button>
                         </div>
                     </div>
                 </Modal>

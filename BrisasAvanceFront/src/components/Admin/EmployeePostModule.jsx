@@ -11,6 +11,7 @@ export default function EmployeePostModule() {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [form, setForm] = useState({ employeeId: "", postId: "" });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadData();
@@ -45,10 +46,30 @@ export default function EmployeePostModule() {
 
     const handleOpenModal = () => {
         setForm({ employeeId: "", postId: "" });
+        setErrors({});
         setModalOpen(true);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!form.employeeId) {
+            newErrors.employeeId = "Debe seleccionar un empleado.";
+        }
+
+        if (!form.postId) {
+            newErrors.postId = "Debe seleccionar un cargo.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             const newRel = await ApiService.createEmployeePost(form);
             setRelations([...relations, newRel.data || newRel]);
@@ -107,7 +128,7 @@ export default function EmployeePostModule() {
                             <select
                                 value={form.employeeId}
                                 onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
-                                style={{ width: "100%", padding: 6 }}
+                                style={{ width: "100%", padding: 6, border: errors.employeeId ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             >
                                 <option value="">-- Seleccionar empleado --</option>
                                 {employees.map((emp) => (
@@ -116,6 +137,7 @@ export default function EmployeePostModule() {
                                     </option>
                                 ))}
                             </select>
+                            {errors.employeeId && <span style={{ color: "red", fontSize: "12px" }}>{errors.employeeId}</span>}
                         </label>
 
                         <label>
@@ -123,7 +145,7 @@ export default function EmployeePostModule() {
                             <select
                                 value={form.postId}
                                 onChange={(e) => setForm({ ...form, postId: e.target.value })}
-                                style={{ width: "100%", padding: 6 }}
+                                style={{ width: "100%", padding: 6, border: errors.postId ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             >
                                 <option value="">-- Seleccionar cargo --</option>
                                 {positions.map((pos) => (
@@ -132,6 +154,7 @@ export default function EmployeePostModule() {
                                     </option>
                                 ))}
                             </select>
+                            {errors.postId && <span style={{ color: "red", fontSize: "12px" }}>{errors.postId}</span>}
                         </label>
 
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>

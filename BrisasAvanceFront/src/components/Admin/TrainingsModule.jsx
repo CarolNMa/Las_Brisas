@@ -11,6 +11,7 @@ export default function TrainingsModule() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editingTraining, setEditingTraining] = useState(null);
     const [form, setForm] = useState({ title: "", date: "", type: "induction", status: "pendiente" });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadData();
@@ -45,10 +46,37 @@ export default function TrainingsModule() {
     const handleOpenModal = (training = null) => {
         setEditingTraining(training);
         setForm(training || { title: "", date: "", type: "induction", status: "pendiente" });
+        setErrors({});
         setModalOpen(true);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!form.title || form.title.trim().length < 3) {
+            newErrors.title = "El título es obligatorio y debe tener al menos 3 caracteres.";
+        }
+
+        if (!form.date) {
+            newErrors.date = "La fecha es obligatoria.";
+        } else {
+            const selectedDate = new Date(form.date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selectedDate < today) {
+                newErrors.date = "La fecha no puede ser anterior a hoy.";
+            }
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             if (editingTraining) {
                 await ApiService.updateTraining(editingTraining.id, form);
@@ -124,8 +152,9 @@ export default function TrainingsModule() {
                                 type="text"
                                 value={form.title}
                                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.title ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.title && <span style={{ color: "red", fontSize: "12px" }}>{errors.title}</span>}
                         </label>
                         <label>
                             Fecha:
@@ -133,8 +162,9 @@ export default function TrainingsModule() {
                                 type="date"
                                 value={form.date}
                                 onChange={(e) => setForm({ ...form, date: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.date ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.date && <span style={{ color: "red", fontSize: "12px" }}>{errors.date}</span>}
                         </label>
                         <label>
                             Tipo:

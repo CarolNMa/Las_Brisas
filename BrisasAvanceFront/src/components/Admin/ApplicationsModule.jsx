@@ -2,15 +2,10 @@ import { useEffect, useState } from "react";
 import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
 import { exportCSV } from "../Comunes/Utils/exportCSV";
-import Modal from "../Layout/Modal";
 
 export default function ApplicationsModule() {
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const [modalOpen, setModalOpen] = useState(false);
-    const [editingApplication, setEditingApplication] = useState(null);
-    const [form, setForm] = useState({ status: "Pendiente" });
 
     useEffect(() => {
         loadData();
@@ -28,6 +23,26 @@ export default function ApplicationsModule() {
         }
     };
 
+    const handleApprove = async (id) => {
+        if (!window.confirm("¿Aprobar esta solicitud?")) return;
+        try {
+            await ApiService.approveApplication(id);
+            await loadData();
+        } catch (err) {
+            console.error("Error aprobando solicitud:", err);
+        }
+    };
+
+    const handleReject = async (id) => {
+        if (!window.confirm("¿Rechazar esta solicitud?")) return;
+        try {
+            await ApiService.rejectApplication(id);
+            await loadData();
+        } catch (err) {
+            console.error("Error rechazando solicitud:", err);
+        }
+    };
+
     const handleDelete = async (id) => {
         if (!window.confirm("¿Seguro que deseas eliminar esta solicitud?")) return;
         try {
@@ -40,24 +55,6 @@ export default function ApplicationsModule() {
 
     const handleExport = () => {
         exportCSV("solicitudes.csv", applications);
-    };
-
-    const handleOpenModal = (application = null) => {
-        setEditingApplication(application);
-        setForm({ status: application?.status || "Pendiente" });
-        setModalOpen(true);
-    };
-
-    const handleSave = async () => {
-        try {
-            if (editingApplication) {
-                await ApiService.updateApplication(editingApplication.id, { ...editingApplication, status: form.status });
-                setApplications(applications.map((a) => (a.id === editingApplication.id ? { ...a, status: form.status } : a)));
-            }
-            setModalOpen(false);
-        } catch (err) {
-            console.error("Error guardando solicitud:", err);
-        }
     };
 
     if (loading) return <p>Cargando solicitudes...</p>;
@@ -80,61 +77,35 @@ export default function ApplicationsModule() {
                     <tr>
                         <th style={styles.th}>Empleado</th>
                         <th style={styles.th}>Tipo</th>
-                        <th style={styles.th}>Razón</th>
+                        <th style={styles.th}>Fecha Inicio</th>
+                        <th style={styles.th}>Fecha Fin</th>
+                        <th style={styles.th}>Motivo</th>
                         <th style={styles.th}>Estado</th>
                         <th style={styles.th}>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {applications.map((a) => (
-                        <tr key={a.id} style={styles.tr}>
+                    {applications.map((a, idx) => (
+                        <tr key={a.id || `app-${idx}`} style={styles.tr}>
                             <td style={styles.td}>{a.employee?.firstName} {a.employee?.lastName}</td>
                             <td style={styles.td}>{a.application_type?.name}</td>
+                            <td style={styles.td}>{a.dateStart}</td>
+                            <td style={styles.td}>{a.dateEnd}</td>
                             <td style={styles.td}>{a.reason}</td>
                             <td style={styles.td}>{a.status}</td>
                             <td style={styles.td}>
-                                <button style={styles.btnSmall} onClick={() => handleOpenModal(a)}>
-                                    Editar Estado
-                                </button>{" "}
-                                <button style={styles.btnAlt} onClick={() => handleDelete(a.id)}>
-                                    Eliminar
-                                </button>
+                                {a.status === "Pendiente" && (
+                                    <>
+                                        <button style={styles.btnSmall} onClick={() => handleApprove(a.id)}>Aprobar</button>{" "}
+                                        <button style={styles.btnAlt} onClick={() => handleReject(a.id)}>Rechazar</button>{" "}
+                                    </>
+                                )}
+                                <button style={styles.btnAlt} onClick={() => handleDelete(a.id)}>Eliminar</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-
-            {modalOpen && (
-                <Modal
-                    open={modalOpen}
-                    title="Editar Estado de Solicitud"
-                    onClose={() => setModalOpen(false)}
-                >
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                        <label>
-                            Estado:
-                            <select
-                                value={form.status}
-                                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
-                            >
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="Aprobado">Aprobado</option>
-                                <option value="Rechazado">Rechazado</option>
-                            </select>
-                        </label>
-                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
-                            <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>
-                                Cancelar
-                            </button>
-                            <button style={styles.btn} onClick={handleSave}>
-                                Guardar
-                            </button>
-                        </div>
-                    </div>
-                </Modal>
-            )}
         </div>
     );
 }

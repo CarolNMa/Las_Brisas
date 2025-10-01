@@ -3,8 +3,26 @@ import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
 import { exportCSV } from "../Comunes/Utils/exportCSV";
 import Modal from "../Layout/Modal";
+import { saveAs } from "file-saver";
+
 
 export default function ContractsModule() {
+    const handleDownload = async (filename) => {
+        try {
+            const blob = await ApiService.downloadContract(filename);
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            link.click();
+
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Error al descargar contrato:", err);
+        }
+    };
+
     const [contracts, setContracts] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,6 +36,7 @@ export default function ContractsModule() {
         type: "practicas",
         status: "activo"
     });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadData();
@@ -66,25 +85,61 @@ export default function ContractsModule() {
                 }
                 : { employee: "", dateStart: "", dateEnd: "", type: "practicas", status: "activo" }
         );
+        setErrors({});
         setModalOpen(true);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!form.employee || isNaN(parseInt(form.employee, 10))) {
+            newErrors.employee = "Debe seleccionar un empleado válido.";
+        }
+
+        if (!form.dateStart) {
+            newErrors.dateStart = "La fecha de inicio es obligatoria.";
+        }
+
+        if (!form.dateEnd) {
+            newErrors.dateEnd = "La fecha de fin es obligatoria.";
+        }
+
+        if (form.dateStart && form.dateEnd && new Date(form.dateStart) >= new Date(form.dateEnd)) {
+            newErrors.dateEnd = "La fecha de fin debe ser posterior a la fecha de inicio.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSave = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
+            const contractData = {
+                employee: parseInt(form.employee, 10),
+                dateStart: form.dateStart,
+                dateEnd: form.dateEnd,
+                type: form.type,
+                status: form.status,
+                document: form.document || undefined
+            };
             if (editingContract) {
-                await ApiService.updateContract(editingContract.id, form);
-                setContracts(
-                    contracts.map((c) => (c.id === editingContract.id ? { ...c, ...form } : c))
-                );
+                await ApiService.updateContract(editingContract.id, contractData);
             } else {
-                const newContract = await ApiService.createContract(form);
-                setContracts([...contracts, newContract]);
+                await ApiService.createContract(contractData);
             }
+            await loadData();
             setModalOpen(false);
         } catch (err) {
+            let msg = err?.message || "Error guardando contrato";
+            alert(msg);
             console.error("Error guardando contrato:", err);
         }
     };
+
 
     if (loading) return <p>Cargando contratos...</p>;
 
@@ -117,10 +172,10 @@ export default function ContractsModule() {
                     </tr>
                 </thead>
                 <tbody>
-                    {contracts.map((c) => {
+                    {contracts.map((c, idx) => {
                         const emp = employees.find((emp) => emp.id === c.employee);
                         return (
-                            <tr key={c.id} style={styles.tr}>
+                            <tr key={c.id || `contract-${idx}`} style={styles.tr}>
                                 <td style={styles.td}>
                                     {emp ? `${emp.firstName} ${emp.lastName}` : `ID: ${c.employee}`}
                                 </td>
@@ -129,15 +184,21 @@ export default function ContractsModule() {
                                 <td style={styles.td}>{c.type}</td>
                                 <td style={styles.td}>
                                     {c.documentUrl ? (
-                                        <a
-                                            href={`http://192.168.100.114:8085/${c.documentUrl}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            download
-                                            style={{ color: "blue", textDecoration: "underline" }}
+                                        <button
+                                            style={{
+                                                color: "blue",
+                                                textDecoration: "underline",
+                                                background: "none",
+                                                border: "none",
+                                                cursor: "pointer"
+                                            }}
+                                            onClick={() => {
+                                                const filename = c.documentUrl.split("/").pop();
+                                                handleDownload(filename);
+                                            }}
                                         >
                                             Descargar
-                                        </a>
+                                        </button>
                                     ) : (
                                         "No disponible"
                                     )}
@@ -171,7 +232,7 @@ export default function ContractsModule() {
                             <select
                                 value={form.employee}
                                 onChange={(e) => setForm({ ...form, employee: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.employee ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             >
                                 <option value="">-- Selecciona un empleado --</option>
                                 {employees.map((emp) => (
@@ -180,6 +241,7 @@ export default function ContractsModule() {
                                     </option>
                                 ))}
                             </select>
+                            {errors.employee && <span style={{ color: "red", fontSize: "12px" }}>{errors.employee}</span>}
                         </label>
                         <label>
                             Fecha Inicio:
@@ -187,8 +249,9 @@ export default function ContractsModule() {
                                 type="date"
                                 value={form.dateStart}
                                 onChange={(e) => setForm({ ...form, dateStart: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.dateStart ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.dateStart && <span style={{ color: "red", fontSize: "12px" }}>{errors.dateStart}</span>}
                         </label>
                         <label>
                             Fecha Fin:
@@ -196,8 +259,9 @@ export default function ContractsModule() {
                                 type="date"
                                 value={form.dateEnd}
                                 onChange={(e) => setForm({ ...form, dateEnd: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.dateEnd ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.dateEnd && <span style={{ color: "red", fontSize: "12px" }}>{errors.dateEnd}</span>}
                         </label>
                         <label>
                             Tipo:
@@ -223,6 +287,16 @@ export default function ContractsModule() {
                                 <option value="terminado">Terminado</option>
                             </select>
                         </label>
+
+                        <label>
+                            Documento:
+                            <input
+                                type="file"
+                                onChange={(e) => setForm({ ...form, document: e.target.files[0] })}
+                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                            />
+                        </label>
+
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
                             <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>
                                 Cancelar

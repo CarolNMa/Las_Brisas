@@ -1,6 +1,6 @@
 package com.brisas.las_brisas.DTO.contract;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.*;
 
@@ -12,9 +12,9 @@ import lombok.*;
 public class contractDTO {
 
     private int id;
-    private LocalDateTime dateStart;
-    private LocalDateTime dateEnd;
-    private LocalDateTime dateUpdate;
+    private LocalDate dateStart;
+    private LocalDate dateEnd;
+    private LocalDate dateUpdate;
     private String type;
     private String status;
     private String documentUrl;
