@@ -29,6 +29,11 @@ public class location {
 
     @Column(name = "address", nullable = false)
     private String address;
+
+    public Object getNombreUbicacion() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getNombreUbicacion'");
+    }
     
     
 }

@@ -4,12 +4,17 @@ import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.attendance.attendanceDTO;
 import com.brisas.las_brisas.model.attendance.attendance;
 import com.brisas.las_brisas.model.employee.employee;
+import com.brisas.las_brisas.model.user.user;
 import com.brisas.las_brisas.repository.attendance.Iattendance;
+import com.brisas.las_brisas.repository.employee.Iemployee;
+import com.brisas.las_brisas.repository.user.Iuser;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,9 +23,19 @@ import java.util.Optional;
 public class AttendanceService {
 
     private final Iattendance iattendance;
+    private final Iuser userRepo;
+    private final Iemployee employeeRepo;
 
     public List<attendance> getAll() {
         return iattendance.findAll();
+    }
+
+    public List<attendance> findByUserEmail(String email) {
+        return iattendance.findByEmployee_User_Email(email);
+    }
+
+    public List<attendance> findByEmployeeId(int employeeId) {
+        return iattendance.findByEmployee_Id(employeeId);
     }
 
     public Optional<attendance> findById(int id) {
@@ -64,6 +79,42 @@ public class AttendanceService {
         }
     }
 
+    public attendanceDTO registerAttendance(String email, String type) {
+
+        user u = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        employee emp = employeeRepo.findByUser_IdUser(u.getIdUser())
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
+        LocalDate today = LocalDate.now();
+
+        attendance record = iattendance.findByEmployee_IdAndDate(emp.getId(), today)
+                .orElseGet(() -> attendance.builder()
+                        .employee(emp)
+                        .date(today)
+                        .build());
+
+        if ("CHECK_IN".equalsIgnoreCase(type)) {
+            if (record.getTime_start() != null) {
+                throw new IllegalArgumentException("Ya registraste entrada hoy");
+            }
+            record.setTime_start(LocalTime.now());
+            record.setStatus(attendance.status.presente);
+        } else if ("CHECK_OUT".equalsIgnoreCase(type)) {
+            if (record.getTime_start() == null) {
+                throw new IllegalArgumentException("No has registrado entrada aún");
+            }
+            if (record.getTime_end() != null) {
+                throw new IllegalArgumentException("Ya registraste salida hoy");
+            }
+            record.setTime_end(LocalTime.now());
+        }
+
+        attendance saved = iattendance.save(record);
+        return convertToDTO(saved);
+    }
+
     private attendance convertToEntity(attendanceDTO dto) {
         employee e = new employee();
         e.setId(dto.getEmployee());
@@ -85,7 +136,7 @@ public class AttendanceService {
                 .build();
     }
 
-    private attendanceDTO convertToDTO(attendance entity) {
+    public attendanceDTO convertToDTO(attendance entity) {
         return attendanceDTO.builder()
                 .id(entity.getId())
                 .date(entity.getDate())

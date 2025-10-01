@@ -23,10 +23,10 @@ public class attendance {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "time_start", nullable = false)
+    @Column(name = "time_start", nullable = true)
     private LocalTime time_start;
 
-    @Column(name = "time_end", nullable = false)
+    @Column(name = "time_end", nullable = true)
     private LocalTime time_end;
 
     @Enumerated(EnumType.STRING)

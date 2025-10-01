@@ -17,5 +17,6 @@ public class contractDTO {
     private LocalDateTime dateUpdate;
     private String type;
     private String status;
+    private String documentUrl;
     private int employee;
 }

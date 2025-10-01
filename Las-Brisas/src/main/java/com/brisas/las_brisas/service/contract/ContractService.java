@@ -19,8 +19,10 @@ public class ContractService {
 
     private final Icontract icontract;
 
-    public List<contract> getAll() {
-        return icontract.findAll();
+    public List<contractDTO> getAll() {
+        return icontract.findAll().stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     public Optional<contract> findById(int id) {
@@ -73,14 +75,14 @@ public class ContractService {
 
         contract.type typeEnum;
         try {
-            typeEnum = contract.type.valueOf(dto.getType().toUpperCase());
+            typeEnum = contract.type.valueOf(dto.getType().toLowerCase());
         } catch (Exception t) {
             typeEnum = contract.type.practicas;
         }
 
         contract.status statusEnum;
         try {
-            statusEnum = contract.status.valueOf(dto.getStatus().toUpperCase());
+            statusEnum = contract.status.valueOf(dto.getStatus().toLowerCase());
         } catch (Exception s) {
             statusEnum = contract.status.activo;
         }
@@ -90,13 +92,14 @@ public class ContractService {
                 .fechaInicio(dto.getDateStart())
                 .fechaFin(dto.getDateEnd())
                 .fechaRenovacion(dto.getDateUpdate())
+                .documentoUrl(dto.getDocumentUrl())
                 .type(typeEnum)
                 .status(statusEnum)
                 .employee(e)
                 .build();
     }
 
-    private contractDTO convertToDTO(contract entity) {
+    public contractDTO convertToDTO(contract entity) {
         return contractDTO.builder()
                 .id(entity.getId())
                 .dateStart(entity.getFechaInicio())
@@ -104,7 +107,9 @@ public class ContractService {
                 .dateUpdate(entity.getFechaRenovacion())
                 .type(entity.getType().name())
                 .status(entity.getStatus().name())
+                .documentUrl(entity.getDocumentoUrl())
                 .employee(entity.getEmployee() != null ? entity.getEmployee().getId() : 0)
                 .build();
     }
+
 }

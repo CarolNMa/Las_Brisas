@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://172.30.7.248:8085/api/v1";
+const API_URL = "http://192.168.100.114:8085/api/v1";
 
 async function getToken() {
     return await AsyncStorage.getItem("token");
@@ -20,7 +20,7 @@ export async function getAllEmployees() {
     });
     if (!res.ok) throw new Error("Error al obtener empleados");
     const json = await res.json();
-    return json.data; 
+    return json; // Returns array directly
 }
 
 export async function getEmployeeById(id: string) {
@@ -32,13 +32,31 @@ export async function getEmployeeById(id: string) {
     return json.data; 
 }
 
+export async function getContractById(id: string) {
+    const res = await fetch(`${API_URL}/contracts/${id}`, {
+        headers: await authHeaders(),
+    });
+    if (!res.ok) throw new Error("Error al obtener contrato");
+    const json = await res.json();
+    return json.data;
+}
+
 export async function getEmployeeContract(id: string) {
     const res = await fetch(`${API_URL}/contracts/employee/${id}`, {
         headers: await authHeaders(),
     });
     if (!res.ok) throw new Error("Error al obtener contrato");
     const json = await res.json();
-    return json.data; 
+    return json.data;
+}
+
+export async function getAttendanceById(id: string) {
+    const res = await fetch(`${API_URL}/attendance/${id}`, {
+        headers: await authHeaders(),
+    });
+    if (!res.ok) throw new Error("Error al obtener asistencia");
+    const json = await res.json();
+    return json.data;
 }
 
 export async function getEmployeeAttendance(id: string) {

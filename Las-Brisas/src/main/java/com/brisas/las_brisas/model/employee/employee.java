@@ -2,7 +2,12 @@ package com.brisas.las_brisas.model.employee;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.brisas.las_brisas.model.contract.certificate;
+import com.brisas.las_brisas.model.contract.contract;
+import com.brisas.las_brisas.model.position.EmployeePost;
 import com.brisas.las_brisas.model.user.user;
 
 import jakarta.persistence.*;
@@ -84,7 +89,31 @@ public class employee {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false, referencedColumnName = "id_user")
+    @JoinColumn(name = "id_user", nullable = true, referencedColumnName = "id_user")
     private user user;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<employee_area> employeeAreas = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<EmployeePost> employeePosts = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<emplo_location> emploLocations = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<emplo_schedule> emploSchedules = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<contract> contracts = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<certificate> certificates = new ArrayList<>();
 
 }

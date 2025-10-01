@@ -19,11 +19,9 @@ import com.brisas.las_brisas.auth.DTO.AuthRequestDTO;
 import com.brisas.las_brisas.auth.DTO.LoginResponseDTO;
 import com.brisas.las_brisas.auth.DTO.RegisterRequestDTO;
 import com.brisas.las_brisas.auth.service.CustomUserDetailsService;
-import com.brisas.las_brisas.model.employee.employee;
 import com.brisas.las_brisas.model.user.rol;
 import com.brisas.las_brisas.model.user.user;
 import com.brisas.las_brisas.model.user.user.status;
-import com.brisas.las_brisas.repository.employee.Iemployee; 
 import com.brisas.las_brisas.repository.user.Irol;
 import com.brisas.las_brisas.repository.user.Iuser;
 import com.brisas.las_brisas.security.JwtService;
@@ -41,7 +39,6 @@ public class AuthController {
         private final Iuser usuarioRepo;
         private final Irol rolRepo;
         private final PasswordEncoder encoder;
-        private final Iemployee employeeRepo; 
 
         @PostMapping("/login")
         public ResponseEntity<LoginResponseDTO> login(@RequestBody AuthRequestDTO req) {
@@ -89,16 +86,6 @@ public class AuthController {
 
                 usuarioRepo.save(nuevo);
 
-                employee nuevoEmpleado = employee.builder()
-                                .firstName(req.getUsername())
-                                .lastName("")
-                                .email(req.getEmail())
-                                .createdAt(LocalDateTime.now())
-                                .user(nuevo) 
-                                .build();
-
-                employeeRepo.save(nuevoEmpleado);
-
-                return ResponseEntity.ok("Usuario y empleado registrados con rol: " + rol.getName());
+                return ResponseEntity.ok("Usuario registrado con rol: " + rol.getName());
         }
 }

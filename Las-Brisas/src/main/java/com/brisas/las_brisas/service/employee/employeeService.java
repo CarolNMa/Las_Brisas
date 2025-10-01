@@ -36,6 +36,10 @@ public class employeeService {
         return iEmployee.findByEmail(email);
     }
 
+    public Optional<employee> findByUserId(int userId) {
+        return iEmployee.findByUser_IdUser(userId);
+    }
+
     public employee saveEntity(employee emp) {
         return iEmployee.save(emp);
     }
@@ -47,6 +51,69 @@ public class employeeService {
         }
         iEmployee.deleteById(id);
         return new ResponseDTO<>("Empleado eliminado correctamente", HttpStatus.OK.toString(), null);
+    }
+
+    public ResponseDTO<employeeDTO> updateEmployee(int id, employeeDTO dto) {
+        try {
+            Optional<employee> empOpt = findById(id);
+            if (empOpt.isEmpty()) {
+                return new ResponseDTO<>("El empleado no existe", HttpStatus.NOT_FOUND.toString(), null);
+            }
+
+            employee existing = empOpt.get();
+
+            if (StringUtils.hasText(dto.getFirstName()))
+                existing.setFirstName(dto.getFirstName());
+            if (StringUtils.hasText(dto.getLastName()))
+                existing.setLastName(dto.getLastName());
+            if (dto.getBirthdate() != null)
+                existing.setBirthdate(dto.getBirthdate());
+            if (StringUtils.hasText(dto.getPhotoProfile()))
+                existing.setPhotoProfile(dto.getPhotoProfile());
+            if (StringUtils.hasText(dto.getGender())) {
+                try {
+                    existing.setGender(employee.gender.valueOf(dto.getGender().toLowerCase()));
+                } catch (Exception e) {
+                    existing.setGender(employee.gender.other);
+                }
+            }
+            if (StringUtils.hasText(dto.getPhone())) {
+                if (!dto.getPhone().matches("3[0-9]{9}")) {
+                    return new ResponseDTO<>("El teléfono debe empezar con 3 y tener 10 dígitos",
+                            HttpStatus.BAD_REQUEST.toString(), null);
+                }
+                existing.setPhone(dto.getPhone());
+            }
+            if (StringUtils.hasText(dto.getEmail()))
+                existing.setEmail(dto.getEmail());
+            if (StringUtils.hasText(dto.getCivilStatus())) {
+                try {
+                    existing.setCivilStatus(employee.civil_status.valueOf(dto.getCivilStatus().toLowerCase()));
+                } catch (Exception e) {
+                    existing.setCivilStatus(employee.civil_status.single);
+                }
+            }
+            if (StringUtils.hasText(dto.getAddress()))
+                existing.setAddress(dto.getAddress());
+            if (StringUtils.hasText(dto.getDocumentNumber()))
+                existing.setDocumentNumber(dto.getDocumentNumber());
+            if (StringUtils.hasText(dto.getTipoDocumento())) {
+                try {
+                    existing.setTipoDocumento(employee.tipo_documento.valueOf(dto.getTipoDocumento().toLowerCase()));
+                } catch (Exception e) {
+                    existing.setTipoDocumento(employee.tipo_documento.cc);
+                }
+            }
+
+            existing.setUpdatedAt(LocalDateTime.now());
+            iEmployee.save(existing);
+
+            return new ResponseDTO<>("Empleado actualizado correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(existing));
+        } catch (Exception e) {
+            return new ResponseDTO<>("Error al actualizar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
+        }
     }
 
     public ResponseDTO<employeeDTO> save(employeeDTO dto) {
@@ -134,7 +201,7 @@ public class employeeService {
 
     }
 
-    private employeeDTO convertToDTO(employee entity) {
+    public employeeDTO convertToDTO(employee entity) {
         return employeeDTO.builder()
                 .id(entity.getId())
                 .firstName(entity.getFirstName())

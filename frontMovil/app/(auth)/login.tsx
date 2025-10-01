@@ -56,7 +56,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if (validate()) {
       try {
-        const response = await fetch("http://172.30.7.248:8085/api/v1/auth/login", {
+        const response = await fetch("http://192.168.100.114:8085/api/v1/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -67,8 +67,14 @@ export default function LoginScreen() {
         const data = await response.json();
         console.log("Respuesta:", data);
 
+        // Check if user has ADMIN role
+        if (!data.roles || !data.roles.includes("ADMIN")) {
+          Alert.alert("Acceso denegado", "Solo los administradores pueden acceder a esta aplicación");
+          return;
+        }
 
         await AsyncStorage.setItem("token", data.token);
+        await AsyncStorage.setItem("username", data.username);
 
         router.push("/employee");
       } catch (error: any) {

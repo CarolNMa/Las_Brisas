@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Image, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
-import { getEmployeeById } from "../../services/api";
+import { getEmployeeById, getEmployeeContract, getEmployeeAttendance, getEmployeePermissions } from "../../services/api";
 
 interface Employee {
     id: number;
@@ -19,6 +19,29 @@ interface Employee {
     createdAt: string;
     updatedAt: string;
     userId: number;
+}
+
+interface Contract {
+    id: number;
+    dateStart: string;
+    dateEnd: string;
+    type: string;
+    status: string;
+}
+
+interface Attendance {
+    id: number;
+    date: string;
+    timeStart: string;
+    timeEnd: string;
+    status: string;
+}
+
+interface Application {
+    id: number;
+    dateStart: string;
+    reason: string;
+    status: string;
 }
 
 function formatDateOnly(dateString: string) {
@@ -55,14 +78,21 @@ function formatDateTime(dateString: string) {
 export default function EmployeeDetail() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const [employee, setEmployee] = useState<Employee | null>(null);
+    const [contract, setContract] = useState<Contract | null>(null);
+    const [attendance, setAttendance] = useState<Attendance[]>([]);
+    const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (id) {
-            getEmployeeById(id)
-                .then(setEmployee)
-                .catch((err) => console.error("Error cargando empleado:", err))
-                .finally(() => setLoading(false));
+            Promise.all([
+                getEmployeeById(id).then(setEmployee),
+                getEmployeeContract(id).then(setContract).catch(() => setContract(null)),
+                getEmployeeAttendance(id).then(setAttendance).catch(() => setAttendance([])),
+                getEmployeePermissions(id).then(setApplications).catch(() => setApplications([])),
+            ])
+            .catch((err) => console.error("Error cargando datos:", err))
+            .finally(() => setLoading(false));
         }
     }, [id]);
 
@@ -123,6 +153,55 @@ export default function EmployeeDetail() {
                 <Text style={styles.value}>{formatDateTime(employee.updatedAt)}</Text>
             </View>
 
+            {/* Información Contractual */}
+            <View style={styles.card}>
+                <Text style={styles.sectionTitle}>Información Contractual</Text>
+                {contract ? (
+                    <>
+                        <Text style={styles.label}>Tipo de Contrato:</Text>
+                        <Text style={styles.value}>{contract.type}</Text>
+                        <Text style={styles.label}>Fecha de Inicio:</Text>
+                        <Text style={styles.value}>{formatDateOnly(contract.dateStart)}</Text>
+                        <Text style={styles.label}>Fecha de Fin:</Text>
+                        <Text style={styles.value}>{formatDateOnly(contract.dateEnd)}</Text>
+                        <Text style={styles.label}>Estado:</Text>
+                        <Text style={styles.value}>{contract.status}</Text>
+                    </>
+                ) : (
+                    <Text style={styles.value}>No hay contrato activo</Text>
+                )}
+            </View>
+
+            {/* Registros de Asistencia */}
+            <View style={styles.card}>
+                <Text style={styles.sectionTitle}>Registros de Asistencia</Text>
+                {attendance.length > 0 ? (
+                    attendance.slice(0, 5).map((att) => (
+                        <View key={att.id} style={styles.attendanceItem}>
+                            <Text style={styles.label}>{formatDateOnly(att.date)}</Text>
+                            <Text style={styles.value}>{att.timeStart} - {att.timeEnd} ({att.status})</Text>
+                        </View>
+                    ))
+                ) : (
+                    <Text style={styles.value}>No hay registros de asistencia</Text>
+                )}
+            </View>
+
+            {/* Permisos */}
+            <View style={styles.card}>
+                <Text style={styles.sectionTitle}>Permisos</Text>
+                {applications.length > 0 ? (
+                    applications.slice(0, 5).map((app) => (
+                        <View key={app.id} style={styles.attendanceItem}>
+                            <Text style={styles.label}>{formatDateOnly(app.dateStart)}</Text>
+                            <Text style={styles.value}>{app.reason} ({app.status})</Text>
+                        </View>
+                    ))
+                ) : (
+                    <Text style={styles.value}>No hay permisos registrados</Text>
+                )}
+            </View>
+
             {/* Botón volver */}
             <TouchableOpacity style={styles.buttonBack} onPress={() => router.back()}>
                 <Text style={styles.buttonText}>Volver</Text>
@@ -151,6 +230,8 @@ const styles = StyleSheet.create({
     },
     label: { fontSize: 14, fontWeight: "bold", color: "#444", marginTop: 10 },
     value: { fontSize: 14, color: "#555" },
+    sectionTitle: { fontSize: 18, fontWeight: "bold", color: "#a50000", marginBottom: 10 },
+    attendanceItem: { marginBottom: 5, paddingBottom: 5, borderBottomWidth: 1, borderBottomColor: "#eee" },
     buttonBack: {
         marginTop: 15,
         backgroundColor: "#a50000",
@@ -160,3 +241,4 @@ const styles = StyleSheet.create({
     },
     buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
+

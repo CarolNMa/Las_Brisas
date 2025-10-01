@@ -1,24 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
-import { getEmployeeById } from "../../services/api";
+import { getContractById } from "../../services/api";
 
-interface Employee {
+interface Contract {
     id: number;
-    firstName: string;
-    lastName: string;
-    tipoDocumento: string;
-    documentNumber: string;
-    birthdate: string;
-    photoProfile?: string;
-    gender: string;
-    phone: string;
-    email: string;
-    civilStatus: string;
-    address: string;
-    createdAt: string;
-    updatedAt: string;
-    userId: number;
+    dateStart: string;
+    dateEnd: string;
+    dateUpdate: string;
+    type: string;
+    status: string;
+    documentUrl: string;
+    employee: number;
 }
 // Formatea solo fecha (ej: 26/09/2025)
 function formatDateOnly(dateString: string) {
@@ -53,16 +46,16 @@ function formatDateTime(dateString: string) {
 }
 
 
-export default function EmployeeDetail() {
+export default function ContractDetail() {
     const { id } = useLocalSearchParams<{ id: string }>();
-    const [employee, setEmployee] = useState<Employee | null>(null);
+    const [contract, setContract] = useState<Contract | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (id) {
-            getEmployeeById(id)
-                .then(setEmployee)
-                .catch((err) => console.error("Error cargando empleado:", err))
+            getContractById(id)
+                .then(setContract)
+                .catch((err) => console.error("Error cargando contrato:", err))
                 .finally(() => setLoading(false));
         }
     }, [id]);
@@ -76,52 +69,46 @@ export default function EmployeeDetail() {
         );
     }
 
-    if (!employee) {
+    if (!contract) {
         return (
             <View style={styles.loading}>
-                <Text>No se encontró el empleado</Text>
+                <Text>No se encontró el contrato</Text>
             </View>
         );
     }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            {/* Foto del perfil */}
-            {employee.photoProfile ? (
-                <Image source={{ uri: employee.photoProfile }} style={styles.avatar} />
-            ) : (
-                <Image source={require("../../assets/images/avatar.jpg")} style={styles.avatar} />
-            )}
-
-            {/* Nombre y documento */}
-            <Text style={styles.name}>{employee.firstName} {employee.lastName}</Text>
-            <Text style={styles.role}>{employee.tipoDocumento}: {employee.documentNumber}</Text>
+            {/* Título */}
+            <Text style={styles.title}>Detalles del Contrato</Text>
+            <Text style={styles.contractId}>ID: {contract.id}</Text>
 
             {/* Datos detallados */}
             <View style={styles.card}>
-                <Text style={styles.label}>Fecha de Nacimiento:</Text>
-                <Text style={styles.value}>{formatDateOnly(employee.birthdate)}</Text>
+                <Text style={styles.label}>Fecha de Inicio:</Text>
+                <Text style={styles.value}>{formatDateTime(contract.dateStart)}</Text>
 
-                <Text style={styles.label}>Género:</Text>
-                <Text style={styles.value}>{employee.gender}</Text>
+                <Text style={styles.label}>Fecha de Fin:</Text>
+                <Text style={styles.value}>{formatDateTime(contract.dateEnd)}</Text>
 
-                <Text style={styles.label}>Teléfono:</Text>
-                <Text style={styles.value}>{employee.phone}</Text>
+                <Text style={styles.label}>Última Actualización:</Text>
+                <Text style={styles.value}>{formatDateTime(contract.dateUpdate)}</Text>
 
-                <Text style={styles.label}>Correo:</Text>
-                <Text style={styles.value}>{employee.email}</Text>
+                <Text style={styles.label}>Tipo:</Text>
+                <Text style={styles.value}>{contract.type}</Text>
 
-                <Text style={styles.label}>Estado Civil:</Text>
-                <Text style={styles.value}>{employee.civilStatus}</Text>
+                <Text style={styles.label}>Estado:</Text>
+                <Text style={styles.value}>{contract.status}</Text>
 
-                <Text style={styles.label}>Dirección:</Text>
-                <Text style={styles.value}>{employee.address}</Text>
+                <Text style={styles.label}>Empleado ID:</Text>
+                <Text style={styles.value}>{contract.employee}</Text>
 
-                <Text style={styles.label}>Creado en:</Text>
-                <Text style={styles.value}>{formatDateTime(employee.createdAt)}</Text>
-
-                <Text style={styles.label}>Actualizado en:</Text>
-                <Text style={styles.value}>{formatDateTime(employee.updatedAt)}</Text>
+                {contract.documentUrl && (
+                    <>
+                        <Text style={styles.label}>Documento:</Text>
+                        <Text style={styles.value}>{contract.documentUrl}</Text>
+                    </>
+                )}
             </View>
 
             {/* Botón volver */}
@@ -135,9 +122,8 @@ export default function EmployeeDetail() {
 const styles = StyleSheet.create({
     container: { flexGrow: 1, padding: 20, alignItems: "center", backgroundColor: "#f8f9fa" },
     loading: { flex: 1, justifyContent: "center", alignItems: "center" },
-    avatar: { width: 120, height: 120, borderRadius: 60, marginBottom: 15 },
-    name: { fontSize: 22, fontWeight: "bold", color: "#333", marginBottom: 5 },
-    role: { fontSize: 16, color: "#a50000", marginBottom: 15 },
+    title: { fontSize: 24, fontWeight: "bold", color: "#333", marginBottom: 10 },
+    contractId: { fontSize: 18, color: "#a50000", marginBottom: 20 },
     card: {
         width: "100%",
         backgroundColor: "#fff",

@@ -3,7 +3,6 @@ package com.brisas.las_brisas.model.contract;
 import java.time.LocalDateTime;
 
 import com.brisas.las_brisas.model.employee.employee;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +28,9 @@ public class contract {
     @Column(name = "fecha_renovacion", nullable = false)
     private LocalDateTime fechaRenovacion;
 
+    @Column(name = "documentoUrl", nullable = false)
+    private String documentoUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private type type;
@@ -52,4 +54,6 @@ public class contract {
     @ManyToOne
     @JoinColumn(name = "id_employee", nullable = false)
     private employee employee;
+
+   
 }

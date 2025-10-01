@@ -11,4 +11,6 @@ public interface Iapplication extends JpaRepository<application, Integer> {
 
     List<application> findByEmployee_User_Email(String email);
 
+    List<application> findByEmployee_Id(int employeeId);
+
 }

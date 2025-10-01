@@ -21,38 +21,54 @@ public class ContractController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(contractService.getAll());
+        return ResponseEntity.ok(contractService.getAll()); 
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/employee/{id}")
+    public ResponseEntity<?> getByEmployee(@PathVariable int id) {
+        return contractService.findById(id)
+                .map(contract -> ResponseEntity.ok(new ResponseDTO<>("Contrato encontrado", "200", contract)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDTO<>("Contrato no encontrado", "404", null)));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
         return contractService.findById(id)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseDTO<>("Contrato no encontrado", HttpStatus.NOT_FOUND.toString(), null)));
+                .map(contract -> ResponseEntity.ok(new ResponseDTO<>("Contrato encontrado", "200", contract)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDTO<>("Contrato no encontrado", "404", null)));
     }
 
     @PreAuthorize("hasRole('EMPLEADO')")
     @GetMapping("/me")
     public ResponseEntity<?> getMyContract(Authentication auth) {
         return contractService.findByUserEmail(auth.getName())
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseDTO<>("Contrato no encontrado", HttpStatus.NOT_FOUND.toString(), null)));
+                .map(contract -> ResponseEntity.ok(
+                        new ResponseDTO<>("Contrato encontrado", "200",
+                                contractService.convertToDTO(contract))))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseDTO<>("Contrato no encontrado", "404", null)));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")
-    public ResponseEntity<?> save(@RequestBody contractDTO dto) {
-        ResponseDTO<?> response = contractService.save(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody contractDTO dto) {
+        return ResponseEntity.ok(contractService.save(dto));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody contractDTO dto) {
+        dto.setId(id);
+        return ResponseEntity.ok(contractService.save(dto));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
-        ResponseDTO<?> response = contractService.delete(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(contractService.delete(id));
     }
 }

@@ -76,6 +76,10 @@ public class ApplicationService {
         return iapplication.findByEmployee_User_Email(email);
     }
 
+    public List<application> findByEmployeeId(int employeeId) {
+        return iapplication.findByEmployee_Id(employeeId);
+    }
+
     // aprobar/rechazar solicitud
     public ResponseDTO<Object> approve(int id, boolean approved) {
         application app = iapplication.findById(id)
@@ -88,7 +92,7 @@ public class ApplicationService {
     }
 
 
-    private applicationDTO convertToDTO(application entity) {
+    public applicationDTO convertToDTO(application entity) {
         return applicationDTO.builder()
                 .id(entity.getId())
                 .dateStart(entity.getDate_start())

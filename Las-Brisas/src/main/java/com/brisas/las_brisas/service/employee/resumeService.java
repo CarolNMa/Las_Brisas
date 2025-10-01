@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-
 public class resumeService {
 
     private final Iresume iResume;
@@ -29,41 +28,81 @@ public class resumeService {
 
     public Optional<resume> findById(int id) {
         return iResume.findById(id);
+
+    }
+
+    public Optional<resumeDTO> getResumeDTOById(int id) {
+        return iResume.findById(id).map(this::convertToDTO);
+    }
+
+    public Optional<resumeDTO> getResumeDTOByUserEmail(String email) {
+        return iResume.findByEmployee_User_Email(email).map(this::convertToDTO);
+    }
+
+    public Optional<resume> findByUserEmail(String email) {
+        return iResume.findByEmployee_User_Email(email);
     }
 
     public ResponseDTO<resumeDTO> deleteResume(int id) {
         Optional<resume> opt = findById(id);
         if (opt.isEmpty()) {
-            return new ResponseDTO<>("La hoja de vida no existe", HttpStatus.NOT_FOUND.toString(), null);
+            return new ResponseDTO<>(
+                    "La hoja de vida no existe",
+                    String.valueOf(HttpStatus.NOT_FOUND.value()),
+                    null);
         }
         iResume.deleteById(id);
-        return new ResponseDTO<>("Hoja de vida eliminada", HttpStatus.OK.toString(), null);
+        return new ResponseDTO<>(
+                "Hoja de vida eliminada",
+                String.valueOf(HttpStatus.OK.value()),
+                null);
     }
 
     public ResponseDTO<resumeDTO> save(resumeDTO dto) {
         try {
-           
             if (dto.getEmployeeId() <= 0) {
-                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+                return new ResponseDTO<>(
+                        "El ID del empleado es requerido",
+                        String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                        null);
             }
             if (!StringUtils.hasText(dto.getDocumentUrl())) {
-                return new ResponseDTO<>("El documento de la hoja de vida es obligatorio",
-                        HttpStatus.BAD_REQUEST.toString(), null);
+                return new ResponseDTO<>(
+                        "El documento de la hoja de vida es obligatorio",
+                        String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                        null);
             }
 
-           
             resume entity = convertToEntity(dto);
+
             if (dto.getId() == 0) {
+
                 entity.setDate_create(LocalDateTime.now());
+                entity.setDate_update(LocalDateTime.now());
             } else {
+
+                Optional<resume> existing = iResume.findById(dto.getId());
+                if (existing.isEmpty()) {
+                    return new ResponseDTO<>(
+                            "La hoja de vida no existe",
+                            String.valueOf(HttpStatus.NOT_FOUND.value()),
+                            null);
+                }
+                entity.setDate_create(existing.get().getDate_create());
                 entity.setDate_update(LocalDateTime.now());
             }
+
             iResume.save(entity);
 
-            return new ResponseDTO<>("Hoja de vida guardada correctamente", HttpStatus.OK.toString(),
+            return new ResponseDTO<>(
+                    "Hoja de vida guardada correctamente",
+                    String.valueOf(HttpStatus.OK.value()),
                     convertToDTO(entity));
+
         } catch (Exception e) {
-            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+            return new ResponseDTO<>(
+                    "Error al guardar: " + e.getMessage(),
+                    String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     null);
         }
     }
@@ -92,4 +131,5 @@ public class resumeService {
                 .employeeId(entity.getEmployee().getId())
                 .build();
     }
+
 }
