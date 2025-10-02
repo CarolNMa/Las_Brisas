@@ -41,6 +41,12 @@ public class user {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "reset_code")
+    private String resetCode;
+
+    @Column(name = "reset_code_expire")
+    private Long resetCodeExpire;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_rol"))
     @Builder.Default

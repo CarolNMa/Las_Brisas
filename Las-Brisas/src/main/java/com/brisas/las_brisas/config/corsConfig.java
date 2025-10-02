@@ -18,7 +18,7 @@ public class corsConfig {
 
         config.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:5173",
-                "http:// 192.168.80.42:5173"));
+                "http://192.168.80.42:5173"));
 
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");

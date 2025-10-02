@@ -1,4 +1,4 @@
-const API_URL = "http://192.168.80.42:8085/api/v1";
+const API_URL = "http://localhost:8085/api/v1";
 
 class ApiService {
   constructor() {
@@ -38,6 +38,30 @@ class ApiService {
       console.error("API request failed:", error);
       throw error;
     }
+  }
+
+  // ==================================================
+  // 🔐 AUTENTICACIÓN Y RESET DE CONTRASEÑA
+  // ==================================================
+  async forgotPassword(email) {
+    return this.request("/password/forgot", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async verifyCode(email, code) {
+    return this.request("/password/verify", {
+      method: "POST",
+      body: JSON.stringify({ email, code }),
+    });
+  }
+
+  async resetPassword(email, code, newPassword) {
+    return this.request("/password/reset", {
+      method: "POST",
+      body: JSON.stringify({ email, code, newPassword }),
+    });
   }
 
   // PERFIL DEL EMPLEADO

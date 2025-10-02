@@ -6,6 +6,9 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/inicio";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyCode from "./pages/VerifyCode";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -82,6 +85,11 @@ function App() {
             )
           }
         />
+
+        {/* Password Reset Flow */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-code" element={<VerifyCode />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Redirección por defecto */}
         <Route path="*" element={<Navigate to="/login" replace />} />
