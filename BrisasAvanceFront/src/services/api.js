@@ -40,9 +40,7 @@ class ApiService {
     }
   }
 
-  // ==================================================
-  // 👤 PERFIL DEL EMPLEADO
-  // ==================================================
+  // PERFIL DEL EMPLEADO
   async getMyProfile() {
     return this.request("/employees/me");
   }
@@ -82,20 +80,40 @@ class ApiService {
     URL.revokeObjectURL(downloadUrl);
   }
 
-  // ==================================================
-  // 📌 SOLICITUDES (Applications)
-  // ==================================================
+  // SOLICITUDES (Applications)
 
   // Empleado
   async getMyApplications() {
     return this.request("/applications/me");
   }
 
-  async createApplication(applicationData) {
-    return this.request("/applications/", {
+  async createApplication(applicationData, isFormData = false) {
+    const token = localStorage.getItem("brisas:token");
+
+    const options = {
       method: "POST",
-      body: JSON.stringify(applicationData),
-    });
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: applicationData,
+    };
+
+    if (!isFormData) {
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify(applicationData);
+    }
+
+    const response = await fetch(`${API_URL}/applications/`, options);
+    if (!response.ok) {
+      let errorMessage = "Error al crear solicitud";
+      try {
+        const errorData = await response.text();
+        if (errorData) errorMessage = errorData;
+      } catch (e) {
+      }
+      throw new Error(errorMessage);
+    }
+    return response.json();
   }
 
   // Admin
@@ -104,20 +122,44 @@ class ApiService {
   }
 
   async approveApplication(id) {
-    return this.request(`/applications/${id}/approve`, { method: "PUT" });
+    return this.request(`/applications/${id}/approve?approved=true`, { method: "PUT" });
   }
 
   async rejectApplication(id) {
-    return this.request(`/applications/${id}/reject`, { method: "PUT" });
+    return this.request(`/applications/${id}/approve?approved=false`, { method: "PUT" });
   }
+
 
   async deleteApplication(id) {
     return this.request(`/applications/${id}`, { method: "DELETE" });
   }
 
-  // ==================================================
-  // 📂 TIPOS DE SOLICITUD
-  // ==================================================
+  async downloadApplicationFile(filename) {
+    const token = localStorage.getItem("brisas:token");
+    const response = await fetch(`${API_URL}/applications/download/${filename}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) throw new Error("No se pudo descargar el archivo de la solicitud");
+    return await response.blob();
+  }
+
+  async downloadApplication(filename) {
+    const blob = await this.downloadApplicationFile(filename);
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(downloadUrl);
+  }
+
+
+
+
+  //  TIPOS DE SOLICITUD
   async getAllApplicationTypes() {
     return this.request("/application-type/all");
   }
@@ -142,9 +184,7 @@ class ApiService {
     });
   }
 
-  // ==================================================
-  // 🕒 ASISTENCIAS
-  // ==================================================
+  //  ASISTENCIAS
   async getMyAttendance() {
     return this.request("/attendance/me");
   }
@@ -178,9 +218,8 @@ class ApiService {
     return this.request(`/attendance/${id}`, { method: "DELETE" });
   }
 
-  // ==================================================
-  // 📑 CONTRATOS
-  // ==================================================
+  // CONTRATOS
+
   async getAllContracts() {
     return this.request("/contracts/all");
   }
@@ -247,9 +286,7 @@ class ApiService {
     return this.request(`/contracts/${id}`, { method: "DELETE" });
   }
 
-  // ==================================================
-  // 📍 UBICACIONES
-  // ==================================================
+  // UBICACIONES
   async getAllLocations() {
     return this.request("/location/all");
   }
@@ -272,9 +309,7 @@ class ApiService {
     return this.request(`/location/${id}`, { method: "DELETE" });
   }
 
-  // ==================================================
-  // 🏢 ÁREAS
-  // ==================================================
+  // ÁREAS
   async getAllAreas() {
     return this.request("/areas/all");
   }
@@ -297,9 +332,8 @@ class ApiService {
     return this.request(`/areas/${id}`, { method: "DELETE" });
   }
 
-  // ==================================================
-  // 📌 PUESTOS / POSICIONES
-  // ==================================================
+  // PUESTOS / POSICIONES
+
   async getAllPositions() {
     return this.request("/positions/all");
   }
@@ -322,9 +356,8 @@ class ApiService {
     return this.request(`/positions/${id}`, { method: "DELETE" });
   }
 
-  // ==================================================
-  // 👥 USUARIOS Y ROLES
-  // ==================================================
+  // USUARIOS Y ROLES
+
   async getAllUsers() {
     return this.request("/user/all");
   }
@@ -370,39 +403,162 @@ class ApiService {
   }
 
   // ==================================================
-  // 📚 INDUCCIONES / CAPACITACIONES
+  // 📚 INDUCCIONES
   // ==================================================
-  async getMyInductions() {
-    return this.request("/induction-employee/");
+
+  // ---- Induction (general) ----
+  async getAllInductions() {
+    return this.request("/induction/");
   }
 
-  async getAllTrainings() {
-    return this.request("/induction/all");
+  async getInductionById(id) {
+    return this.request(`/induction/${id}`);
   }
 
-  async createTraining(trainingData) {
+  async createInduction(data) {
     return this.request("/induction/", {
       method: "POST",
-      body: JSON.stringify(trainingData),
+      body: JSON.stringify(data),
     });
   }
 
-  async updateTraining(id, trainingData) {
-    return this.request("/induction/", {
+  async updateInduction(id, data) {
+    return this.request(`/induction/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteInduction(id) {
+    return this.request(`/induction/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Módulos de inducción ----
+  async getModulesByInduction(inductionId) {
+    return this.request(`/module-induction/induction/${inductionId}`);
+  }
+
+
+  async createModule(data) {
+    return this.request("/module-induction", {
       method: "POST",
-      body: JSON.stringify({ ...trainingData, id: id }),
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateModule(id, data) {
+    return this.request(`/module-induction/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteModule(id) {
+    return this.request(`/module-induction/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Preguntas ----
+  async getQuestionsByModule(moduleId) {
+    return this.request(`/question/${moduleId}`);
+  }
+
+  async createQuestion(data) {
+    return this.request("/question/", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateQuestion(id, data) {
+    return this.request(`/question/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteQuestion(id) {
+    return this.request(`/question/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Respuestas ----
+  async getAnswersByQuestion(questionId) {
+    return this.request(`/answers/${questionId}`);
+  }
+
+  async createAnswer(data) {
+    return this.request("/answers/", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateAnswer(id, data) {
+    return this.request(`/answers/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteAnswer(id) {
+    return this.request(`/answers/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Asignación de inducciones a empleados ----
+  async getAllInductionAssignments() {
+    return this.request("/induction-employee/");
+  }
+
+  async assignInduction(data) {
+    return this.request("/induction-employee/", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteInductionAssignment(id) {
+    return this.request(`/induction-employee/${id}`, { method: "DELETE" });
+  }
+
+  // EMPLEADO: ver mis inducciones asignadas
+  async getMyInductions() {
+    return this.request("/induction-employee/me");
+  }
+
+
+
+  //  CAPACITACIONES
+
+  async getAllTrainings() {
+    return this.request("/training/all");
+  }
+
+  async createTraining(data) {
+    return this.request("/training/", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateTraining(id, data) {
+    return this.request(`/training/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
     });
   }
 
   async deleteTraining(id) {
-    return this.request(`/induction/${id}`, { method: "DELETE" });
+    return this.request(`/training/${id}`, { method: "DELETE" });
   }
 
-  // ==================================================
-  // 👷‍♂️ EMPLEADOS
-  // ==================================================
+
+  // EMPLEADOS
+
   async getAllEmployees() {
     return this.request("/employees/all");
+  }
+
+  async getEmployeeById(id) {
+    return this.request(`/employees/${id}`);
   }
 
   async createEmployee(employeeData) {
