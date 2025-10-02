@@ -11,9 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.nio.file.Path;
@@ -22,7 +20,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

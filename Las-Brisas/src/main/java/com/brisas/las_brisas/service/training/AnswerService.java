@@ -27,6 +27,10 @@ public class AnswerService {
         return ianswer.findById(id);
     }
 
+    public List<answer> getAnswersByQuestion(int questionId) {
+        return ianswer.findByQuestionId(questionId);
+    }
+
     public ResponseDTO<answerDTO> delete(int id) {
         Optional<answer> opt = ianswer.findById(id);
         if (opt.isEmpty()) {

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import EmployeeTakeInduction from './EmployeeTakeInduction';
 
 export default function EmployeeInductions({ employeeId }) {
-  const [inductions, setInductions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+   const [inductions, setInductions] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState(null);
+   const [takingInduction, setTakingInduction] = useState(null);
 
   useEffect(() => {
     loadInductions();
@@ -34,11 +36,20 @@ export default function EmployeeInductions({ employeeId }) {
 
   const getStatusTextColor = (status) => {
     switch (status) {
-      case 'COMPLETED': return '#155724';
-      case 'IN_PROGRESS': return '#856404';
-      case 'PENDING': return '#383d41';
+      case 'aprobado': return '#155724';
+      case 'en_progreso': return '#856404';
+      case 'pendiente': return '#383d41';
       default: return '#383d41';
     }
+  };
+
+  const handleTakeInduction = (inductionId) => {
+    setTakingInduction(inductionId);
+  };
+
+  const handleInductionComplete = (points) => {
+    setTakingInduction(null);
+    loadInductions(); // Reload to show updated status
   };
 
   if (loading) {
@@ -47,6 +58,23 @@ export default function EmployeeInductions({ employeeId }) {
 
   if (error) {
     return <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>{error}</div>;
+  }
+
+  if (takingInduction) {
+    return (
+      <div>
+        <button
+          onClick={() => setTakingInduction(null)}
+          style={{ marginBottom: '20px', padding: '8px 16px' }}
+        >
+          ← Volver a Inducciones
+        </button>
+        <EmployeeTakeInduction
+          inductionId={takingInduction}
+          onComplete={handleInductionComplete}
+        />
+      </div>
+    );
   }
 
   return (
@@ -63,9 +91,9 @@ export default function EmployeeInductions({ employeeId }) {
                   background: getStatusColor(induction.status),
                   color: getStatusTextColor(induction.status)
                 }}>
-                  {induction.status === 'COMPLETED' ? 'Completada' :
-                   induction.status === 'IN_PROGRESS' ? 'En Progreso' :
-                   induction.status === 'PENDING' ? 'Pendiente' : induction.status}
+                  {induction.status === 'aprobado' ? 'Completada' :
+                   induction.status === 'en_progreso' ? 'En Progreso' :
+                   induction.status === 'pendiente' ? 'Pendiente' : induction.status}
                 </span>
               </div>
 
@@ -73,12 +101,22 @@ export default function EmployeeInductions({ employeeId }) {
                 <div style={styles.detailRow}>
                   <div style={styles.detailItem}>
                     <strong>Fecha de Asignación:</strong>
-                    <span>{new Date(induction.assignedDate || induction.createdAt).toLocaleDateString()}</span>
+                    <span>{new Date(induction.dateAssignment).toLocaleDateString()}</span>
                   </div>
-                  {induction.completedDate && (
+                  {induction.dateComplete && (
                     <div style={styles.detailItem}>
                       <strong>Fecha de Finalización:</strong>
-                      <span>{new Date(induction.completedDate).toLocaleDateString()}</span>
+                      <span>{new Date(induction.dateComplete).toLocaleDateString()}</span>
+                    </div>
+                  )}
+                  {induction.status === 'pendiente' && (
+                    <div style={styles.detailItem}>
+                      <button
+                        onClick={() => handleTakeInduction(induction.inductionId)}
+                        style={{ padding: '8px 16px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }}
+                      >
+                        Tomar Inducción
+                      </button>
                     </div>
                   )}
                 </div>

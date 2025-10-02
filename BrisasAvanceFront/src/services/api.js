@@ -19,25 +19,38 @@ class ApiService {
   }
 
   async request(endpoint, options = {}) {
-    const url = `${API_URL}${endpoint}`;
-    const config = {
-      headers: this.getAuthHeaders(),
-      ...options,
-    };
+      const url = `${API_URL}${endpoint}`;
+      const config = {
+          headers: this.getAuthHeaders(),
+          ...options,
+      };
 
-    console.log("Request:", url, config);
+      console.log("Request:", url, config);
 
-    try {
-      const response = await fetch(url, config);
-      if (!response.ok) {
-        console.error("Error HTTP:", response.status);
-        throw new Error(`HTTP error! status: ${response.status}`);
+      try {
+          const response = await fetch(url, config);
+          if (!response.ok) {
+              console.error("Error HTTP:", response.status);
+              const errorText = await response.text().catch(() => "Error desconocido");
+              throw new Error(`Error HTTP ${response.status}: ${errorText}`);
+          }
+
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+              try {
+                  return await response.json();
+              } catch (jsonError) {
+                  console.error("Error parsing JSON:", jsonError);
+                  throw new Error("La respuesta del servidor no es un JSON válido");
+              }
+          } else {
+              // Si no es JSON, devolver el texto
+              return await response.text();
+          }
+      } catch (error) {
+          console.error("API request failed:", error);
+          throw error;
       }
-      return await response.json();
-    } catch (error) {
-      console.error("API request failed:", error);
-      throw error;
-    }
   }
 
   // ==================================================
@@ -462,7 +475,6 @@ class ApiService {
     return this.request(`/module-induction/induction/${inductionId}`);
   }
 
-
   async createModule(data) {
     return this.request("/module-induction", {
       method: "POST",
@@ -483,7 +495,7 @@ class ApiService {
 
   // ---- Preguntas ----
   async getQuestionsByModule(moduleId) {
-    return this.request(`/question/${moduleId}`);
+    return this.request(`/question/module/${moduleId}`);
   }
 
   async createQuestion(data) {
@@ -536,6 +548,12 @@ class ApiService {
     return this.request("/induction-employee/", {
       method: "POST",
       body: JSON.stringify(data),
+    });
+  }
+
+  async completeInduction(id, points) {
+    return this.request(`/induction-employee/${id}/complete?points=${points}`, {
+      method: "PUT",
     });
   }
 

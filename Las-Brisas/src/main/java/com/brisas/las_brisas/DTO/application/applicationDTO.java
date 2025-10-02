@@ -22,4 +22,5 @@ public class applicationDTO {
     private String status;
     private int employeeId;
     private int applicationTypeid;
+    private String applicationTypeName;
 }

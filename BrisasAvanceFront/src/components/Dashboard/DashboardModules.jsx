@@ -10,6 +10,8 @@ import ContractsModule from "../Admin/ContractsModule";
 import AttendanceModule from "../Admin/AttendanceModule";
 import TrainingsModule from "../Admin/TrainingsModule";
 import EmployeePostModule from "../Admin/EmployeePostModule";
+import InductionsModule from "../Admin/InductionsModule";
+import AssignInductionModule from "../Admin/AssignInductionModule";
 
 export default function DashboardModules({ active }) {
     switch (active) {
@@ -35,6 +37,10 @@ export default function DashboardModules({ active }) {
             return <AttendanceModule />;
         case "trainings":
             return <TrainingsModule />;
+        case "inductions":
+            return <InductionsModule />;
+        case "assignInductions":
+            return <AssignInductionModule />;
         case "employeePosts":
             return <EmployeePostModule />;
         default:

@@ -139,14 +139,17 @@ export default function ApplicationTypesModule() {
                             {errors.name && <span style={{ color: "red", fontSize: "12px" }}>{errors.name}</span>}
                         </label>
                         <label>
-                            <input
-                                type="checkbox"
-                                checked={form.required}
-                                onChange={(e) => setForm({ ...form, required: e.target.checked })}
-                            />
-                            Requiere documento adjunto
+                            <div style={{ alignItems: "center", gap: 8 , display: "inline-flex" }}>
+                                <input
+                                    type="checkbox"
+                                    checked={form.required}
+                                    onChange={(e) => setForm({ ...form, required: e.target.checked })
+                                    }
+                                />
+                                Requiere documento adjunto
+                            </div>
                         </label>
-                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                             <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>Cancelar</button>
                             <button style={styles.btn} onClick={handleSave}>Guardar</button>
                         </div>

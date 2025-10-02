@@ -23,6 +23,10 @@ public class InductionService {
         return iinduction.findAll();
     }
 
+    public List<induction> getInductionsByEmployee(int employeeId) {
+        return iinduction.findByEmployeeId(employeeId);
+    }
+
     public Optional<induction> findById(int id) {
         return iinduction.findById(id);
     }
@@ -38,7 +42,6 @@ public class InductionService {
 
     public ResponseDTO<inductionDTO> save(inductionDTO dto) {
         try {
-         
             if (dto.getName() == null || dto.getName().trim().isEmpty()) {
                 return new ResponseDTO<>("El nombre de la inducción es obligatorio", HttpStatus.BAD_REQUEST.toString(),
                         null);
@@ -47,13 +50,15 @@ public class InductionService {
                 return new ResponseDTO<>("La descripción es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
             }
 
-        
             induction entity = convertToEntity(dto);
+
             if (dto.getId() == 0) {
                 entity.setDateCreate(LocalDateTime.now());
+                entity.setDateUpdate(LocalDateTime.now()); 
             } else {
                 entity.setDateUpdate(LocalDateTime.now());
             }
+
             iinduction.save(entity);
 
             return new ResponseDTO<>("Inducción guardada correctamente", HttpStatus.OK.toString(),

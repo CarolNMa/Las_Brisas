@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +25,18 @@ public class InductionEmployeeService {
         return IintroduEmployee.findAll();
     }
 
+    public List<induction_employeeDTO> getAllFormatted() {
+        return IintroduEmployee.findAll().stream()
+                .map(this::convertToDTOWithNames)
+                .toList();
+    }
+
     public Optional<induction_employee> findById(int id) {
         return IintroduEmployee.findById(id);
+    }
+
+    public List<induction_employee> findByUserEmail(String email) {
+        return IintroduEmployee.findByUserEmail(email);
     }
 
     public ResponseDTO<induction_employeeDTO> delete(int id) {
@@ -35,6 +46,26 @@ public class InductionEmployeeService {
         }
         IintroduEmployee.deleteById(id);
         return new ResponseDTO<>("Asignación eliminada correctamente", HttpStatus.OK.toString(), null);
+    }
+
+    public List<induction_employee> getByEmployeeId(int employeeId) {
+        return IintroduEmployee.findByEmployeeId(employeeId);
+    }
+
+    public ResponseDTO<induction_employeeDTO> completeInduction(int id, int points) {
+        Optional<induction_employee> opt = IintroduEmployee.findById(id);
+        if (opt.isEmpty()) {
+            return new ResponseDTO<>("Asignación no encontrada", HttpStatus.NOT_FOUND.toString(), null);
+        }
+
+        induction_employee entity = opt.get();
+        entity.setPoints(points);
+        entity.setStatus(induction_employee.status.aprobado);
+        entity.setDateComplete(LocalDateTime.now());
+
+        IintroduEmployee.save(entity);
+
+        return new ResponseDTO<>("Inducción completada", HttpStatus.OK.toString(), convertToDTO(entity));
     }
 
     public ResponseDTO<induction_employeeDTO> save(induction_employeeDTO dto) {
@@ -52,7 +83,6 @@ public class InductionEmployeeService {
                 return new ResponseDTO<>("Los puntos no pueden ser negativos", HttpStatus.BAD_REQUEST.toString(), null);
             }
 
-           
             induction_employee entity = convertToEntity(dto);
             IintroduEmployee.save(entity);
 
@@ -113,4 +143,23 @@ public class InductionEmployeeService {
                 .points(entity.getPoints())
                 .build();
     }
+
+    private induction_employeeDTO convertToDTOWithNames(induction_employee entity) {
+        return induction_employeeDTO.builder()
+                .id(entity.getId())
+                .employeeId(entity.getEmployee() != null ? entity.getEmployee().getId() : 0)
+                .inductionId(entity.getInduction() != null ? entity.getInduction().getId() : 0)
+                .employeeName(entity.getEmployee() != null ?
+                    entity.getEmployee().getFirstName() + " " + entity.getEmployee().getLastName() : "")
+                .inductionName(entity.getInduction() != null ? entity.getInduction().getName() : "")
+                .dateAssignment(entity.getDateAssignment())
+                .dateComplete(entity.getDateComplete())
+                .deadline(entity.getDeadline())
+                .dateSeen(entity.getDateSeen())
+                .status(entity.getStatus().name())
+                .visto(entity.getVisto().name())
+                .points(entity.getPoints())
+                .build();
+    }
+
 }

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import EmployeeNewApplication from './EmployeeNewApplication';
 
 export default function EmployeeApplications({ employeeId }) {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false); 
 
   useEffect(() => {
     loadApplications();
@@ -13,7 +15,7 @@ export default function EmployeeApplications({ employeeId }) {
   const loadApplications = async () => {
     try {
       setLoading(true);
-      const data = await api.getMyApplications();
+      const data = await api.getMyApplications(employeeId);
       setApplications(Array.isArray(data) ? data : data.data || []);
     } catch (err) {
       setError('Error al cargar las solicitudes');
@@ -23,20 +25,25 @@ export default function EmployeeApplications({ employeeId }) {
     }
   };
 
+  const handleCreated = () => {
+    setShowModal(false);
+    loadApplications();
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
-      case 'APPROVED': return '#d4edda';
-      case 'REJECTED': return '#f8d7da';
-      case 'PENDING': return '#fff3cd';
+      case 'Aprobado': return '#d4edda';
+      case 'Rechazado': return '#f8d7da';
+      case 'Pendiente': return '#fff3cd';
       default: return '#e2e3e5';
     }
   };
 
   const getStatusTextColor = (status) => {
     switch (status) {
-      case 'APPROVED': return '#155724';
-      case 'REJECTED': return '#721c24';
-      case 'PENDING': return '#856404';
+      case 'Aprobado': return '#155724';
+      case 'Rechazado': return '#721c24';
+      case 'Pendiente': return '#856404';
       default: return '#383d41';
     }
   };
@@ -51,21 +58,27 @@ export default function EmployeeApplications({ employeeId }) {
 
   return (
     <div>
-      <h2>Mis Solicitudes</h2>
+      <div style={styles.header}>
+        <h2>Mis Solicitudes</h2>
+        <button style={styles.button} onClick={() => setShowModal(true)}>
+          Nueva Solicitud
+        </button>
+      </div>
+
       <div style={styles.applicationsContainer}>
         {applications.length > 0 ? (
           applications.map((application, index) => (
             <div key={index} style={styles.applicationCard}>
-              <div style={styles.applicationHeader}>
-                <h3>{application.type || 'Solicitud'}</h3>
+            <div style={styles.applicationHeader}>
+              <h3>{application.applicationTypeName || application.applicationType || application.type || 'Solicitud'}</h3>
                 <span style={{
                   ...styles.status,
                   background: getStatusColor(application.status),
                   color: getStatusTextColor(application.status)
                 }}>
-                  {application.status === 'APPROVED' ? 'Aprobada' :
-                   application.status === 'REJECTED' ? 'Rechazada' :
-                   application.status === 'PENDING' ? 'Pendiente' : application.status}
+                  {application.status === 'Aprobado' ? 'Aprobada' :
+                    application.status === 'Rechazado' ? 'Rechazada' :
+                      application.status === 'Pendiente' ? 'Pendiente' : application.status}
                 </span>
               </div>
 
@@ -73,31 +86,31 @@ export default function EmployeeApplications({ employeeId }) {
                 <div style={styles.detailRow}>
                   <div style={styles.detailItem}>
                     <strong>Fecha de Solicitud:</strong>
-                    <span>{new Date(application.createdAt || application.date).toLocaleDateString()}</span>
+                    <span>{new Date(application.dateCreate || application.createdAt || application.date).toLocaleDateString()}</span>
                   </div>
                   <div style={styles.detailItem}>
                     <strong>Tipo:</strong>
-                    <span>{application.applicationType || application.type}</span>
+                    <span>{application.applicationTypeName || application.applicationType || application.type}</span>
                   </div>
                 </div>
 
-                {application.startDate && application.endDate && (
+                {application.dateStart && application.dateEnd && (
                   <div style={styles.detailRow}>
                     <div style={styles.detailItem}>
                       <strong>Desde:</strong>
-                      <span>{new Date(application.startDate).toLocaleDateString()}</span>
+                      <span>{new Date(application.dateStart).toLocaleDateString()}</span>
                     </div>
                     <div style={styles.detailItem}>
                       <strong>Hasta:</strong>
-                      <span>{new Date(application.endDate).toLocaleDateString()}</span>
+                      <span>{new Date(application.dateEnd).toLocaleDateString()}</span>
                     </div>
                   </div>
                 )}
 
-                {application.description && (
+                {application.reason && (
                   <div style={styles.detailItem}>
                     <strong>Descripción:</strong>
-                    <p style={styles.description}>{application.description}</p>
+                    <p style={styles.description}>{application.reason}</p>
                   </div>
                 )}
 
@@ -116,64 +129,124 @@ export default function EmployeeApplications({ employeeId }) {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <div style={styles.modalHeader}>
+              <button style={styles.closeButton} onClick={() => setShowModal(false)}>✖</button>
+            </div>
+            <EmployeeNewApplication employeeId={employeeId} onCreated={handleCreated} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 const styles = {
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  button: {
+    padding: "10px 20px",
+    background: "#dc3545",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
   applicationsContainer: {
-    padding: '20px',
+    padding: "20px",
   },
   applicationCard: {
-    background: '#fff',
-    borderRadius: '12px',
-    padding: '20px',
-    marginBottom: '20px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    maxWidth: '800px',
-    margin: '0 auto 20px auto',
+    background: "#fff",
+    borderRadius: "12px",
+    padding: "20px",
+    marginBottom: "20px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    maxWidth: "800px",
+    margin: "0 auto 20px auto",
   },
   applicationHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-    borderBottom: '2px solid #f0f0f0',
-    paddingBottom: '15px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+    borderBottom: "2px solid #f0f0f0",
+    paddingBottom: "15px",
   },
   status: {
-    padding: '4px 8px',
-    borderRadius: '4px',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    padding: "4px 8px",
+    borderRadius: "4px",
+    fontSize: "12px",
+    fontWeight: "bold",
+    textTransform: "uppercase",
   },
   applicationDetails: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
   },
   detailRow: {
-    display: 'flex',
-    gap: '40px',
-    flexWrap: 'wrap',
+    display: "flex",
+    gap: "40px",
+    flexWrap: "wrap",
   },
   detailItem: {
     flex: 1,
-    minWidth: '200px',
+    minWidth: "200px",
   },
   description: {
-    margin: '5px 0 0 0',
-    color: '#555',
-    lineHeight: '1.5',
+    margin: "5px 0 0 0",
+    color: "#555",
+    lineHeight: "1.5",
   },
   noApplications: {
-    textAlign: 'center',
-    padding: '50px',
-    background: '#fff',
-    borderRadius: '12px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    maxWidth: '800px',
-    margin: '0 auto',
+    textAlign: "center",
+    padding: "50px",
+    background: "#fff",
+    borderRadius: "12px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    maxWidth: "800px",
+    margin: "0 auto",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0,0,0,0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: "#fff",
+    padding: "20px",
+    borderRadius: "12px",
+    width: "600px",
+    maxHeight: "90vh",
+    overflowY: "auto",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "15px",
+  },
+  closeButton: {
+    background: "transparent",
+    border: "none",
+    fontSize: "18px",
+    cursor: "pointer",
   },
 };

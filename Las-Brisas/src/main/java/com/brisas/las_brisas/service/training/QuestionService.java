@@ -27,6 +27,10 @@ public class QuestionService {
         return iquestion.findById(id);
     }
 
+    public List<question> getQuestionsByModule(int moduleId) {
+        return iquestion.findByModuleInductionId(moduleId);
+    }
+
     public ResponseDTO<questionDTO> delete(int id) {
         Optional<question> opt = iquestion.findById(id);
         if (opt.isEmpty()) {

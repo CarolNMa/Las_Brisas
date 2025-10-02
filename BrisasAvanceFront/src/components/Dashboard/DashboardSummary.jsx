@@ -1,31 +1,66 @@
+import { useEffect, useState } from "react";
 import Card from "../Layout/Tarjeta";
 import { exportCSV } from "../Comunes/Utils/exportCSV";
+import ApiService from "../../services/api";
 import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    PieChart,
-    Pie,
-    Cell,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+    PieChart, Pie, Cell,
 } from "recharts";
 
-export default function DashboardSummary({
-    empleados,
-    users,
-    applications,
-    contratos,
-    areas,
-    asistencias,
-    setActive,
-}) {
+export default function DashboardSummary({ setActive }) {
+    const [empleados, setEmpleados] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [applications, setApplications] = useState([]);
+    const [contratos, setContratos] = useState([]);
+    const [areas, setAreas] = useState([]);
+    const [asistencias, setAsistencias] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Cargar datos individualmente para que si una API falla, las demás sigan funcionando
+            const results = await Promise.allSettled([
+                ApiService.getAllEmployees().catch(err => { console.warn("Error cargando empleados:", err); return []; }),
+                ApiService.getAllUsers().catch(err => { console.warn("Error cargando usuarios:", err); return []; }),
+                ApiService.getAllApplications().catch(err => { console.warn("Error cargando solicitudes:", err); return []; }),
+                ApiService.getAllContracts().catch(err => { console.warn("Error cargando contratos:", err); return []; }),
+                ApiService.getAllAreas().catch(err => { console.warn("Error cargando áreas:", err); return []; }),
+                ApiService.getAllAttendance().catch(err => { console.warn("Error cargando asistencias:", err); return []; }),
+            ]);
+
+            setEmpleados(results[0].status === 'fulfilled' ? results[0].value || [] : []);
+            setUsers(results[1].status === 'fulfilled' ? results[1].value || [] : []);
+            setApplications(results[2].status === 'fulfilled' ? results[2].value || [] : []);
+            setContratos(results[3].status === 'fulfilled' ? results[3].value || [] : []);
+            setAreas(results[4].status === 'fulfilled' ? results[4].value || [] : []);
+            setAsistencias(results[5].status === 'fulfilled' ? results[5].value || [] : []);
+
+            // Verificar si todas las APIs fallaron
+            const allFailed = results.every(result => result.status === 'rejected');
+            if (allFailed) {
+                setError("Error al cargar los datos desde las APIs. Verifica que el backend esté ejecutándose y que tengas permisos de administrador.");
+            }
+        } catch (err) {
+            console.error("❌ Error general cargando datos del dashboard:", err);
+            setError("Error general al cargar los datos. Revisa la consola para más detalles.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ---- Procesamiento de datos ----
     const employeesByArea = areas.map((area) => ({
         name: area.name,
-        count: empleados.filter((e) =>
-            e.area?.id === area.id || e.areaId === area.id
+        count: empleados.filter(
+            (e) => e.area?.id === area.id || e.areaId === area.id
         ).length,
     }));
 
@@ -38,6 +73,27 @@ export default function DashboardSummary({
     );
 
     const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
+    if (loading) {
+        return (
+            <div style={{ textAlign: "center", padding: 50 }}>
+                <h2>Cargando datos del dashboard...</h2>
+                <p>Conectando con las APIs para obtener la información más reciente.</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ textAlign: "center", padding: 50, color: "red" }}>
+                <h2>Error al cargar datos</h2>
+                <p>{error}</p>
+                <button onClick={loadData} style={styles.btn}>
+                    🔄 Reintentar
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div>

@@ -23,6 +23,14 @@ public class ModuleInductionService {
         return imodulInduction.findAll();
     }
 
+    public List<moduleInduction> getModulesByInduction(int inductionId) {
+        return imodulInduction.findByInductionId(inductionId);
+    }
+
+    public List<moduleInduction> findByInductionId(int inductionId) {
+        return imodulInduction.findByInductionId(inductionId);
+    }
+
     public Optional<moduleInduction> findById(int id) {
         return imodulInduction.findById(id);
     }
@@ -38,7 +46,7 @@ public class ModuleInductionService {
 
     public ResponseDTO<module_inductionDTO> save(module_inductionDTO dto) {
         try {
-            
+
             if (dto.getInductionId() <= 0) {
                 return new ResponseDTO<>("El ID de la inducción es requerido", HttpStatus.BAD_REQUEST.toString(), null);
             }

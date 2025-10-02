@@ -15,7 +15,28 @@ export default function ApplicationsModule() {
         try {
             setLoading(true);
             const data = await ApiService.getAllApplications();
-            setApplications(data.data || data);
+
+            // Enriquecer con datos de empleado
+            const withDetails = await Promise.all(
+                (data.data || data).map(async (app) => {
+                    let employeeName = "";
+                    try {
+                        if (app.employeeId) {
+                            const emp = await ApiService.getEmployeeById(app.employeeId);
+                            employeeName = `${emp.firstName} ${emp.lastName}`;
+                        }
+                    } catch (err) {
+                        console.error("Error obteniendo empleado:", err);
+                    }
+
+                    return {
+                        ...app,
+                        employeeName,
+                    };
+                })
+            );
+
+            setApplications(withDetails);
         } catch (err) {
             console.error("Error cargando solicitudes:", err);
         } finally {
@@ -77,6 +98,7 @@ export default function ApplicationsModule() {
                     <tr>
                         <th style={styles.th}>Empleado</th>
                         <th style={styles.th}>Tipo</th>
+                        <th style={styles.th}>Documento</th>
                         <th style={styles.th}>Fecha Inicio</th>
                         <th style={styles.th}>Fecha Fin</th>
                         <th style={styles.th}>Motivo</th>
@@ -87,8 +109,20 @@ export default function ApplicationsModule() {
                 <tbody>
                     {applications.map((a, idx) => (
                         <tr key={a.id || `app-${idx}`} style={styles.tr}>
-                            <td style={styles.td}>{a.employee?.firstName} {a.employee?.lastName}</td>
-                            <td style={styles.td}>{a.application_type?.name}</td>
+                            <td style={styles.td}>{a.employeeName || "Desconocido"}</td>
+                            <td style={styles.td}>{a.applicationTypeName}</td>
+                            <td style={styles.td}>
+                                {a.documentUrl ? (
+                                    <button
+                                        style={styles.btnSmall}
+                                        onClick={() => ApiService.downloadApplication(a.documentUrl)}
+                                    >
+                                        Descargar
+                                    </button>
+                                ) : (
+                                    "Sin documento"
+                                )}
+                            </td>
                             <td style={styles.td}>{a.dateStart}</td>
                             <td style={styles.td}>{a.dateEnd}</td>
                             <td style={styles.td}>{a.reason}</td>

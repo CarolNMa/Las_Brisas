@@ -23,6 +23,9 @@ export default function Inicio({ user, onLogout }) {
   const [applicationTypes, setApplicationTypes] = useState([]);
   const [employeePosts, setEmployeePosts] = useState([]);
 
+  const [inductions, setInductions] = useState([]);
+  const [trainings, setTrainings] = useState([]);
+
   const [active, setActive] = useState("dashboard");
   const [loading, setLoading] = useState(true);
 
@@ -41,6 +44,9 @@ export default function Inicio({ user, onLogout }) {
     { key: "applicationTypes", label: "Tipos de Solicitud", icon: "📋" },
     { key: "contratos", label: "Contratos", icon: "📄" },
     { key: "employeePosts", label: "Relaciones Empleado - Cargo", icon: "👥" },
+    { key: "inductions", label: "Inducciones", icon: "📚" },
+    { key: "assignInductions", label: "Asignar Inducciones", icon: "📝" },
+    { key: "trainings", label: "Capacitaciones", icon: "🎓" },
   ];
 
   useEffect(() => {
@@ -62,6 +68,8 @@ export default function Inicio({ user, onLogout }) {
         locs,
         appTypes,
         empPosts,
+        inds,
+        trns,
       ] = await Promise.all([
         ApiService.getAllEmployees(),
         ApiService.getAllAreas(),
@@ -74,6 +82,8 @@ export default function Inicio({ user, onLogout }) {
         ApiService.getAllLocations(),
         ApiService.getAllApplicationTypes(),
         ApiService.getAllEmployeePosts(),
+        ApiService.getAllInductions(),
+        ApiService.getAllTrainings(),
       ]);
 
       setEmpleados(emps.data || emps);
@@ -87,8 +97,10 @@ export default function Inicio({ user, onLogout }) {
       setLocations(locs.data || locs);
       setApplicationTypes(appTypes.data || appTypes);
       setEmployeePosts(empPosts.data || empPosts);
+      setInductions(inds.data || inds);   // 🔹
+      setTrainings(trns.data || trns);    // 🔹
     } catch (err) {
-      console.error("❌ Error cargando datos del dashboard:", err);
+      console.error("Error cargando datos del dashboard:", err);
     } finally {
       setLoading(false);
     }
@@ -138,6 +150,11 @@ export default function Inicio({ user, onLogout }) {
               setSelectedAddress={setSelectedAddress}
               employeePosts={employeePosts}
               setEmployeePosts={setEmployeePosts}
+              // 🔹 Pasamos a DashboardModules
+              inductions={inductions}
+              setInductions={setInductions}
+              trainings={trainings}
+              setTrainings={setTrainings}
             />
           )}
         </div>
