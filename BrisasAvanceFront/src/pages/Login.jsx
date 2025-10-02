@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../styles/login.css";
 
@@ -101,7 +101,7 @@ return (
         </button>
 
         <div className="links">
-          <a href="/forgotpass">¿Olvidaste tu contraseña?</a>
+          <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
         </div>
       </form>
     </div>
