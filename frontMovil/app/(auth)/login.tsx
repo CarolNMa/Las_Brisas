@@ -43,7 +43,7 @@ export default function LoginScreen() {
       Alert.alert("Error", "La contraseña es obligatoria");
       return false;
     }
-    if (password.length < 6) {
+    if (password.length < 4) {
       Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres");
       return false;
     }
@@ -57,10 +57,29 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if (validate()) {
       try {
-        await api.login({ email, password });
-        router.push("/dashboard");
-      } catch (error) {
-        Alert.alert("Error", "Credenciales inválidas");
+        const response = await fetch("http://10.3.234.51:8085/api/v1/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) throw new Error("Credenciales inválidas");
+
+        const data = await response.json();
+        console.log("Respuesta:", data);
+
+        // Check if user has ADMIN role
+        if (!data.roles || !data.roles.includes("ADMIN")) {
+          Alert.alert("Acceso denegado", "Solo los administradores pueden acceder a esta aplicación");
+          return;
+        }
+
+        await AsyncStorage.setItem("token", data.token);
+        await AsyncStorage.setItem("username", data.username);
+
+        router.push("/employee");
+      } catch (error: any) {
+        Alert.alert("Error", error.message);
       }
     }
   };
