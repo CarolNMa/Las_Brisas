@@ -29,6 +29,7 @@ export const authStyles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 5,
+        boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
     },
     label: {
         fontSize: 14,
@@ -65,7 +66,6 @@ export const authStyles = StyleSheet.create({
         width: 20,
         height: 20,
         marginRight: 8,
-        resizeMode: "contain",
     },
     input: {
         flex: 1,

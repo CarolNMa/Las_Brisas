@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { authStyles } from "../../styles/authStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../../services/api";
 
 
 export default function LoginScreen() {
@@ -105,6 +106,7 @@ export default function LoginScreen() {
               <Image
                 source={require("../../assets/images/mail.png")}
                 style={authStyles.iconImage}
+                resizeMode="contain"
               />
               <TextInput
                 style={authStyles.input}
@@ -121,6 +123,7 @@ export default function LoginScreen() {
               <Image
                 source={require("../../assets/images/password.png")}
                 style={authStyles.iconImage}
+                resizeMode="contain"
               />
               <TextInput
                 style={authStyles.input}

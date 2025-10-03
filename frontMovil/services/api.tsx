@@ -1,78 +1,152 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = "http://10.3.234.51:8085/api/v1";
+const API_BASE_URL = 'http://localhost:8085/api/v1'; // Adjust if needed
 
-async function getToken() {
-    return await AsyncStorage.getItem("token");
+interface LoginRequest {
+  email: string;
+  password: string;
 }
 
-async function authHeaders() {
-    const token = await getToken();
+interface LoginResponse {
+  token: string;
+  email: string;
+  username: string;
+  roles: string[];
+}
+
+interface User {
+  idUser: number;
+  username: string;
+  email: string;
+  password?: string;
+  status?: 'active' | 'inactive';
+  createdAt?: string;
+  resetCode?: string;
+  resetCodeExpire?: number;
+  roles?: { id: number; name: string; description: string }[];
+}
+
+interface Role {
+  id: number;
+  name: string;
+  description: string;
+}
+
+interface CreateUserRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
+class ApiService {
+  private async getAuthHeaders() {
+    const token = await AsyncStorage.getItem('jwt_token');
     return {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
+  }
+
+  async login(credentials: LoginRequest): Promise<LoginResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error('Login failed');
+    }
+
+    const data: LoginResponse = await response.json();
+    await AsyncStorage.setItem('jwt_token', data.token);
+    return data;
+  }
+
+  async getUsers(): Promise<User[]> {
+    const response = await fetch(`${API_BASE_URL}/user/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch users');
+    }
+
+    return response.json();
+  }
+
+  async getRoles(): Promise<Role[]> {
+    const response = await fetch(`${API_BASE_URL}/role/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch roles');
+    }
+
+    return response.json();
+  }
+
+  async createUser(userData: CreateUserRequest): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/user/`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create user');
+    }
+
+    return response.json();
+  }
+
+  async deleteUser(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/user/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete user');
+    }
+
+    return response.json();
+  }
+
+  async createRole(roleData: { name: string; description: string }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/role/`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(roleData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create role');
+    }
+
+    return response.json();
+  }
+
+  async deleteRole(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/role/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete role');
+    }
+
+    return response.json();
+  }
+
+  // Note: Update not implemented in backend, would need PUT endpoint
+  // async updateUser(id: number, userData: Partial<User>): Promise<any> {
+  //   // Implement if backend adds PUT
+  // }
 }
 
-export async function getAllEmployees() {
-    const res = await fetch(`${API_URL}/employees/all`, {
-        headers: await authHeaders(),
-    });
-    if (!res.ok) throw new Error("Error al obtener empleados");
-    const json = await res.json();
-    return json; // Returns array directly
-}
-
-export async function getEmployeeById(id: string) {
-    const res = await fetch(`${API_URL}/employees/${id}`, {
-        headers: await authHeaders(),
-    });
-    if (!res.ok) throw new Error("Error al obtener empleado");
-    const json = await res.json();
-    return json.data; 
-}
-
-export async function getContractById(id: string) {
-    const res = await fetch(`${API_URL}/contracts/${id}`, {
-        headers: await authHeaders(),
-    });
-    if (!res.ok) throw new Error("Error al obtener contrato");
-    const json = await res.json();
-    return json.data;
-}
-
-export async function getEmployeeContract(id: string) {
-    const res = await fetch(`${API_URL}/contracts/employee/${id}`, {
-        headers: await authHeaders(),
-    });
-    if (!res.ok) throw new Error("Error al obtener contrato");
-    const json = await res.json();
-    return json.data;
-}
-
-export async function getAttendanceById(id: string) {
-    const res = await fetch(`${API_URL}/attendance/${id}`, {
-        headers: await authHeaders(),
-    });
-    if (!res.ok) throw new Error("Error al obtener asistencia");
-    const json = await res.json();
-    return json.data;
-}
-
-export async function getEmployeeAttendance(id: string) {
-    const res = await fetch(`${API_URL}/attendance/employee/${id}`, {
-        headers: await authHeaders(),
-    });
-    if (!res.ok) throw new Error("Error al obtener asistencia");
-    const json = await res.json();
-    return json.data;
-}
-
-export async function getEmployeePermissions(id: string) {
-    const res = await fetch(`${API_URL}/applications/employee/${id}`, {
-        headers: await authHeaders(),
-    });
-    if (!res.ok) throw new Error("Error al obtener permisos");
-    const json = await res.json();
-    return json.data; 
-}
+export default new ApiService();
