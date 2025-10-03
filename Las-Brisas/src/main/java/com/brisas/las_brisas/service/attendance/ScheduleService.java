@@ -3,6 +3,8 @@ package com.brisas.las_brisas.service.attendance;
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.attendance.scheduleDTO;
 import com.brisas.las_brisas.model.attendance.schedule;
+import com.brisas.las_brisas.model.attendance.schedule.DayWeek;
+import com.brisas.las_brisas.model.attendance.schedule.Shift;
 import com.brisas.las_brisas.repository.attendance.Ischedule;
 
 import lombok.RequiredArgsConstructor;
@@ -16,22 +18,22 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final Ischedule ischedule;
+    private final Ischedule scheduleRepo;
 
     public List<schedule> getAll() {
-        return ischedule.findAll();
+        return scheduleRepo.findAll();
     }
 
     public Optional<schedule> findById(int id) {
-        return ischedule.findById(id);
+        return scheduleRepo.findById(id);
     }
 
     public ResponseDTO<scheduleDTO> delete(int id) {
-        Optional<schedule> opt = ischedule.findById(id);
+        Optional<schedule> opt = scheduleRepo.findById(id);
         if (opt.isEmpty()) {
             return new ResponseDTO<>("El horario no existe", HttpStatus.NOT_FOUND.toString(), null);
         }
-        ischedule.deleteById(id);
+        scheduleRepo.deleteById(id);
         return new ResponseDTO<>("Horario eliminado correctamente", HttpStatus.OK.toString(), null);
     }
 
@@ -47,7 +49,7 @@ public class ScheduleService {
                 return new ResponseDTO<>("La hora de inicio no puede ser mayor a la hora de fin",
                         HttpStatus.BAD_REQUEST.toString(), null);
             }
-            if (dto.getDay_week() == null || dto.getDay_week().trim().isEmpty()) {
+            if (dto.getDayWeek() == null || dto.getDayWeek().trim().isEmpty()) {
                 return new ResponseDTO<>("El día de la semana es obligatorio", HttpStatus.BAD_REQUEST.toString(), null);
             }
             if (dto.getShift() == null || dto.getShift().trim().isEmpty()) {
@@ -55,7 +57,7 @@ public class ScheduleService {
             }
 
             schedule entity = convertToEntity(dto);
-            ischedule.save(entity);
+            scheduleRepo.save(entity);
 
             return new ResponseDTO<>("Horario guardado correctamente",
                     HttpStatus.OK.toString(), convertToDTO(entity));
@@ -66,19 +68,18 @@ public class ScheduleService {
     }
 
     private schedule convertToEntity(scheduleDTO dto) {
-
-        schedule.shift shiftEnum;
+        Shift shiftEnum;
         try {
-            shiftEnum = schedule.shift.valueOf(dto.getShift().toUpperCase());
-        } catch (Exception s) {
-            shiftEnum = schedule.shift.mañana;
+            shiftEnum = Shift.valueOf(dto.getShift().toUpperCase());
+        } catch (Exception e) {
+            shiftEnum = Shift.MANANA;
         }
 
-        schedule.day_week day_weekEnum;
+        DayWeek dayEnum;
         try {
-            day_weekEnum = schedule.day_week.valueOf(dto.getDay_week().toUpperCase());
-        } catch (Exception s) {
-            day_weekEnum = schedule.day_week.lunes;
+            dayEnum = DayWeek.valueOf(dto.getDayWeek().toUpperCase());
+        } catch (Exception e) {
+            dayEnum = DayWeek.LUNES;
         }
 
         return schedule.builder()
@@ -86,9 +87,8 @@ public class ScheduleService {
                 .time_start(dto.getTime_start())
                 .time_end(dto.getTime_end())
                 .shift(shiftEnum)
-                .documentUrl(dto.getDocumentUrl())
                 .overtime(dto.getOvertime())
-                .day_week(day_weekEnum)
+                .dayWeek(dayEnum) 
                 .build();
     }
 
@@ -98,9 +98,8 @@ public class ScheduleService {
                 .time_start(entity.getTime_start())
                 .time_end(entity.getTime_end())
                 .shift(entity.getShift().name())
-                .documentUrl(entity.getDocumentUrl())
                 .overtime(entity.getOvertime())
-                .day_week(entity.getDay_week().name())
+                .dayWeek(entity.getDayWeek().name())
                 .build();
     }
 }

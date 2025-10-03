@@ -96,6 +96,16 @@ export default function EmployeesModule() {
 
         if (!form.birthdate) {
             newErrors.birthdate = "La fecha de nacimiento es obligatoria.";
+        } else {
+            const birthDate = new Date(form.birthdate);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+
+            if (actualAge < 18) {
+                newErrors.birthdate = "Debe ser mayor de 18 años.";
+            }
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -181,6 +191,23 @@ export default function EmployeesModule() {
                                 <button style={styles.btnAlt} onClick={() => handleDelete(e.id)}>
                                     Eliminar
                                 </button>
+
+                                <button
+                                    style={styles.btnSmall}
+                                    onClick={async () => {
+                                        try {
+                                            const blob = await ApiService.generateCertificateByEmployee(e.id);
+                                            await ApiService.downloadCertificate(
+                                                blob,
+                                                `certificado_${e.firstName}_${e.lastName}.pdf`
+                                            );
+                                        } catch (err) {
+                                            alert("❌ Error al generar certificado: " + err.message);
+                                        }
+                                    }}
+                                >
+                                    Certificado
+                                </button>
                             </td>
                         </tr>
                     ))}
@@ -206,6 +233,7 @@ export default function EmployeesModule() {
                                         {u.username} ({u.email})
                                     </option>
                                 ))}
+
                             </select>
                             {errors.userId && <span style={{ color: "red", fontSize: "12px" }}>{errors.userId}</span>}
                         </div>

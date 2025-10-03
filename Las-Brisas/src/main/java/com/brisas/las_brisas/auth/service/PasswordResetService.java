@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import com.brisas.las_brisas.repository.user.Iuser;
-import com.brisas.las_brisas.auth.service.EmailService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.brisas.las_brisas.model.user.user;
-import java.util.Optional;
 import java.util.Random;
 
 @Service

@@ -60,10 +60,6 @@ export default function EmployeeContract() {
                 <strong>Tipo de Contrato:</strong>
                 <span>{contract.type}</span>
               </div>
-              <div style={styles.detailItem}>
-                <strong>Empleado ID:</strong>
-                <span>{contract.employee}</span>
-              </div>
             </div>
 
             <div style={styles.detailRow}>

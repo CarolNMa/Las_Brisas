@@ -4,9 +4,9 @@ import { styles } from "../Dashboard/styles";
 import Modal from "../Layout/Modal";
 
 export default function EmployeePostModule() {
-    const [relations, setRelations] = useState([]); // relaciones empleado-cargo
-    const [employees, setEmployees] = useState([]); // lista de empleados
-    const [positions, setPositions] = useState([]); // lista de cargos
+    const [relations, setRelations] = useState([]); 
+    const [employees, setEmployees] = useState([]); 
+    const [positions, setPositions] = useState([]); 
     const [loading, setLoading] = useState(true);
 
     const [modalOpen, setModalOpen] = useState(false);

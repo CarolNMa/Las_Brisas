@@ -11,5 +11,6 @@ public interface Iemployee extends JpaRepository<employee, Integer> {
 
     Optional<employee> findByUser_IdUser(int idUser);
 
+    Optional<employee> findByUser_Email(String email);
 
 }

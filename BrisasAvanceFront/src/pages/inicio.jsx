@@ -12,6 +12,7 @@ import ApiService from "../services/api";
 export default function Inicio({ user, onLogout }) {
   const [areas, setAreas] = useState([]);
   const [empleados, setEmpleados] = useState([]);
+  const [shedules, setShedules] = useState([]);
   const [asistencias, setAsistencias] = useState([]);
   const [applications, setApplications] = useState([]);
   const [contratos, setContratos] = useState([]);
@@ -22,6 +23,9 @@ export default function Inicio({ user, onLogout }) {
   const [locations, setLocations] = useState([]);
   const [applicationTypes, setApplicationTypes] = useState([]);
   const [employeePosts, setEmployeePosts] = useState([]);
+  const [employeeLocations, setEmployeeLocations] = useState([]);
+  const [employeeSchedules, setEmployeeSchedules] = useState([]);
+  const[employeeAreas, setEmployeeAreas] = useState([]);
 
   const [inductions, setInductions] = useState([]);
   const [trainings, setTrainings] = useState([]);
@@ -32,18 +36,25 @@ export default function Inicio({ user, onLogout }) {
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
 
+  const [resumes, setResumes] = useState([]);
+
   const items = [
     { key: "dashboard", label: "Resumen", icon: "🏠" },
     { key: "users", label: "Usuarios", icon: "👤" },
     { key: "roles", label: "Roles", icon: "🔑" },
     { key: "empleados", label: "Empleados", icon: "👥" },
-    { key: "positions", label: "Posiciones", icon: "💼" },
+    { key: "shedules", label: "Horarios", icon: "📅" },
+    { key: "positions", label: "Cargo", icon: "💼" },
     { key: "locations", label: "Ubicaciones", icon: "📍" },
     { key: "areas", label: "Áreas", icon: "🏢" },
     { key: "applications", label: "Solicitudes", icon: "📩" },
     { key: "applicationTypes", label: "Tipos de Solicitud", icon: "📋" },
+    { key: "resumes", label: "Hojas de Vida", icon: "📄" },
     { key: "contratos", label: "Contratos", icon: "📄" },
     { key: "employeePosts", label: "Relaciones Empleado - Cargo", icon: "👥" },
+    { key: "employeeAreas", label: "Relaciones Empleado - Área", icon: "👥" },
+    { key: "employeeLocations", label: "Relaciones Empleado - Ubicación", icon: "👥" },
+    { key: "employeeSchedules", label: "Relaciones Empleado - Horario", icon: "👥" },
     { key: "inductions", label: "Inducciones", icon: "📚" },
     { key: "assignInductions", label: "Asignar Inducciones", icon: "📝" },
     { key: "trainings", label: "Capacitaciones", icon: "🎓" },
@@ -58,6 +69,7 @@ export default function Inicio({ user, onLogout }) {
       setLoading(true);
       const [
         emps,
+        sheds,
         ars,
         apps,
         cons,
@@ -67,11 +79,16 @@ export default function Inicio({ user, onLogout }) {
         poss,
         locs,
         appTypes,
+        resumes,
         empPosts,
+        empAreas,
+        empLocations,
+        empSchedules,
         inds,
         trns,
       ] = await Promise.all([
         ApiService.getAllEmployees(),
+        ApiService.getAllSchedules(),
         ApiService.getAllAreas(),
         ApiService.getAllApplications(),
         ApiService.getAllContracts(),
@@ -81,12 +98,17 @@ export default function Inicio({ user, onLogout }) {
         ApiService.getAllPositions(),
         ApiService.getAllLocations(),
         ApiService.getAllApplicationTypes(),
+        ApiService.getAllResumes(),
         ApiService.getAllEmployeePosts(),
+        ApiService.getAllEmployeeAreas(),
+        ApiService.getAllEmployeeLocations(),
+        ApiService.getAllEmployeeSchedules(),
         ApiService.getAllInductions(),
         ApiService.getAllTrainings(),
       ]);
 
       setEmpleados(emps.data || emps);
+      setShedules(sheds.data || sheds);
       setAreas(ars.data || ars);
       setApplications(apps.data || apps);
       setContratos(cons.data || cons);
@@ -96,9 +118,13 @@ export default function Inicio({ user, onLogout }) {
       setPositions(poss.data || poss);
       setLocations(locs.data || locs);
       setApplicationTypes(appTypes.data || appTypes);
+      setResumes(resumes.data || resumes);
       setEmployeePosts(empPosts.data || empPosts);
-      setInductions(inds.data || inds);   // 🔹
-      setTrainings(trns.data || trns);    // 🔹
+      setEmployeeAreas(empAreas.data || empAreas);
+      setEmployeeLocations(empLocations.data || empLocations);
+      setEmployeeSchedules(empSchedules.data || empSchedules);
+      setInductions(inds.data || inds);
+      setTrainings(trns.data || trns);
     } catch (err) {
       console.error("Error cargando datos del dashboard:", err);
     } finally {
@@ -131,6 +157,8 @@ export default function Inicio({ user, onLogout }) {
               active={active}
               empleados={empleados}
               setEmpleados={setEmpleados}
+              shedules={shedules}
+              setShedules={setShedules}
               areas={areas}
               setAreas={setAreas}
               applications={applications}
@@ -146,11 +174,17 @@ export default function Inicio({ user, onLogout }) {
               locations={locations}
               setLocations={setLocations}
               applicationTypes={applicationTypes}
+              setApplicationTypes={setApplicationTypes}
               setMapModalOpen={setMapModalOpen}
               setSelectedAddress={setSelectedAddress}
               employeePosts={employeePosts}
               setEmployeePosts={setEmployeePosts}
-              // 🔹 Pasamos a DashboardModules
+              employeeAreas={employeeAreas}
+              setEmployeeAreas={setEmployeeAreas}
+              employeeLocations={employeeLocations}
+              setEmployeeLocations={setEmployeeLocations}
+              employeeSchedules={employeeSchedules}
+              setEmployeeSchedules={setEmployeeSchedules}
               inductions={inductions}
               setInductions={setInductions}
               trainings={trainings}

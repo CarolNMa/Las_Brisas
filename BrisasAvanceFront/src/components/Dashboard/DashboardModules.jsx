@@ -12,6 +12,11 @@ import TrainingsModule from "../Admin/TrainingsModule";
 import EmployeePostModule from "../Admin/EmployeePostModule";
 import InductionsModule from "../Admin/InductionsModule";
 import AssignInductionModule from "../Admin/AssignInductionModule";
+import ResumesModule from "../Admin/ResumeModule";
+import EmployeeScheduleModule from "../Admin/EmployeeScheduleModule";
+import EmployeeLocationModule from "../Admin/EmployeeLocationModule";
+import EmployeeAreaModule from "../Admin/EmployeeAreaModule";
+import SchedulesModule from "../Admin/ScheduleModule";
 
 export default function DashboardModules({ active }) {
     switch (active) {
@@ -21,6 +26,8 @@ export default function DashboardModules({ active }) {
             return <RolesModule />;
         case "empleados":
             return <EmployeesModule />;
+        case "shedules":
+            return <SchedulesModule />;
         case "positions":
             return <PositionsModule />;
         case "locations":
@@ -31,6 +38,9 @@ export default function DashboardModules({ active }) {
             return <ApplicationsModule />;
         case "applicationTypes":
             return <ApplicationTypesModule />;
+        case "resumes":
+            return <ResumesModule />;
+
         case "contratos":
             return <ContractsModule />;
         case "attendance":
@@ -43,6 +53,12 @@ export default function DashboardModules({ active }) {
             return <AssignInductionModule />;
         case "employeePosts":
             return <EmployeePostModule />;
+        case "employeeAreas":
+            return <EmployeeAreaModule />;
+        case "employeeLocations":
+            return <EmployeeLocationModule />;
+        case "employeeSchedules":
+            return <EmployeeScheduleModule />;
         default:
             return <p>Seleccione un módulo del menú</p>;
     }

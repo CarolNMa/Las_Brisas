@@ -2,6 +2,7 @@ package com.brisas.las_brisas.service.employee;
 
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.employee.emplo_locationDTO;
+import com.brisas.las_brisas.DTO.location.employee_locationDetailDTO;
 import com.brisas.las_brisas.model.employee.emplo_location;
 import com.brisas.las_brisas.model.employee.employee;
 import com.brisas.las_brisas.model.location.location;
@@ -13,46 +14,48 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeLocationService {
 
-    private final Iemplo_location iemplo_location;
+    private final Iemplo_location iEmployeeLocation;
 
-    public List<emplo_location> getAll() {
-        return iemplo_location.findAll();
+    public List<employee_locationDetailDTO> getAll() {
+        return iEmployeeLocation.findAll()
+                .stream()
+                .map(this::convertToDetailDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<emplo_location> findById(int id) {
-        return iemplo_location.findById(id);
+    public Optional<employee_locationDetailDTO> findById(int id) {
+        return iEmployeeLocation.findById(id).map(this::convertToDetailDTO);
     }
 
     public ResponseDTO<emplo_locationDTO> delete(int id) {
-        Optional<emplo_location> opt = iemplo_location.findById(id);
+        Optional<emplo_location> opt = iEmployeeLocation.findById(id);
         if (opt.isEmpty()) {
             return new ResponseDTO<>("La relación empleado-ubicación no existe", HttpStatus.NOT_FOUND.toString(), null);
         }
-        iemplo_location.deleteById(id);
+        iEmployeeLocation.deleteById(id);
         return new ResponseDTO<>("Relación eliminada correctamente", HttpStatus.OK.toString(), null);
     }
 
     public ResponseDTO<emplo_locationDTO> save(emplo_locationDTO dto) {
         try {
-            if (dto.getEmployeeId() <= 0) {
-                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
-            }
-            if (dto.getLocationId() <= 0) {
-                return new ResponseDTO<>("El ID de la ubicación es requerido", HttpStatus.BAD_REQUEST.toString(), null);
+            if (dto.getEmployeeId() <= 0 || dto.getLocationId() <= 0) {
+                return new ResponseDTO<>("ID de empleado y ubicación son requeridos",
+                        HttpStatus.BAD_REQUEST.toString(), null);
             }
 
             emplo_location entity = convertToEntity(dto);
-            iemplo_location.save(entity);
+            iEmployeeLocation.save(entity);
 
-            return new ResponseDTO<>("Relación guardada correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
+            return new ResponseDTO<>("Relación guardada correctamente", HttpStatus.OK.toString(), dto);
         } catch (Exception e) {
-            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                    null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 
@@ -70,11 +73,13 @@ public class EmployeeLocationService {
                 .build();
     }
 
-    private emplo_locationDTO convertToDTO(emplo_location entity) {
-        return emplo_locationDTO.builder()
+    private employee_locationDetailDTO convertToDetailDTO(emplo_location entity) {
+        return employee_locationDetailDTO.builder()
                 .id(entity.getId())
-                .employeeId(entity.getEmployee() != null ? entity.getEmployee().getId() : 0)
-                .locationId(entity.getLocation() != null ? entity.getLocation().getId() : 0)
+                .employeeId(entity.getEmployee().getId())
+                .employeeName(entity.getEmployee().getFirstName() + " " + entity.getEmployee().getLastName())
+                .locationId(entity.getLocation().getId())
+                .locationName(entity.getLocation().getNameLocation())
                 .build();
     }
 }

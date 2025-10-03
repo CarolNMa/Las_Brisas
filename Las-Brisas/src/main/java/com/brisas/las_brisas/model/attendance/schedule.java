@@ -2,6 +2,7 @@ package com.brisas.las_brisas.model.attendance;
 
 import java.time.LocalTime;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,31 +26,28 @@ public class schedule {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "shift", nullable = false)
-    private shift shift;
+    private Shift shift;
 
-    public enum shift {
-        mañana,
-        tarde,
-        noche
+    public enum Shift {
+        MANANA,
+        TARDE,
+        NOCHE
     }
-
-    @Column(name = "document_url", nullable = false)
-    private String documentUrl;
 
     @Column(name = "overtime", nullable = false)
     private LocalTime overtime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "day_week", nullable = false)
-    private day_week day_week;
+    private DayWeek dayWeek;
 
-    public enum day_week {
-        lunes,
-        martes,
-        miercoles,
-        jueves,
-        viernes,
-        sabado,
-        domingo
+    public enum DayWeek {
+        LUNES,
+        MARTES,
+        MIERCOLES,
+        JUEVES,
+        VIERNES,
+        SABADO,
+        DOMINGO
     }
 }
