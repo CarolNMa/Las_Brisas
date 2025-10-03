@@ -35,7 +35,7 @@ public class employeeProfileService {
 
                 List<String> horarios = emp.getEmploSchedules().stream()
                                 .map(es -> es.getSchedule().getShift().name() + " " +
-                                                es.getSchedule().getDay_week().name() +
+                                                es.getSchedule().getDayWeek().name() +
                                                 " (" + es.getSchedule().getTime_start() + " - "
                                                 + es.getSchedule().getTime_end() + ")")
                                 .toList();

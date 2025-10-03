@@ -19,43 +19,41 @@ class ApiService {
   }
 
   async request(endpoint, options = {}) {
-      const url = `${API_URL}${endpoint}`;
-      const config = {
-          headers: this.getAuthHeaders(),
-          ...options,
-      };
+    const url = `${API_URL}${endpoint}`;
+    const config = {
+      headers: this.getAuthHeaders(),
+      ...options,
+    };
 
-      console.log("Request:", url, config);
+    console.log("Request:", url, config);
 
-      try {
-          const response = await fetch(url, config);
-          if (!response.ok) {
-              console.error("Error HTTP:", response.status);
-              const errorText = await response.text().catch(() => "Error desconocido");
-              throw new Error(`Error HTTP ${response.status}: ${errorText}`);
-          }
-
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-              try {
-                  return await response.json();
-              } catch (jsonError) {
-                  console.error("Error parsing JSON:", jsonError);
-                  throw new Error("La respuesta del servidor no es un JSON válido");
-              }
-          } else {
-              // Si no es JSON, devolver el texto
-              return await response.text();
-          }
-      } catch (error) {
-          console.error("API request failed:", error);
-          throw error;
+    try {
+      const response = await fetch(url, config);
+      if (!response.ok) {
+        console.error("Error HTTP:", response.status);
+        const errorText = await response.text().catch(() => "Error desconocido");
+        throw new Error(`Error HTTP ${response.status}: ${errorText}`);
       }
+
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        try {
+          return await response.json();
+        } catch (jsonError) {
+          console.error("Error parsing JSON:", jsonError);
+          throw new Error("La respuesta del servidor no es un JSON válido");
+        }
+      } else {
+        // Si no es JSON, devolver el texto
+        return await response.text();
+      }
+    } catch (error) {
+      console.error("API request failed:", error);
+      throw error;
+    }
   }
 
-  // ==================================================
-  // 🔐 AUTENTICACIÓN Y RESET DE CONTRASEÑA
-  // ==================================================
+  // AUTENTICACIÓN Y RESET DE CONTRASEÑA
   async forgotPassword(email) {
     return this.request("/password/forgot", {
       method: "POST",
@@ -518,7 +516,7 @@ class ApiService {
 
   // ---- Respuestas ----
   async getAnswersByQuestion(questionId) {
-    return this.request(`/answers/${questionId}`);
+    return this.request(`/answers/question/${questionId}`);
   }
 
   async createAnswer(data) {
@@ -611,7 +609,7 @@ class ApiService {
   }
 
   async updateEmployee(id, employeeData) {
-    return this.request("/employees/", {
+    return this.request(`/employees/${id}`), ({
       method: "POST",
       body: JSON.stringify({ ...employeeData, id: id }),
     });
@@ -620,6 +618,191 @@ class ApiService {
   async deleteEmployee(id) {
     return this.request(`/employees/${id}`, { method: "DELETE" });
   }
+
+  // ---- Hojas de Vida ----
+  async getAllResumes() {
+    return this.request("/resumes");
+  }
+
+  async getResumeById(id) {
+    return this.request(`/resumes/${id}`);
+  }
+
+  async uploadResume(formData) {
+    const token = localStorage.getItem("brisas:token");
+
+    const response = await fetch(`${API_URL}/resumes/upload`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` }, // ⚠️ sin Content-Type
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error al subir hoja de vida: ${response.status}`);
+    }
+    return response.json();
+  }
+
+  async deleteResume(id) {
+    return this.request(`/resumes/${id}`, { method: "DELETE" });
+  }
+
+  async updateResume(id, formData) {
+    const token = localStorage.getItem("brisas:token");
+
+    const response = await fetch(`${API_URL}/resumes/${id}`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` }, // ⚠️ no pongas Content-Type
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error al actualizar hoja de vida: ${response.status}`);
+    }
+    return response.json();
+  }
+
+
+  async downloadResumeFile(id) {
+    const token = localStorage.getItem("brisas:token");
+    const response = await fetch(`${API_URL}/resumes/${id}/download`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) throw new Error("No se pudo descargar la hoja de vida");
+    return await response.blob();
+  }
+
+  async downloadResume(id) {
+    const blob = await this.downloadResumeFile(id);
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `resume_${id}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(downloadUrl);
+  }
+
+  // ==== CERTIFICADOS LABORALES ====
+
+  async generateCertificateByEmployee(employeeId) {
+    const token = localStorage.getItem("brisas:token");
+
+    const response = await fetch(`${API_URL}/certificates/employee/${employeeId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) throw new Error("No se pudo generar el certificado");
+    return await response.blob(); // PDF como blob
+  }
+
+  // Utilidad para descargar blob como archivo
+  async downloadCertificate(blob, filename = "certificado.pdf") {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  }
+
+
+  // ---- Employee - Post ----
+  async getAllEmployeePosts() {
+    return this.request("/employee-post");
+  }
+  async createEmployeePost(data) {
+    return this.request("/employee-post", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+  async updateEmployeePost(id, data) {
+    return this.request(`/employee-post/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+  async deleteEmployeePost(id) {
+    return this.request(`/employee-post/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Employee Areas ----
+  async getAllEmployeeAreas() {
+    return this.request("/employee-areas");
+  }
+
+  async createEmployeeArea(data) {
+    return this.request("/employee-areas", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteEmployeeArea(id) {
+    return this.request(`/employee-areas/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Employee - Location ----
+
+  async getAllEmployeeLocations() {
+    return this.request("/employee-locations");
+  }
+  async createEmployeeLocation(data) {
+    return this.request("/employee-locations", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+  async deleteEmployeeLocation(id) {
+    return this.request(`/employee-locations/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Employee - Schedule ----
+  async getAllEmployeeSchedules() {
+    return this.request("/employee-schedules");
+  }
+  async createEmployeeSchedule(data) {
+    return this.request("/employee-schedules", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+  async deleteEmployeeSchedule(id) {
+    return this.request(`/employee-schedules/${id}`, { method: "DELETE" });
+  }
+
+  // ==== SCHEDULES ====
+  async getAllSchedules() {
+    return this.request(`/schedules`);
+  }
+
+  async getScheduleById(id) {
+    return this.request(`/schedules/${id}`);
+  }
+
+  async createSchedule(data) {
+    return this.request(`/schedules`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateSchedule(id, data) {
+    return this.request(`/schedules/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSchedule(id) {
+    return this.request(`/schedules/${id}`, { method: "DELETE" });
+  }
+
 }
 
 export default new ApiService();

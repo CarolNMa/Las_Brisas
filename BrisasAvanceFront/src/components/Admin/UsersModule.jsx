@@ -16,7 +16,7 @@ export default function UsersModule() {
         email: "",
         password: "",
         status: "ACTIVE",
-        rol: "", // importante: este nombre coincide con RegisterRequestDTO
+        rol: "", // importante: coincide con RegisterRequestDTO
     });
     const [errors, setErrors] = useState({});
 
@@ -34,7 +34,7 @@ export default function UsersModule() {
             setUsers(usrs.data || usrs);
             setRoles(rls.data || rls);
         } catch (err) {
-            console.error("Error cargando datos:", err);
+            console.error("❌ Error cargando datos:", err);
         } finally {
             setLoading(false);
         }
@@ -46,7 +46,7 @@ export default function UsersModule() {
             await ApiService.deleteUser(idUser);
             setUsers(users.filter((u) => u.idUser !== idUser));
         } catch (err) {
-            console.error("Error eliminando usuario:", err);
+            console.error("❌ Error eliminando usuario:", err);
         }
     };
 
@@ -91,23 +91,19 @@ export default function UsersModule() {
     };
 
     const handleSave = async () => {
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
         try {
             if (editing) {
-                // Editar usuario existente
                 await ApiService.updateUser(editing.idUser, form);
                 setUsers(users.map((u) => (u.idUser === editing.idUser ? { ...u, ...form } : u)));
             } else {
-                // Registrar nuevo usuario vía auth/register
                 const newUser = await ApiService.registerUser({ ...form, status: "ACTIVE" });
                 setUsers([...users, newUser.data || newUser]);
             }
             setModalOpen(false);
         } catch (err) {
-            console.error("Error guardando usuario:", err);
+            console.error("❌ Error guardando usuario:", err);
         }
     };
 
@@ -172,6 +168,7 @@ export default function UsersModule() {
                     onClose={() => setModalOpen(false)}
                 >
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {/* Username */}
                         <div>
                             <input
                                 placeholder="Usuario"
@@ -189,6 +186,7 @@ export default function UsersModule() {
                             )}
                         </div>
 
+                        {/* Email */}
                         <div>
                             <input
                                 type="email"
@@ -207,7 +205,7 @@ export default function UsersModule() {
                             )}
                         </div>
 
-                        {/* Contraseña solo en nuevo */}
+                        {/* Contraseña (solo al crear) */}
                         {!editing && (
                             <div>
                                 <input
@@ -242,7 +240,7 @@ export default function UsersModule() {
                             >
                                 <option value="">-- Selecciona un rol --</option>
                                 {roles.map((r) => (
-                                    <option key={r.id} value={r.name}>
+                                    <option key={r.name} value={r.name}>
                                         {r.name}
                                     </option>
                                 ))}
@@ -278,6 +276,7 @@ export default function UsersModule() {
                             </div>
                         )}
 
+                        {/* Botones */}
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                             <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>
                                 Cancelar

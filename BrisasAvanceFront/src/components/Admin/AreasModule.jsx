@@ -57,6 +57,10 @@ export default function AreasModule() {
             newErrors.name = "El nombre del área es obligatorio y debe tener al menos 2 caracteres.";
         }
 
+        if (!form.description || form.description.trim().length < 5) {
+            newErrors.description = "La descripción es obligatoria y debe tener al menos 5 caracteres.";
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -136,7 +140,10 @@ export default function AreasModule() {
                             <input
                                 type="text"
                                 value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                onChange={(e) => {
+                                    setForm({ ...form, name: e.target.value });
+                                    if (errors.name) setErrors({ ...errors, name: null });
+                                }}
                                 style={{ width: "100%", padding: 6, border: errors.name ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
                             {errors.name && <span style={{ color: "red", fontSize: "12px" }}>{errors.name}</span>}
@@ -146,9 +153,13 @@ export default function AreasModule() {
                             <input
                                 type="text"
                                 value={form.description}
-                                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                onChange={(e) => {
+                                    setForm({ ...form, description: e.target.value });
+                                    if (errors.description) setErrors({ ...errors, description: null });
+                                }}
+                                style={{ width: "100%", padding: 6, border: errors.description ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.description && <span style={{ color: "red", fontSize: "12px" }}>{errors.description}</span>}
                         </label>
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
                             <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>

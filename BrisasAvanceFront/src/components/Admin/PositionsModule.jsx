@@ -57,6 +57,18 @@ export default function PositionsModule() {
             newErrors.namePost = "El nombre de la posición es obligatorio y debe tener al menos 2 caracteres.";
         }
 
+        if (!form.description || form.description.trim().length < 5) {
+            newErrors.description = "La descripción es obligatoria y debe tener al menos 5 caracteres.";
+        }
+
+        if (!form.jobFunction || form.jobFunction.trim().length < 5) {
+            newErrors.jobFunction = "La función del trabajo es obligatoria y debe tener al menos 5 caracteres.";
+        }
+
+        if (!form.requirements || form.requirements.trim().length < 10) {
+            newErrors.requirements = "Los requisitos son obligatorios y deben tener al menos 10 caracteres.";
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -80,13 +92,13 @@ export default function PositionsModule() {
         }
     };
 
-    if (loading) return <p>Cargando posiciones...</p>;
+    if (loading) return <p>Cargando Cargos...</p>;
 
     return (
         <div style={styles.card}>
             {/* Encabezado */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2>Posiciones</h2>
+                <h2>Cargo</h2>
                 <div style={{ display: "flex", gap: 8 }}>
                     <button style={styles.btnSmall} onClick={handleExport}>
                         Exportar
@@ -138,7 +150,10 @@ export default function PositionsModule() {
                             <input
                                 type="text"
                                 value={form.namePost}
-                                onChange={(e) => setForm({ ...form, namePost: e.target.value })}
+                                onChange={(e) => {
+                                    setForm({ ...form, namePost: e.target.value });
+                                    if (errors.namePost) setErrors({ ...errors, namePost: null });
+                                }}
                                 style={{ width: "100%", padding: 6, border: errors.namePost ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
                             {errors.namePost && <span style={{ color: "red", fontSize: "12px" }}>{errors.namePost}</span>}
@@ -148,26 +163,45 @@ export default function PositionsModule() {
                             <input
                                 type="text"
                                 value={form.description}
-                                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                onChange={(e) => {
+                                    setForm({ ...form, description: e.target.value });
+                                    if (errors.description) setErrors({ ...errors, description: null });
+                                }}
+                                style={{ width: "100%", padding: 6, border: errors.description ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.description && <span style={{ color: "red", fontSize: "12px" }}>{errors.description}</span>}
                         </label>
                         <label>
                             Función del Trabajo:
                             <input
                                 type="text"
                                 value={form.jobFunction}
-                                onChange={(e) => setForm({ ...form, jobFunction: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                onChange={(e) => {
+                                    setForm({ ...form, jobFunction: e.target.value });
+                                    if (errors.jobFunction) setErrors({ ...errors, jobFunction: null });
+                                }}
+                                style={{ width: "100%", padding: 6, border: errors.jobFunction ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
+                            {errors.jobFunction && <span style={{ color: "red", fontSize: "12px" }}>{errors.jobFunction}</span>}
                         </label>
                         <label>
                             Requisitos:
                             <textarea
                                 value={form.requirements}
-                                onChange={(e) => setForm({ ...form, requirements: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                onChange={(e) => {
+                                    setForm({ ...form, requirements: e.target.value });
+                                    if (errors.requirements) setErrors({ ...errors, requirements: null });
+                                }}
+                                style={{
+                                    width: "100%",
+                                    padding: 6,
+                                    border: errors.requirements ? "1px solid red" : "1px solid #ddd",
+                                    borderRadius: 4,
+                                    minHeight: "80px",
+                                    resize: "vertical"
+                                }}
                             />
+                            {errors.requirements && <span style={{ color: "red", fontSize: "12px" }}>{errors.requirements}</span>}
                         </label>
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
                             <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>

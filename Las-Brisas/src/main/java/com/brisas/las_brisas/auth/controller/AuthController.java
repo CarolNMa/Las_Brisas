@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -65,7 +64,6 @@ public class AuthController {
                 return ResponseEntity.ok(response);
         }
 
-        @PreAuthorize("hasRole('ADMIN')")
         @PostMapping("/register")
         public ResponseEntity<String> register(@RequestBody RegisterRequestDTO req) {
                 if (usuarioRepo.findByEmail(req.getEmail()).isPresent()) {

@@ -3,6 +3,7 @@ package com.brisas.las_brisas.controller.position;
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.position.employee_postDTO;
 import com.brisas.las_brisas.service.position.EmployeePostService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,10 @@ public class EmployeePostController {
 
     private final EmployeePostService employeePostService;
 
-    @GetMapping("/")
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(employeePostService.getAll());
+    // 🔹 Devuelve todas las relaciones con nombres incluidos
+    @GetMapping
+    public ResponseEntity<?> getAllDetails() {
+        return ResponseEntity.ok(employeePostService.getAllDetails());
     }
 
     @GetMapping("/{id}")
@@ -25,7 +27,8 @@ public class EmployeePostController {
         return employeePostService.findById(id)
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseDTO<>("Relación no encontrada", HttpStatus.NOT_FOUND.toString(), null)));
+                        .body(new ResponseDTO<>("Relación no encontrada",
+                                HttpStatus.NOT_FOUND.toString(), null)));
     }
 
     @DeleteMapping("/{id}")
@@ -34,7 +37,7 @@ public class EmployeePostController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<?> save(@RequestBody employee_postDTO dto) {
         ResponseDTO<?> response = employeePostService.save(dto);
         return new ResponseEntity<>(response, HttpStatus.OK);

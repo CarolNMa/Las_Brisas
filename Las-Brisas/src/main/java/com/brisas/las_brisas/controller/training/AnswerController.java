@@ -24,7 +24,7 @@ public class AnswerController {
         return ResponseEntity.ok(answerService.getAll());
     }
 
-    // EMPLEADO y ADMIN: ver una
+    // EMPLEADO y ADMIN: ver una por ID
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
@@ -32,6 +32,12 @@ public class AnswerController {
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ResponseDTO<>("Respuesta no encontrada", HttpStatus.NOT_FOUND.toString(), null)));
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_EMPLEADO')")
+    @GetMapping("/question/{questionId}")
+    public ResponseEntity<?> getByQuestion(@PathVariable int questionId) {
+        return ResponseEntity.ok(answerService.getAnswersByQuestion(questionId));
     }
 
     // ADMIN: guardar

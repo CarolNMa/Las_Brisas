@@ -13,6 +13,7 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
     const [message, setMessage] = useState(null);
     const [applicationTypes, setApplicationTypes] = useState([]);
     const [loadingTypes, setLoadingTypes] = useState(true);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         loadTypes();
@@ -30,6 +31,36 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!form.applicationTypeId) {
+            newErrors.applicationTypeId = "Debe seleccionar un tipo de solicitud.";
+        }
+
+        if (!form.description || form.description.trim().length < 10) {
+            newErrors.description = "La descripción es obligatoria y debe tener al menos 10 caracteres.";
+        }
+
+        if (form.startDate && form.endDate) {
+            const start = new Date(form.startDate);
+            const end = new Date(form.endDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (start < today) {
+                newErrors.startDate = "La fecha de inicio no puede ser anterior a hoy.";
+            }
+
+            if (end <= start) {
+                newErrors.endDate = "La fecha de fin debe ser posterior a la fecha de inicio.";
+            }
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         if (e.target.type === "file") {
@@ -37,12 +68,22 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
         } else {
             setForm({ ...form, [name]: value });
         }
+        // Clear errors when user starts typing
+        if (errors[name]) {
+            setErrors({ ...errors, [name]: null });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage(null);
+
+        if (!validateForm()) {
+            setLoading(false);
+            setMessage({ type: "error", text: "Por favor, corrige los errores en el formulario." });
+            return;
+        }
 
         try {
             const formData = new FormData();
@@ -88,6 +129,13 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
                             value={form.applicationTypeId}
                             onChange={handleChange}
                             required
+                            style={{
+                                width: "100%",
+                                padding: "8px",
+                                border: errors.applicationTypeId ? "1px solid red" : "1px solid #ddd",
+                                borderRadius: "4px",
+                                fontSize: "14px"
+                            }}
                         >
                             <option value="">-- Seleccionar --</option>
                             {applicationTypes.map((type) => (
@@ -97,6 +145,7 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
                             ))}
                         </select>
                     )}
+                    {errors.applicationTypeId && <span style={{ color: "red", fontSize: "12px" }}>{errors.applicationTypeId}</span>}
                 </div>
 
                 {/* Descripción */}
@@ -107,18 +156,54 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
                         value={form.description}
                         onChange={handleChange}
                         required
+                        style={{
+                            width: "100%",
+                            padding: "8px",
+                            border: errors.description ? "1px solid red" : "1px solid #ddd",
+                            borderRadius: "4px",
+                            fontSize: "14px",
+                            minHeight: "80px",
+                            resize: "vertical"
+                        }}
                     />
+                    {errors.description && <span style={{ color: "red", fontSize: "12px" }}>{errors.description}</span>}
                 </div>
 
                 {/* Fechas */}
                 <div style={styles.formRow}>
                     <div style={styles.formGroup}>
                         <label>Fecha Inicio</label>
-                        <input type="date" name="startDate" value={form.startDate} onChange={handleChange} />
+                        <input
+                            type="date"
+                            name="startDate"
+                            value={form.startDate}
+                            onChange={handleChange}
+                            style={{
+                                width: "100%",
+                                padding: "8px",
+                                border: errors.startDate ? "1px solid red" : "1px solid #ddd",
+                                borderRadius: "4px",
+                                fontSize: "14px"
+                            }}
+                        />
+                        {errors.startDate && <span style={{ color: "red", fontSize: "12px" }}>{errors.startDate}</span>}
                     </div>
                     <div style={styles.formGroup}>
                         <label>Fecha Fin</label>
-                        <input type="date" name="endDate" value={form.endDate} onChange={handleChange} />
+                        <input
+                            type="date"
+                            name="endDate"
+                            value={form.endDate}
+                            onChange={handleChange}
+                            style={{
+                                width: "100%",
+                                padding: "8px",
+                                border: errors.endDate ? "1px solid red" : "1px solid #ddd",
+                                borderRadius: "4px",
+                                fontSize: "14px"
+                            }}
+                        />
+                        {errors.endDate && <span style={{ color: "red", fontSize: "12px" }}>{errors.endDate}</span>}
                     </div>
                 </div>
 

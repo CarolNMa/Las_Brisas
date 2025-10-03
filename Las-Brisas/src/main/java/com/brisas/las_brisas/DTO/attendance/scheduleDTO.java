@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +17,6 @@ public class scheduleDTO {
    private LocalTime time_start;
    private LocalTime time_end;
    private String shift;
-   private String documentUrl;
    private LocalTime overtime;
-   private String day_week;
+   private String dayWeek;
 }

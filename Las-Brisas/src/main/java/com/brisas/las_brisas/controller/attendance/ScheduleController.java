@@ -9,13 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/schedule")
+@RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(scheduleService.getAll());
     }
@@ -31,12 +31,15 @@ public class ScheduleController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
         ResponseDTO<?> response = scheduleService.delete(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response,
+                response.getStatus().equals(HttpStatus.OK.toString()) ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<?> save(@RequestBody scheduleDTO dto) {
         ResponseDTO<?> response = scheduleService.save(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        HttpStatus status = response.getStatus().equals(HttpStatus.OK.toString()) ? HttpStatus.OK
+                : HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(response, status);
     }
 }
