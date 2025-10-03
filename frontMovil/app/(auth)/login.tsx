@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { authStyles } from "../../styles/authStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../../services/api";
 
 
 export default function LoginScreen() {
@@ -56,29 +57,10 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if (validate()) {
       try {
-        const response = await fetch("http://192.168.100.114:8085/api/v1/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
-
-        if (!response.ok) throw new Error("Credenciales inválidas");
-
-        const data = await response.json();
-        console.log("Respuesta:", data);
-
-        // Check if user has ADMIN role
-        if (!data.roles || !data.roles.includes("ADMIN")) {
-          Alert.alert("Acceso denegado", "Solo los administradores pueden acceder a esta aplicación");
-          return;
-        }
-
-        await AsyncStorage.setItem("token", data.token);
-        await AsyncStorage.setItem("username", data.username);
-
-        router.push("/employee");
-      } catch (error: any) {
-        Alert.alert("Error", error.message);
+        await api.login({ email, password });
+        router.push("/dashboard");
+      } catch (error) {
+        Alert.alert("Error", "Credenciales inválidas");
       }
     }
   };
@@ -105,6 +87,7 @@ export default function LoginScreen() {
               <Image
                 source={require("../../assets/images/mail.png")}
                 style={authStyles.iconImage}
+                resizeMode="contain"
               />
               <TextInput
                 style={authStyles.input}
@@ -121,6 +104,7 @@ export default function LoginScreen() {
               <Image
                 source={require("../../assets/images/password.png")}
                 style={authStyles.iconImage}
+                resizeMode="contain"
               />
               <TextInput
                 style={authStyles.input}

@@ -4,7 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function HeaderAdmin() {
+interface HeaderAdminProps {
+    onMenuPress?: () => void;
+}
+
+export default function HeaderAdmin({ onMenuPress }: HeaderAdminProps) {
     const [username, setUsername] = useState<string | null>(null);
     useEffect(() => {
         AsyncStorage.getItem("username").then(setUsername);
@@ -31,6 +35,11 @@ export default function HeaderAdmin() {
 
     return (
         <View style={styles.container}>
+            {onMenuPress && (
+                <TouchableOpacity onPress={onMenuPress} style={styles.menuButton}>
+                    <Ionicons name="menu" size={24} color="#000" />
+                </TouchableOpacity>
+            )}
             <View style={styles.userInfo}>
                 <Text style={styles.username}>{username || "Administrador"}</Text>
             </View>
@@ -47,10 +56,16 @@ const styles = StyleSheet.create({
         marginTop: 25,
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "center",
         paddingVertical: 12,
-        marginLeft: 220,
+        paddingHorizontal: 20,
+    },
+    menuButton: {
+        padding: 6,
+        marginRight: 10,
     },
     userInfo: {
+        flex: 1,
         flexDirection: "row",
         alignItems: "center",
     },
