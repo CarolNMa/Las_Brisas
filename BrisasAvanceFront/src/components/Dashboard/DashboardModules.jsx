@@ -10,13 +10,13 @@ import ContractsModule from "../Admin/ContractsModule";
 import AttendanceModule from "../Admin/AttendanceModule";
 import TrainingsModule from "../Admin/TrainingsModule";
 import EmployeePostModule from "../Admin/EmployeePostModule";
-import InductionsModule from "../Admin/InductionsModule";
-import AssignInductionModule from "../Admin/AssignInductionModule";
+import InductionsModule from "../Admin/InductionsModules";
 import ResumesModule from "../Admin/ResumeModule";
 import EmployeeScheduleModule from "../Admin/EmployeeScheduleModule";
 import EmployeeLocationModule from "../Admin/EmployeeLocationModule";
 import EmployeeAreaModule from "../Admin/EmployeeAreaModule";
 import SchedulesModule from "../Admin/ScheduleModule";
+import AssignInductionModule from "../Admin/AssignInductionModule";
 
 export default function DashboardModules({ active }) {
     switch (active) {
