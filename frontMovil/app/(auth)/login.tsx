@@ -42,7 +42,7 @@ export default function LoginScreen() {
       Alert.alert("Error", "La contraseña es obligatoria");
       return false;
     }
-    if (password.length < 6) {
+    if (password.length < 4) {
       Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres");
       return false;
     }
@@ -56,7 +56,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if (validate()) {
       try {
-        const response = await fetch("http://192.168.100.114:8085/api/v1/auth/login", {
+        const response = await fetch("http://10.3.234.51:8085/api/v1/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
