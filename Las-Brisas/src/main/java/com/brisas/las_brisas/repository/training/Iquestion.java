@@ -11,7 +11,4 @@ public interface Iquestion extends JpaRepository<question, Integer> {
 
     List<question> findByModuleInductionId(int moduleId);
 
-    @Query("SELECT q FROM question q JOIN FETCH q.moduleInduction m LEFT JOIN FETCH q.answers WHERE m.id = :moduleId")
-    List<question> findQuestionsWithAnswersByModule(int moduleId);
-
 }

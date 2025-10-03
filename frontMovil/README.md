@@ -2,6 +2,17 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Features
+
+### Application Management
+- **Application Types**: The app supports dynamic application type selection from the backend API.
+- **New Application Form**: Users can create new applications by selecting from available application types, providing a description, and optional start/end dates.
+- **Backward Compatibility**: Existing applications without application types continue to function normally.
+
+## API Integration
+- Fetches application types from `/api/v1/application-type/all`
+- Creates applications via `/api/v1/applications/` with FormData including `applicationTypeid`, `reason`, and optional dates.
+
 ## Get started
 
 1. Install dependencies

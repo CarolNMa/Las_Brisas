@@ -10,7 +10,7 @@ import ContractsModule from "../Admin/ContractsModule";
 import AttendanceModule from "../Admin/AttendanceModule";
 import TrainingsModule from "../Admin/TrainingsModule";
 import EmployeePostModule from "../Admin/EmployeePostModule";
-import InductionsModule from "../Admin/InductionsModule";
+import InductionsModule from "../Admin/InductionModules";
 import AssignInductionModule from "../Admin/AssignInductionModule";
 import ResumesModule from "../Admin/ResumeModule";
 import EmployeeScheduleModule from "../Admin/EmployeeScheduleModule";
