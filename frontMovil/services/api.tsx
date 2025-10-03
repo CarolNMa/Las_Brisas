@@ -64,6 +64,25 @@ interface Position {
   requirements: string;
 }
 
+interface Application {
+  id: number;
+  dateStart: string;
+  dateEnd: string;
+  dateCreate: string;
+  reason: string;
+  documentUrl: string;
+  status: string;
+  employeeId: number;
+  applicationTypeId: number;
+  applicationTypeName?: string;
+}
+
+interface ApplicationType {
+  id: number;
+  name: string;
+  required: boolean;
+}
+
 class ApiService {
   private async getAuthHeaders() {
     const token = await AsyncStorage.getItem('jwt_token');
@@ -347,6 +366,131 @@ class ApiService {
   // async updateUser(id: number, userData: Partial<User>): Promise<any> {
   //   // Implement if backend adds PUT
   // }
+
+  // APPLICATIONS METHODS
+  async getMyApplications(): Promise<Application[]> {
+    const response = await fetch(`${API_BASE_URL}/applications/me`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch my applications');
+    }
+
+    return response.json();
+  }
+
+  async getAllApplications(): Promise<Application[]> {
+    const response = await fetch(`${API_BASE_URL}/applications/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch all applications');
+    }
+
+    return response.json();
+  }
+
+  async getAllApplicationTypes(): Promise<ApplicationType[]> {
+    const response = await fetch(`${API_BASE_URL}/application-type/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch application types');
+    }
+
+    return response.json();
+  }
+
+  async createApplicationType(typeData: { name: string; required: boolean }): Promise<ApplicationType> {
+    const response = await fetch(`${API_BASE_URL}/application-type/`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(typeData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create application type');
+    }
+
+    return response.json();
+  }
+
+  async updateApplicationType(id: number, typeData: { name: string; required: boolean }): Promise<ApplicationType> {
+    const response = await fetch(`${API_BASE_URL}/application-type/${id}`, {
+      method: 'PUT',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(typeData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update application type');
+    }
+
+    return response.json();
+  }
+
+  async deleteApplicationType(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/application-type/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete application type');
+    }
+
+    return response.json();
+  }
+
+  async createApplication(formData: FormData): Promise<any> {
+    const token = await AsyncStorage.getItem('jwt_token');
+    const response = await fetch(`${API_BASE_URL}/applications/`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // Don't set Content-Type for FormData
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create application');
+    }
+
+    return response.json();
+  }
+
+  async approveApplication(id: number, approved: boolean): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/applications/${id}/approve?approved=${approved}`, {
+      method: 'PUT',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to approve/reject application');
+    }
+
+    return response.json();
+  }
+
+  async deleteApplication(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete application');
+    }
+
+    return response.json();
+  }
 }
 
 export default new ApiService();
