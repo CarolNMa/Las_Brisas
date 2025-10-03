@@ -1,11 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TextInput,
+  TouchableOpacity,
+  Alert,
+  Modal,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../../services/api";
 
 interface Position {
   id: number;
@@ -15,104 +24,187 @@ interface Position {
   requirements: string;
 }
 
+interface PositionFormData {
+  id?: number;
+  namePost: string;
+  description: string;
+  jobFunction: string;
+  requirements: string;
+}
+
 export default function PositionsModule() {
   const [positions, setPositions] = useState<Position[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingPosition, setEditingPosition] = useState<Position | null>(null);
+  const [formData, setFormData] = useState<PositionFormData>({
+    namePost: "",
+    description: "",
+    jobFunction: "",
+    requirements: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    loadData();
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem('jwt_token');
+      if (!token) {
+        setIsAuthenticated(false);
+        Alert.alert("Error", "Debes iniciar sesión primero");
+        router.replace("/(auth)/login");
+        return;
+      }
+      setIsAuthenticated(true);
+    };
+    checkAuth();
   }, []);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-
-      // Mock data showing all backend fields
-      const mockPositions: Position[] = [
-        {
-          id: 1,
-          namePost: "Desarrollador Senior",
-          description: "Desarrollador de software con experiencia en tecnologías web",
-          jobFunction: "Desarrollar aplicaciones web y móviles, mantener código existente, colaborar con el equipo de desarrollo",
-          requirements: "5+ años de experiencia, conocimientos en React, Node.js, bases de datos SQL/NoSQL",
-        },
-        {
-          id: 2,
-          namePost: "Analista de Recursos Humanos",
-          description: "Encargado de gestionar procesos de selección y desarrollo del personal",
-          jobFunction: "Realizar procesos de reclutamiento, entrevistas, capacitación, gestión de nómina",
-          requirements: "Experiencia en RRHH, conocimientos en legislación laboral, habilidades de comunicación",
-        },
-        {
-          id: 3,
-          namePost: "Gerente de Proyecto",
-          description: "Liderar equipos de desarrollo y asegurar entrega de proyectos",
-          jobFunction: "Planificar proyectos, coordinar equipos, gestionar presupuestos, reportar avances",
-          requirements: "Experiencia en gestión de proyectos, conocimientos en metodologías ágiles, liderazgo",
-        },
-        {
-          id: 4,
-          namePost: "Diseñador UX/UI",
-          description: "Crear interfaces de usuario intuitivas y atractivas",
-          jobFunction: "Diseñar wireframes, mockups, prototipos, realizar pruebas de usabilidad",
-          requirements: "Portafolio de diseño, conocimientos en Figma/Sketch, principios de UX/UI",
-        },
-      ];
-
-      setPositions(mockPositions);
-    } catch (err) {
-      console.error("Error cargando datos:", err);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      const fetchPositions = async () => {
+        try {
+          const positionsData = await api.getPositions();
+          setPositions(positionsData);
+        } catch (error) {
+          Alert.alert("Error", "No se pudieron cargar las posiciones. Verifica tu conexión y permisos.");
+        }
+      };
+      fetchPositions();
     }
-  };
+  }, [isAuthenticated]);
+
+  const resetForm = useCallback(() => {
+    setFormData({ namePost: "", description: "", jobFunction: "", requirements: "" });
+  }, []);
+
+  const handleCreatePosition = useCallback(() => {
+    setEditingPosition(null);
+    resetForm();
+    setModalVisible(true);
+  }, [resetForm]);
+
+  const handleEditPosition = useCallback((position: Position) => {
+    setEditingPosition(position);
+    setFormData({
+      id: position.id,
+      namePost: position.namePost,
+      description: position.description,
+      jobFunction: position.jobFunction,
+      requirements: position.requirements,
+    });
+    setModalVisible(true);
+  }, []);
+
+  const handleDeletePosition = useCallback((position: Position) => {
+    Alert.alert(
+      "Eliminar Posición",
+      `¿Estás seguro de que quieres eliminar la posición "${position.namePost}"?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: () => performDeletePosition(position.id),
+        },
+      ]
+    );
+  }, []);
+
+  const performDeletePosition = useCallback(async (id: number) => {
+    try {
+      await api.deletePosition(id);
+      Alert.alert("Éxito", "Posición eliminada correctamente");
+
+      // Refresh data
+      const positionsData = await api.getPositions();
+      setPositions(positionsData);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo eliminar la posición");
+    }
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
+    if (!formData.namePost.trim() || !formData.description.trim()) {
+      Alert.alert("Error", "Los campos nombre y descripción son obligatorios");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      if (!editingPosition) {
+        // Create position
+        await api.createPosition(formData);
+        Alert.alert("Éxito", "Posición creada correctamente");
+      } else {
+        // Update position - backend doesn't have PUT, so alert
+        Alert.alert("Información", "Funcionalidad de actualización no implementada en el backend");
+      }
+
+      setModalVisible(false);
+      resetForm();
+
+      // Refresh data
+      const positionsData = await api.getPositions();
+      setPositions(positionsData);
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió un error inesperado");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [formData, editingPosition, resetForm]);
 
   const filteredPositions = positions.filter(position =>
-    position.namePost.toLowerCase().includes(searchText.toLowerCase()) ||
-    position.description.toLowerCase().includes(searchText.toLowerCase())
+    (position.namePost?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
+    (position.description?.toLowerCase() || '').includes(searchText.toLowerCase())
   );
 
-  const renderPosition = ({ item }: { item: Position }) => (
-    <View style={styles.positionCard}>
-      <View style={styles.positionInfo}>
-        <Text style={styles.fieldLabel}>ID Posición:</Text>
-        <Text style={styles.fieldValue}>{item.id}</Text>
+  const renderPosition = useCallback(
+    ({ item }: { item: Position }) => (
+      <View style={styles.positionCard}>
+        <View style={styles.positionInfo}>
+          <Text style={styles.fieldLabel}>ID Posición:</Text>
+          <Text style={styles.fieldValue}>{item.id}</Text>
 
-        <Text style={styles.fieldLabel}>Nombre del Cargo:</Text>
-        <Text style={styles.fieldValue}>{item.namePost}</Text>
+          <Text style={styles.fieldLabel}>Nombre del Cargo:</Text>
+          <Text style={styles.fieldValue}>{item.namePost || 'Sin nombre'}</Text>
 
-        <Text style={styles.fieldLabel}>Descripción:</Text>
-        <Text style={styles.fieldValue}>{item.description}</Text>
+          <Text style={styles.fieldLabel}>Descripción:</Text>
+          <Text style={styles.fieldValue}>{item.description || 'Sin descripción'}</Text>
 
-        <Text style={styles.fieldLabel}>Función del Trabajo:</Text>
-        <Text style={styles.fieldValue}>{item.jobFunction}</Text>
+          <Text style={styles.fieldLabel}>Función del Trabajo:</Text>
+          <Text style={styles.fieldValue}>{item.jobFunction || 'Sin función'}</Text>
 
-        <Text style={styles.fieldLabel}>Requisitos:</Text>
-        <Text style={styles.fieldValue}>{item.requirements}</Text>
+          <Text style={styles.fieldLabel}>Requisitos:</Text>
+          <Text style={styles.fieldValue}>{item.requirements || 'Sin requisitos'}</Text>
+        </View>
+
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.editButton]}
+            onPress={() => handleEditPosition(item)}
+            accessibilityRole="button"
+            accessibilityLabel={`Editar posición ${item.namePost}`}
+          >
+            <Text style={styles.editButtonText}>Editar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.deleteButton]}
+            onPress={() => handleDeletePosition(item)}
+            accessibilityRole="button"
+            accessibilityLabel={`Eliminar posición ${item.namePost}`}
+          >
+            <Text style={styles.deleteButtonText}>Eliminar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    ),
+    [handleEditPosition, handleDeletePosition]
   );
-
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <Text>Cargando posiciones...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar por nombre o descripción..."
-          value={searchText}
-          onChangeText={setSearchText}
-        />
-      </View>
-
       <FlatList
         data={filteredPositions}
         keyExtractor={(item) => item.id.toString()}
@@ -123,7 +215,133 @@ export default function PositionsModule() {
             <Text style={styles.emptyText}>No se encontraron posiciones</Text>
           </View>
         }
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Buscar por nombre o descripción..."
+              value={searchText}
+              onChangeText={setSearchText}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <TouchableOpacity
+              style={styles.createButton}
+              onPress={handleCreatePosition}
+              accessibilityRole="button"
+              accessibilityLabel="Crear Posición"
+            >
+              <Text style={styles.createButtonText}>Crear Posición</Text>
+            </TouchableOpacity>
+          </View>
+        }
+        initialNumToRender={10}
+        windowSize={10}
+        removeClippedSubviews
       />
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            style={{ width: "90%" }}
+          >
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                {editingPosition ? "Editar Posición" : "Crear Posición"}
+              </Text>
+
+              <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
+                <Text style={styles.label}>Nombre del Cargo:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.namePost}
+                  onChangeText={(text) =>
+                    setFormData((p) => ({ ...p, namePost: text }))
+                  }
+                  placeholder="Ingrese el nombre del cargo"
+                  autoCapitalize="words"
+                />
+
+                <Text style={styles.label}>Descripción:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.description}
+                  onChangeText={(text) =>
+                    setFormData((p) => ({ ...p, description: text }))
+                  }
+                  placeholder="Ingrese la descripción del cargo"
+                  multiline
+                  numberOfLines={3}
+                  textAlignVertical="top"
+                />
+
+                <Text style={styles.label}>Función del Trabajo:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.jobFunction}
+                  onChangeText={(text) =>
+                    setFormData((p) => ({ ...p, jobFunction: text }))
+                  }
+                  placeholder="Describa las funciones del cargo"
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                />
+
+                <Text style={styles.label}>Requisitos:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.requirements}
+                  onChangeText={(text) =>
+                    setFormData((p) => ({ ...p, requirements: text }))
+                  }
+                  placeholder="Ingrese los requisitos del cargo"
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                />
+              </ScrollView>
+
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setModalVisible(false)}
+                  disabled={submitting}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancelar"
+                >
+                  <Text style={styles.cancelButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.modalButton,
+                    styles.submitButton,
+                    submitting && { opacity: 0.7 },
+                  ]}
+                  onPress={handleSubmit}
+                  disabled={submitting}
+                  accessibilityRole="button"
+                  accessibilityLabel={editingPosition ? "Actualizar" : "Crear"}
+                >
+                  <Text style={styles.submitButtonText}>
+                    {submitting
+                      ? "Guardando..."
+                      : editingPosition
+                      ? "Actualizar"
+                      : "Crear"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -131,14 +349,26 @@ export default function PositionsModule() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-  header: { padding: 20 },
+  header: { padding: 20, flexDirection: "row", alignItems: "center", gap: 10 },
   searchInput: {
+    flex: 1,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     backgroundColor: "#fff",
+  },
+  createButton: {
+    backgroundColor: "#a50000",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  createButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
   list: { padding: 20 },
   positionCard: {
@@ -147,6 +377,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
     elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
   },
   positionInfo: {},
   fieldLabel: {
@@ -160,6 +394,92 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     marginBottom: 4,
+  },
+  actions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 15,
+    gap: 10,
+  },
+  actionButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  editButton: { backgroundColor: "#007bff" },
+  editButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  deleteButton: { backgroundColor: "#dc3545" },
+  deleteButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    width: "100%",
+    maxHeight: "85%",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#a50000",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  form: { maxHeight: 400 },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginTop: 15,
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: "#fff",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+    gap: 10,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  cancelButton: { backgroundColor: "#6c757d" },
+  cancelButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  submitButton: { backgroundColor: "#a50000" },
+  submitButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
   emptyText: {
     fontSize: 16,

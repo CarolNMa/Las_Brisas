@@ -62,7 +62,7 @@ export default function DrawerLayout({ children, currentModule = "dashboard" }: 
           text: "Salir",
           style: "destructive",
           onPress: async () => {
-            await AsyncStorage.multiRemove(["token", "username", "photoProfile"]);
+            await AsyncStorage.multiRemove(["jwt_token", "username", "photoProfile"]);
             router.replace("/(auth)/login");
           },
         },

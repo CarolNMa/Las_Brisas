@@ -46,10 +46,10 @@ public class employee {
     @Column(name = "document", nullable = false)
     private String documentNumber;
 
-    @Column(name = "birthdate", nullable = false)
+    @Column(name = "birthdate", nullable = true)
     private LocalDate birthdate;
 
-    @Column(name = "photo_profile", nullable = false)
+    @Column(name = "photo_profile", nullable = true)
     private String photoProfile;
 
     public enum gender {

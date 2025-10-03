@@ -55,34 +55,39 @@ export default function UsersModule() {
   });
   const [showPass, setShowPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('jwt_token');
       if (!token) {
+        setIsAuthenticated(false);
         Alert.alert("Error", "Debes iniciar sesión primero");
         router.replace("/(auth)/login");
         return;
       }
+      setIsAuthenticated(true);
     };
     checkAuth();
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [usersData, rolesData] = await Promise.all([
-          api.getUsers(),
-          api.getRoles(),
-        ]);
-        setUsers(usersData);
-        setRoles(rolesData);
-      } catch (error) {
-        Alert.alert("Error", "No se pudieron cargar los datos. Verifica tu conexión y permisos.");
-      }
-    };
-    fetchData();
-  }, []);
+    if (isAuthenticated === true) {
+      const fetchData = async () => {
+        try {
+          const [usersData, rolesData] = await Promise.all([
+            api.getUsers(),
+            api.getRoles(),
+          ]);
+          setUsers(usersData);
+          setRoles(rolesData);
+        } catch (error) {
+          Alert.alert("Error", "No se pudieron cargar los datos. Verifica tu conexión y permisos.");
+        }
+      };
+      fetchData();
+    }
+  }, [isAuthenticated]);
 
   const resetForm = useCallback(() => {
     setFormData({ username: "", email: "", password: "", roleIds: [] });

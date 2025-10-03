@@ -35,30 +35,35 @@ export default function RolesModule() {
     name: "",
     description: "",
   });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('jwt_token');
       if (!token) {
+        setIsAuthenticated(false);
         Alert.alert("Error", "Debes iniciar sesión primero");
         router.replace("/(auth)/login");
         return;
       }
+      setIsAuthenticated(true);
     };
     checkAuth();
   }, []);
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const rolesData = await api.getRoles();
-        setRoles(rolesData);
-      } catch (error) {
-        Alert.alert("Error", "No se pudieron cargar los roles. Verifica tu conexión y permisos.");
-      }
-    };
-    fetchRoles();
-  }, []);
+    if (isAuthenticated === true) {
+      const fetchRoles = async () => {
+        try {
+          const rolesData = await api.getRoles();
+          setRoles(rolesData);
+        } catch (error) {
+          Alert.alert("Error", "No se pudieron cargar los roles. Verifica tu conexión y permisos.");
+        }
+      };
+      fetchRoles();
+    }
+  }, [isAuthenticated]);
 
   const resetForm = () => {
     setFormData({ name: "", description: "" });
@@ -132,8 +137,8 @@ export default function RolesModule() {
   };
 
   const filteredRoles = roles.filter(role =>
-    role.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    role.description.toLowerCase().includes(searchText.toLowerCase())
+    (role.name?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
+    (role.description?.toLowerCase() || '').includes(searchText.toLowerCase())
   );
 
   const renderRole = ({ item }: { item: Role }) => (
@@ -143,10 +148,10 @@ export default function RolesModule() {
         <Text style={styles.fieldValue}>{item.id}</Text>
 
         <Text style={styles.fieldLabel}>Nombre:</Text>
-        <Text style={styles.fieldValue}>{item.name}</Text>
+        <Text style={styles.fieldValue}>{item.name || 'Sin nombre'}</Text>
 
         <Text style={styles.fieldLabel}>Descripción:</Text>
-        <Text style={styles.fieldValue}>{item.description}</Text>
+        <Text style={styles.fieldValue}>{item.description || 'Sin descripción'}</Text>
       </View>
 
       <View style={styles.actions}>

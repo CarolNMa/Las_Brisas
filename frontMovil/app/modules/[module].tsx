@@ -6,6 +6,7 @@ import DrawerLayout from "@/components/DrawerLayout";
 // Import module components
 import UsersModule from "./UsersModule";
 import RolesModule from "./RolesModule";
+import EmployeesModule from "./EmployeesModule";
 import PositionsModule from "./PositionsModule";
 import LocationsModule from "./LocationsModule";
 import AreasModule from "./AreasModule";
@@ -21,6 +22,7 @@ import TrainingsModule from "./TrainingsModule";
 const moduleTitles: { [key: string]: string } = {
   users: "Usuarios",
   roles: "Roles",
+  empleados: "Empleados",
   positions: "Posiciones",
   locations: "Ubicaciones",
   areas: "Áreas",
@@ -42,6 +44,8 @@ export default function ModuleScreen() {
         return <UsersModule />;
       case "roles":
         return <RolesModule />;
+      case "empleados":
+        return <EmployeesModule />;
       case "positions":
         return <PositionsModule />;
       case "locations":

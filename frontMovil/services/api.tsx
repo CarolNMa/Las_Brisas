@@ -38,6 +38,32 @@ interface CreateUserRequest {
   password: string;
 }
 
+interface Employee {
+  id: number;
+  firstName: string;
+  lastName: string;
+  tipoDocumento: string;
+  documentNumber: string;
+  birthdate: string;
+  photoProfile?: string;
+  gender: string;
+  phone: string;
+  email: string;
+  civilStatus: string;
+  address: string;
+  createdAt?: string;
+  updatedAt?: string;
+  userId: number;
+}
+
+interface Position {
+  id: number;
+  namePost: string;
+  description: string;
+  jobFunction: string;
+  requirements: string;
+}
+
 class ApiService {
   private async getAuthHeaders() {
     const token = await AsyncStorage.getItem('jwt_token');
@@ -138,6 +164,180 @@ class ApiService {
 
     if (!response.ok) {
       throw new Error('Failed to delete role');
+    }
+
+    return response.json();
+  }
+
+  async getAreas(): Promise<any[]> {
+    const response = await fetch(`${API_BASE_URL}/areas/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch areas');
+    }
+
+    return response.json();
+  }
+
+  async createArea(areaData: { name: string; description: string }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/areas/`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(areaData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create area');
+    }
+
+    return response.json();
+  }
+
+  async deleteArea(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/areas/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete area');
+    }
+
+    return response.json();
+  }
+
+  async getLocations(): Promise<any[]> {
+    const response = await fetch(`${API_BASE_URL}/location/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch locations');
+    }
+
+    return response.json();
+  }
+
+  async createLocation(locationData: { nameLocation: string; address: string }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/location/`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(locationData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create location');
+    }
+
+    return response.json();
+  }
+
+  async deleteLocation(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/location/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete location');
+    }
+
+    return response.json();
+  }
+
+  async getEmployees(): Promise<Employee[]> {
+    const response = await fetch(`${API_BASE_URL}/employees/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch employees');
+    }
+
+    return response.json();
+  }
+
+  async createEmployee(employeeData: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/employees`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(employeeData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create employee');
+    }
+
+    return response.json();
+  }
+
+  async updateEmployee(id: number, employeeData: Partial<Employee>): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
+      method: 'PUT',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(employeeData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update employee');
+    }
+
+    return response.json();
+  }
+
+  async deleteEmployee(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete employee');
+    }
+
+    return response.json();
+  }
+
+  async getPositions(): Promise<Position[]> {
+    const response = await fetch(`${API_BASE_URL}/positions/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch positions');
+    }
+
+    return response.json();
+  }
+
+  async createPosition(positionData: Omit<Position, 'id'>): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/positions/`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(positionData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create position');
+    }
+
+    return response.json();
+  }
+
+  async deletePosition(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/positions/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete position');
     }
 
     return response.json();

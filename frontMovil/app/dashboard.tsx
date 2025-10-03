@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Alert } from "react-native";
+import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DrawerLayout from "@/components/DrawerLayout";
 
@@ -10,10 +11,27 @@ export default function Dashboard() {
     solicitudes: 0,
     areas: 0,
   });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    fetchSummaryData();
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem('jwt_token');
+      if (!token) {
+        setIsAuthenticated(false);
+        Alert.alert("Error", "Debes iniciar sesión primero");
+        router.replace("/(auth)/login");
+        return;
+      }
+      setIsAuthenticated(true);
+    };
+    checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      fetchSummaryData();
+    }
+  }, [isAuthenticated]);
 
   const fetchSummaryData = async () => {
     try {
