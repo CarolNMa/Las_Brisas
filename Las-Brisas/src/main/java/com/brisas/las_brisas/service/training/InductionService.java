@@ -31,6 +31,19 @@ public class InductionService {
         return iinduction.findById(id);
     }
 
+    public List<induction> getAllInductions() {
+        return iinduction.findByType(induction.type.induction);
+    }
+
+    public List<induction> getAllCapacitaciones() {
+        return iinduction.findByType(induction.type.capacitacion);
+    }
+
+    public ResponseDTO<inductionDTO> saveCapacitacion(inductionDTO dto) {
+        dto.setType("capacitacion");
+        return save(dto);
+    }
+
     public ResponseDTO<inductionDTO> delete(int id) {
         Optional<induction> opt = iinduction.findById(id);
         if (opt.isEmpty()) {
@@ -72,14 +85,14 @@ public class InductionService {
     private induction convertToEntity(inductionDTO dto) {
         induction.type t;
         try {
-            t = induction.type.valueOf(dto.getType().toUpperCase()); // 🔹 usar upperCase porque enums son en mayúsculas
+            t = induction.type.valueOf(dto.getType().toLowerCase()); 
         } catch (Exception e) {
             t = induction.type.induction;
         }
 
         induction.status s;
         try {
-            s = induction.status.valueOf(dto.getStatus().toUpperCase());
+            s = induction.status.valueOf(dto.getStatus().toLowerCase());
         } catch (Exception e) {
             s = induction.status.pendiente;
         }
@@ -90,8 +103,8 @@ public class InductionService {
                 .description(dto.getDescription())
                 .type(t)
                 .status(s)
-                .dateCreate(dto.getDateCreate())
-                .dateUpdate(dto.getDateUpdate())
+                .dateCreate(dto.getDateCreate() != null ? dto.getDateCreate() : LocalDateTime.now())
+                .dateUpdate(LocalDateTime.now())
                 .build();
     }
 

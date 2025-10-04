@@ -6,17 +6,19 @@ import InductionForm from "../Inductions/InductionForm";
 import ModuleList from "../Inductions/ModuleList";
 import ModuleDetail from "../Inductions/ModuleDetails";
 
-export default function InductionsModule() {
-    const [inductions, setInductions] = useState([]);
+export default function FormacionesModule() {
+    const [formaciones, setFormaciones] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const [view, setView] = useState("list"); 
-    const [selectedInduction, setSelectedInduction] = useState(null);
+    const [view, setView] = useState("list");
+    const [selectedFormacion, setSelectedFormacion] = useState(null);
     const [selectedModule, setSelectedModule] = useState(null);
-
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState(null);
+    const [filterType, setFilterType] = useState("todos");
 
+    // =============================
+    // Cargar formaciones (inducción / capacitación)
+    // =============================
     useEffect(() => {
         loadData();
     }, []);
@@ -24,27 +26,33 @@ export default function InductionsModule() {
     const loadData = async () => {
         try {
             setLoading(true);
-            const data = await ApiService.getAllInductions();
-            setInductions(data.data || data);
+            const data = await ApiService.getAllInductions(); // ya devuelve todas (ambos tipos)
+            setFormaciones(data.data || data);
         } catch (err) {
-            console.error("❌ Error cargando inducciones:", err);
+            console.error("❌ Error cargando formaciones:", err);
         } finally {
             setLoading(false);
         }
     };
 
+    // =============================
+    // Eliminar formación
+    // =============================
     const handleDelete = async (id) => {
-        if (!window.confirm("¿Seguro que deseas eliminar esta inducción?")) return;
+        if (!window.confirm("¿Seguro que deseas eliminar esta formación?")) return;
         try {
             await ApiService.deleteInduction(id);
-            setInductions(inductions.filter((i) => i.id !== id));
+            setFormaciones(formaciones.filter((f) => f.id !== id));
         } catch (err) {
-            console.error("❌ Error eliminando inducción:", err);
+            console.error("❌ Error eliminando formación:", err);
         }
     };
 
-    const handleOpenModal = (induction = null) => {
-        setEditing(induction);
+    // =============================
+    // Abrir modal crear / editar
+    // =============================
+    const handleOpenModal = (formacion = null) => {
+        setEditing(formacion);
         setModalOpen(true);
     };
 
@@ -53,14 +61,17 @@ export default function InductionsModule() {
         loadData();
     };
 
-    if (loading) return <p>Cargando inducciones...</p>;
+    // =============================
+    // Vistas condicionales
+    // =============================
+    if (loading) return <p>Cargando formaciones...</p>;
 
-    if (view === "modules" && selectedInduction) {
+    if (view === "modules" && selectedFormacion) {
         return (
             <div style={styles.card}>
                 <button style={styles.btnAlt} onClick={() => setView("list")}>⬅️ Volver</button>
                 <ModuleList
-                    induction={selectedInduction}
+                    induction={selectedFormacion}
                     onSelectModule={(m) => {
                         setSelectedModule(m);
                         setView("moduleDetail");
@@ -74,19 +85,33 @@ export default function InductionsModule() {
         return (
             <div style={styles.card}>
                 <button style={styles.btnAlt} onClick={() => setView("modules")}>⬅️ Volver</button>
-                <ModuleDetail moduleId={selectedModule.id} />
+                <ModuleDetail moduleId={selectedModule.id} showQuestions={selectedFormacion?.type === "induction"} />
             </div>
         );
     }
 
+    // =============================
+    // Render principal
+    // =============================
     return (
         <div style={styles.card}>
             {/* Encabezado */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2>Inducciones</h2>
-                <button style={styles.btn} onClick={() => handleOpenModal()}>
-                    Nueva Inducción
-                </button>
+                <h2>📚 Formaciones (Inducciones y Capacitaciones)</h2>
+                <div style={{ display: "flex", gap: 10 }}>
+                    <select
+                        value={filterType}
+                        onChange={(e) => setFilterType(e.target.value)}
+                        style={{ padding: 6, borderRadius: 4 }}
+                    >
+                        <option value="todos">Todos</option>
+                        <option value="induction">Inducciones</option>
+                        <option value="capacitacion">Capacitaciones</option>
+                    </select>
+                    <button style={styles.btn} onClick={() => handleOpenModal()}>
+                        ➕ Nueva
+                    </button>
+                </div>
             </div>
 
             {/* Tabla */}
@@ -101,35 +126,52 @@ export default function InductionsModule() {
                     </tr>
                 </thead>
                 <tbody>
-                    {inductions.map((i) => (
-                        <tr key={i.id} style={styles.tr}>
-                            <td style={styles.td}>{i.name}</td>
-                            <td style={styles.td}>{i.description}</td>
-                            <td style={styles.td}>{i.type}</td>
-                            <td style={styles.td}>{i.status}</td>
-                            <td style={styles.td}>
-                                <button style={styles.btnSmall} onClick={() => { setSelectedInduction(i); setView("modules"); }}>
-                                    📂 Módulos
-                                </button>{" "}
-                                <button style={styles.btnSmall} onClick={() => handleOpenModal(i)}>
-                                    ✏️ Editar
-                                </button>{" "}
-                                <button style={styles.btnAlt} onClick={() => handleDelete(i.id)}>
-                                    🗑️ Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {formaciones
+                        .filter((f) => filterType === "todos" || f.type === filterType)
+                        .map((f) => (
+                            <tr key={f.id} style={styles.tr}>
+                                <td style={styles.td}>{f.name}</td>
+                                <td style={styles.td}>{f.description}</td>
+                                <td style={styles.td}>
+                                    {f.type === "induction" ? "Inducción" : "Capacitación"}
+                                </td>
+                                <td style={styles.td}>{f.status}</td>
+                                <td style={styles.td}>
+                                    <button
+                                        style={styles.btnSmall}
+                                        onClick={() => {
+                                            setSelectedFormacion(f);
+                                            setView("modules");
+                                        }}
+                                    >
+                                        📂 Módulos
+                                    </button>{" "}
+                                    <button
+                                        style={styles.btnSmall}
+                                        onClick={() => handleOpenModal(f)}
+                                    >
+                                        ✏️ Editar
+                                    </button>{" "}
+                                    <button
+                                        style={styles.btnAlt}
+                                        onClick={() => handleDelete(f.id)}
+                                    >
+                                        🗑️ Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
                 </tbody>
             </table>
 
             {/* Modal Crear/Editar */}
             {modalOpen && (
-                <Modal
-                    open={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                >
-                    <InductionForm induction={editing || {}} onClose={() => setModalOpen(false)} onSaved={handleSaved} />
+                <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+                    <InductionForm
+                        induction={editing || {}}
+                        onClose={() => setModalOpen(false)}
+                        onSaved={handleSaved}
+                    />
                 </Modal>
             )}
         </div>

@@ -11,4 +11,7 @@ public interface Iinduction extends JpaRepository<induction, Integer> {
 
     @Query("SELECT ie.induction FROM induction_employee ie WHERE ie.employee.id = :employeeId")
     List<induction> findByEmployeeId(int employeeId);
+
+    List<induction> findByType(induction.type type);
+
 }

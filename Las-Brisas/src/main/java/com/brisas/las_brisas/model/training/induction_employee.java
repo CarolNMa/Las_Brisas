@@ -29,13 +29,13 @@ public class induction_employee {
     @Column(name = "date_assignment", nullable = false)
     private LocalDateTime dateAssignment;
 
-    @Column(name = "date_complete", nullable = false)
+    @Column(name = "date_complete")
     private LocalDateTime dateComplete;
 
     @Column(name = "deadline", nullable = false)
     private LocalDateTime deadline;
 
-    @Column(name = "date_seen", nullable = false)
+    @Column(name = "date_seen")
     private LocalDateTime dateSeen;
 
     @Enumerated(EnumType.STRING)

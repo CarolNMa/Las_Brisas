@@ -32,8 +32,11 @@ public class QuestionService {
         return iquestion.findById(id);
     }
 
-    public List<question> getQuestionsByModule(int moduleId) {
-        return iquestion.findByModuleInductionId(moduleId);
+    public List<questionDTO> getQuestionsByModule(int moduleId) {
+        return iquestion.findByModuleInductionId(moduleId)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     public ResponseDTO<questionDTO> delete(int id) {
@@ -63,12 +66,12 @@ public class QuestionService {
                 if (ianswer.findByQuestionId(saved.getId()).isEmpty()) {
                     ianswer.save(answer.builder()
                             .answer("Verdadero")
-                            .response_correct(true)
+                            .responseCorrect(true)
                             .question(saved)
                             .build());
                     ianswer.save(answer.builder()
                             .answer("Falso")
-                            .response_correct(false)
+                            .responseCorrect(false)
                             .question(saved)
                             .build());
                 }
@@ -99,12 +102,13 @@ public class QuestionService {
                 .build();
     }
 
-    private questionDTO convertToDTO(question entity) {
+    public questionDTO convertToDTO(question entity) {
         return questionDTO.builder()
                 .id(entity.getId())
                 .question(entity.getQuestion())
-                .type(entity.getType().name())
+                .type(entity.getType().name().toLowerCase()) // 🔥 siempre minúscula
                 .moduleInductionId(entity.getModuleInduction() != null ? entity.getModuleInduction().getId() : 0)
                 .build();
     }
+
 }

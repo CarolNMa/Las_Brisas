@@ -4,7 +4,6 @@ import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.training.answerDTO;
 import com.brisas.las_brisas.service.training.AnswerService;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,14 +16,21 @@ public class AnswerController {
 
     private final AnswerService answerService;
 
-    // ADMIN: ver todas
+    // 🔹 ADMIN: Ver todas las respuestas
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(answerService.getAll());
     }
 
-    // EMPLEADO y ADMIN: ver una por ID
+    // 🔹 EMPLEADO o ADMIN: Ver respuestas por pregunta
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @GetMapping("/question/{questionId}")
+    public ResponseEntity<?> getByQuestion(@PathVariable int questionId) {
+        return ResponseEntity.ok(answerService.getAnswersByQuestion(questionId));
+    }
+
+    // 🔹 EMPLEADO o ADMIN: Ver una respuesta por ID
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
@@ -34,21 +40,24 @@ public class AnswerController {
                         .body(new ResponseDTO<>("Respuesta no encontrada", HttpStatus.NOT_FOUND.toString(), null)));
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_EMPLEADO')")
-    @GetMapping("/question/{questionId}")
-    public ResponseEntity<?> getByQuestion(@PathVariable int questionId) {
-        return ResponseEntity.ok(answerService.getAnswersByQuestion(questionId));
-    }
-
-    // ADMIN: guardar
+    @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")
     public ResponseEntity<?> save(@RequestBody answerDTO dto) {
         ResponseDTO<?> response = answerService.save(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        // Extraer solo el número si la cadena tiene "200 OK"
+        HttpStatus status = HttpStatus.OK;
+        try {
+            String code = response.getStatus().split(" ")[0]; // 👈 toma solo "200"
+            status = HttpStatus.resolve(Integer.parseInt(code));
+        } catch (Exception e) {
+            status = HttpStatus.OK;
+        }
+
+        return new ResponseEntity<>(response, status != null ? status : HttpStatus.OK);
     }
 
-    // ADMIN: eliminar
+    // 🔹 ADMIN: Eliminar respuesta
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {

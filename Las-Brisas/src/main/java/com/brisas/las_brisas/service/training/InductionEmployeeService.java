@@ -3,12 +3,12 @@ package com.brisas.las_brisas.service.training;
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.training.induction_employeeDTO;
 import com.brisas.las_brisas.model.employee.employee;
-import com.brisas.las_brisas.model.training.induction_employee;
-import com.brisas.las_brisas.repository.training.Iinduction_employee;
 import com.brisas.las_brisas.model.training.induction;
-
+import com.brisas.las_brisas.model.training.induction_employee;
+import com.brisas.las_brisas.repository.employee.Iemployee;
+import com.brisas.las_brisas.repository.training.Iinduction;
+import com.brisas.las_brisas.repository.training.Iinduction_employee;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,88 +19,168 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class InductionEmployeeService {
 
-    private final Iinduction_employee IintroduEmployee;
+    private final Iinduction_employee inductionEmployeeRepository;
+    private final Iemployee employeeRepository;
+    private final Iinduction inductionRepository;
 
-    public List<induction_employee> getAll() {
-        return IintroduEmployee.findAll();
+    // =========================================
+    // LISTADOS
+    // =========================================
+
+    /** 🔹 Devuelve todas las asignaciones con nombres (solo para ADMIN) */
+    public List<induction_employeeDTO> getAllFormatted() {
+        return inductionEmployeeRepository.findAll()
+                .stream()
+                .map(this::convertToDTOWithNames)
+                .toList();
     }
 
-    public List<induction_employeeDTO> getAllFormatted() {
-        return IintroduEmployee.findAll().stream()
+    /** 🔹 Devuelve asignaciones del empleado autenticado (vista EMPLEADO) */
+    public List<induction_employeeDTO> findByUserEmailFormatted(String email) {
+        return inductionEmployeeRepository.findByUserEmail(email)
+                .stream()
                 .map(this::convertToDTOWithNames)
                 .toList();
     }
 
     public Optional<induction_employee> findById(int id) {
-        return IintroduEmployee.findById(id);
+        return inductionEmployeeRepository.findById(id);
     }
 
-    public List<induction_employee> findByUserEmail(String email) {
-        return IintroduEmployee.findByUserEmail(email);
-    }
+    // =========================================
+    // GUARDAR / ASIGNAR (ADMIN)
+    // =========================================
+    public ResponseDTO<induction_employeeDTO> save(induction_employeeDTO dto) {
+        try {
+            if (dto.getEmployeeId() <= 0)
+                return new ResponseDTO<>("El empleado es obligatorio", "400", null);
 
-    public ResponseDTO<induction_employeeDTO> delete(int id) {
-        Optional<induction_employee> opt = IintroduEmployee.findById(id);
-        if (opt.isEmpty()) {
-            return new ResponseDTO<>("La asignación de inducción no existe", HttpStatus.NOT_FOUND.toString(), null);
+            if (dto.getInductionId() <= 0)
+                return new ResponseDTO<>("La inducción es obligatoria", "400", null);
+
+            if (dto.getDeadline() == null)
+                return new ResponseDTO<>("La fecha límite es obligatoria", "400", null);
+
+            Optional<employee> empOpt = employeeRepository.findById(dto.getEmployeeId());
+            Optional<induction> indOpt = inductionRepository.findById(dto.getInductionId());
+
+            if (empOpt.isEmpty() || indOpt.isEmpty())
+                return new ResponseDTO<>("Empleado o inducción no encontrados", "404", null);
+
+            if (dto.getDateAssignment() == null)
+                dto.setDateAssignment(LocalDateTime.now());
+
+            if (dto.getStatus() == null || dto.getStatus().isEmpty())
+                dto.setStatus("pendiente");
+
+            if (dto.getVisto() == null || dto.getVisto().isEmpty())
+                dto.setVisto("no");
+
+            if (dto.getPoints() < 0)
+                dto.setPoints(0);
+
+            induction_employee entity = convertToEntity(dto, empOpt.get(), indOpt.get());
+            inductionEmployeeRepository.saveAndFlush(entity);
+
+            System.out.println("✅ Asignación guardada con ID: " + entity.getId());
+
+            return new ResponseDTO<>("Asignación guardada correctamente", "200", convertToDTO(entity));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), "500", null);
         }
-        IintroduEmployee.deleteById(id);
-        return new ResponseDTO<>("Asignación eliminada correctamente", HttpStatus.OK.toString(), null);
     }
 
-    public List<induction_employee> getByEmployeeId(int employeeId) {
-        return IintroduEmployee.findByEmployeeId(employeeId);
-    }
-
-    public ResponseDTO<induction_employeeDTO> completeInduction(int id, int points) {
-        Optional<induction_employee> opt = IintroduEmployee.findById(id);
+    // =========================================
+    // EMPLEADO: Marcar como vista
+    // =========================================
+    public ResponseDTO<induction_employeeDTO> markAsSeen(int id) {
+        Optional<induction_employee> opt = inductionEmployeeRepository.findById(id);
         if (opt.isEmpty()) {
-            return new ResponseDTO<>("Asignación no encontrada", HttpStatus.NOT_FOUND.toString(), null);
+            return new ResponseDTO<>("Asignación no encontrada", "404", null);
         }
 
         induction_employee entity = opt.get();
+
+        if (entity.getVisto() == induction_employee.visto.no) {
+            entity.setVisto(induction_employee.visto.si);
+            entity.setDateSeen(LocalDateTime.now());
+            inductionEmployeeRepository.saveAndFlush(entity);
+            System.out.println("👁️ Inducción marcada como vista para empleado ID " + entity.getEmployee().getId());
+        }
+
+        return new ResponseDTO<>("Inducción vista registrada", "200", convertToDTO(entity));
+    }
+
+    // =========================================
+    // EMPLEADO: Completar inducción
+    // =========================================
+    public ResponseDTO<induction_employeeDTO> completeInduction(int id, int points) {
+        Optional<induction_employee> opt = inductionEmployeeRepository.findById(id);
+        if (opt.isEmpty()) {
+            return new ResponseDTO<>("Asignación no encontrada", "404", null);
+        }
+
+        induction_employee entity = opt.get();
+
         entity.setPoints(points);
+
+        if (points >= 50) {
+            entity.setStatus(induction_employee.status.aprobado);
+        } else {
+            entity.setStatus(induction_employee.status.rechazado);
+        }
+
+        entity.setDateComplete(LocalDateTime.now());
+        inductionEmployeeRepository.saveAndFlush(entity);
+
+        System.out.println("🏁 Inducción completada ID " + entity.getId() + " | Puntos: " + points);
+
+        return new ResponseDTO<>(
+                points >= 50 ? "Inducción aprobada" : "Inducción reprobada",
+                "200",
+                convertToDTO(entity));
+    }
+
+    // =========================================
+    // ELIMINAR
+    // =========================================
+    public ResponseDTO<induction_employeeDTO> delete(int id) {
+        Optional<induction_employee> opt = inductionEmployeeRepository.findById(id);
+        if (opt.isEmpty()) {
+            return new ResponseDTO<>("La asignación no existe", "404", null);
+        }
+        inductionEmployeeRepository.deleteById(id);
+        return new ResponseDTO<>("Asignación eliminada correctamente", "200", null);
+    }
+
+    public ResponseDTO<induction_employeeDTO> completeCapacitacion(int id) {
+        Optional<induction_employee> opt = inductionEmployeeRepository.findById(id);
+        if (opt.isEmpty()) {
+            return new ResponseDTO<>("Asignación no encontrada", "404", null);
+        }
+
+        induction_employee entity = opt.get();
+
+        // Solo marcar como vista y aprobar con 100 puntos
+        entity.setVisto(induction_employee.visto.si);
+        entity.setDateSeen(LocalDateTime.now());
         entity.setStatus(induction_employee.status.aprobado);
+        entity.setPoints(100);
         entity.setDateComplete(LocalDateTime.now());
 
-        IintroduEmployee.save(entity);
+        inductionEmployeeRepository.saveAndFlush(entity);
 
-        return new ResponseDTO<>("Inducción completada", HttpStatus.OK.toString(), convertToDTO(entity));
+        System.out.println("🎓 Capacitación completada y aprobada automáticamente ID " + entity.getId());
+
+        return new ResponseDTO<>("Capacitación completada correctamente con 100 puntos", "200", convertToDTO(entity));
     }
 
-    public ResponseDTO<induction_employeeDTO> save(induction_employeeDTO dto) {
-        try {
-            if (dto.getEmployeeId() <= 0) {
-                return new ResponseDTO<>("El ID del empleado es requerido", HttpStatus.BAD_REQUEST.toString(), null);
-            }
-            if (dto.getInductionId() <= 0) {
-                return new ResponseDTO<>("El ID de la inducción es requerido", HttpStatus.BAD_REQUEST.toString(), null);
-            }
-            if (dto.getDeadline() == null) {
-                return new ResponseDTO<>("La fecha límite es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
-            }
-            if (dto.getPoints() < 0) {
-                return new ResponseDTO<>("Los puntos no pueden ser negativos", HttpStatus.BAD_REQUEST.toString(), null);
-            }
-
-            induction_employee entity = convertToEntity(dto);
-            IintroduEmployee.save(entity);
-
-            return new ResponseDTO<>("Asignación guardada correctamente", HttpStatus.OK.toString(),
-                    convertToDTO(entity));
-        } catch (Exception e) {
-            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                    null);
-        }
-    }
-
-    private induction_employee convertToEntity(induction_employeeDTO dto) {
-        employee e = new employee();
-        e.setId(dto.getEmployeeId());
-
-        induction i = new induction();
-        i.setId(dto.getInductionId());
-
+    // =========================================
+    // CONVERSORES
+    // =========================================
+    private induction_employee convertToEntity(induction_employeeDTO dto, employee emp, induction ind) {
         induction_employee.status s;
         try {
             s = induction_employee.status.valueOf(dto.getStatus().toLowerCase());
@@ -117,8 +197,8 @@ public class InductionEmployeeService {
 
         return induction_employee.builder()
                 .id(dto.getId())
-                .employee(e)
-                .induction(i)
+                .employee(emp)
+                .induction(ind)
                 .dateAssignment(dto.getDateAssignment())
                 .dateComplete(dto.getDateComplete())
                 .deadline(dto.getDeadline())
@@ -149,9 +229,12 @@ public class InductionEmployeeService {
                 .id(entity.getId())
                 .employeeId(entity.getEmployee() != null ? entity.getEmployee().getId() : 0)
                 .inductionId(entity.getInduction() != null ? entity.getInduction().getId() : 0)
-                .employeeName(entity.getEmployee() != null ?
-                    entity.getEmployee().getFirstName() + " " + entity.getEmployee().getLastName() : "")
+                .employeeName(entity.getEmployee() != null
+                        ? entity.getEmployee().getFirstName() + " " + entity.getEmployee().getLastName()
+                        : "")
                 .inductionName(entity.getInduction() != null ? entity.getInduction().getName() : "")
+                .inductionType(entity.getInduction() != null ? entity.getInduction().getType().name() : "")
+
                 .dateAssignment(entity.getDateAssignment())
                 .dateComplete(entity.getDateComplete())
                 .deadline(entity.getDeadline())

@@ -11,12 +11,11 @@ export default function UsersModule() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editing, setEditing] = useState(null);
     const [form, setForm] = useState({
-        idUser: "",
         username: "",
         email: "",
         password: "",
         status: "ACTIVE",
-        rol: "", // importante: coincide con RegisterRequestDTO
+        rol: "",
     });
     const [errors, setErrors] = useState({});
 
@@ -54,7 +53,6 @@ export default function UsersModule() {
         setEditing(user);
         setForm(
             user || {
-                idUser: "",
                 username: "",
                 email: "",
                 password: "",
@@ -107,7 +105,21 @@ export default function UsersModule() {
         }
     };
 
-    const handleExport = () => exportCSV("usuarios.csv", users);
+    const handleExport = () => {
+        const cleanUsers = users.map(u => ({
+            id: u.idUser,
+            usuario: u.username,
+            email: u.email,
+            rol: Array.isArray(u.roles)
+                ? u.roles.map(r => r.name).join(", ")
+                : u.role?.name || "—",
+            estado: u.status,
+            creado: u.createdAt,
+        }));
+
+        exportCSV("usuarios.csv", cleanUsers);
+    };
+
 
     if (loading) return <p>Cargando usuarios...</p>;
 
@@ -137,8 +149,8 @@ export default function UsersModule() {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((u) => (
-                        <tr key={u.idUser}>
+                    {users.map((u, index) => (
+                        <tr key={u.idUser || u.email || index}>
                             <td style={styles.td}>{u.idUser}</td>
                             <td style={styles.td}>{u.username}</td>
                             <td style={styles.td}>{u.email}</td>
@@ -240,7 +252,7 @@ export default function UsersModule() {
                             >
                                 <option value="">-- Selecciona un rol --</option>
                                 {roles.map((r) => (
-                                    <option key={r.name} value={r.name}>
+                                    <option key={r.id} value={r.name}>
                                         {r.name}
                                     </option>
                                 ))}

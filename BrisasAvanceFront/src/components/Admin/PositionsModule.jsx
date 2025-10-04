@@ -10,7 +10,7 @@ export default function PositionsModule() {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingPosition, setEditingPosition] = useState(null);
-    const [form, setForm] = useState({ namePost: "", description: "", jobFunction: "", requirements: "" });
+    const [form, setForm] = useState({ namePost: "", description: "", jon_function: "", requirements: "" });
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
@@ -45,7 +45,7 @@ export default function PositionsModule() {
 
     const handleOpenModal = (position = null) => {
         setEditingPosition(position);
-        setForm(position || { namePost: "", description: "", jobFunction: "", requirements: "" });
+        setForm(position || { namePost: "", description: "", jon_function: "", requirements: "" });
         setErrors({});
         setModalOpen(true);
     };
@@ -61,8 +61,8 @@ export default function PositionsModule() {
             newErrors.description = "La descripción es obligatoria y debe tener al menos 5 caracteres.";
         }
 
-        if (!form.jobFunction || form.jobFunction.trim().length < 5) {
-            newErrors.jobFunction = "La función del trabajo es obligatoria y debe tener al menos 5 caracteres.";
+        if (!form.jon_function || form.jon_function.trim().length < 5) {
+            newErrors.jon_function = "La función del trabajo es obligatoria y debe tener al menos 5 caracteres.";
         }
 
         if (!form.requirements || form.requirements.trim().length < 10) {
@@ -124,7 +124,7 @@ export default function PositionsModule() {
                         <tr key={p.id} style={styles.tr}>
                             <td style={styles.td}>{p.namePost}</td>
                             <td style={styles.td}>{p.description}</td>
-                            <td style={styles.td}>{p.jobFunction}</td>
+                            <td style={styles.td}>{p.jon_function}</td>
                             <td style={styles.td}>
                                 <button style={styles.btnSmall} onClick={() => handleOpenModal(p)}>
                                     Editar
@@ -175,14 +175,14 @@ export default function PositionsModule() {
                             Función del Trabajo:
                             <input
                                 type="text"
-                                value={form.jobFunction}
+                                value={form.jon_function}
                                 onChange={(e) => {
-                                    setForm({ ...form, jobFunction: e.target.value });
-                                    if (errors.jobFunction) setErrors({ ...errors, jobFunction: null });
+                                    setForm({ ...form, jon_function: e.target.value });
+                                    if (errors.jon_function) setErrors({ ...errors, jon_function: null });
                                 }}
-                                style={{ width: "100%", padding: 6, border: errors.jobFunction ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.jon_function ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
-                            {errors.jobFunction && <span style={{ color: "red", fontSize: "12px" }}>{errors.jobFunction}</span>}
+                            {errors.jon_function && <span style={{ color: "red", fontSize: "12px" }}>{errors.jon_function}</span>}
                         </label>
                         <label>
                             Requisitos:

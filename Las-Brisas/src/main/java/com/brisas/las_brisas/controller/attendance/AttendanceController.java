@@ -22,8 +22,13 @@ public class AttendanceController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<List<attendance>> getAll() {
-        return ResponseEntity.ok(attendanceService.getAll());
+    public ResponseEntity<?> getAll() {
+        var records = attendanceService.getAll()
+                .stream()
+                .map(attendanceService::convertToDTO)
+                .toList();
+
+        return ResponseEntity.ok(records);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -80,4 +85,3 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.delete(id));
     }
 }
-

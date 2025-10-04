@@ -3,9 +3,9 @@ package com.brisas.las_brisas.service.training;
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.training.answerDTO;
 import com.brisas.las_brisas.model.training.answer;
-import com.brisas.las_brisas.repository.training.Ianswer;
 import com.brisas.las_brisas.model.training.question;
-
+import com.brisas.las_brisas.repository.training.Ianswer;
+import com.brisas.las_brisas.repository.training.Iquestion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,7 @@ import java.util.Optional;
 public class AnswerService {
 
     private final Ianswer ianswer;
+    private final Iquestion iquestion;
 
     public List<answer> getAll() {
         return ianswer.findAll();
@@ -49,25 +50,47 @@ public class AnswerService {
                 return new ResponseDTO<>("La respuesta no puede estar vacía", HttpStatus.BAD_REQUEST.toString(), null);
             }
 
+            Optional<question> questionOpt = iquestion.findById(dto.getQuestionId());
+            if (questionOpt.isEmpty()) {
+                return new ResponseDTO<>("La pregunta asociada no existe", HttpStatus.NOT_FOUND.toString(), null);
+            }
+
+            question q = questionOpt.get();
+
+            String tipo = q.getType().name().toLowerCase();
+
+            if (tipo.equals("truefalse")) {
+                long correctCount = ianswer.findByQuestionId(q.getId())
+                        .stream().filter(answer::isResponseCorrect).count();
+
+                if (dto.isResponseCorrect() && correctCount >= 1) {
+                    return new ResponseDTO<>(
+                            "Ya existe una respuesta correcta para esta pregunta (verdadero/falso)",
+                            HttpStatus.BAD_REQUEST.toString(),
+                            null);
+                }
+            }
+
             answer entity = convertToEntity(dto);
+            entity.setQuestion(q);
+
             ianswer.save(entity);
 
             return new ResponseDTO<>("Respuesta guardada correctamente", HttpStatus.OK.toString(),
                     convertToDTO(entity));
         } catch (Exception e) {
-            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                    null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 
     private answer convertToEntity(answerDTO dto) {
         question q = new question();
         q.setId(dto.getQuestionId());
-
         return answer.builder()
                 .id(dto.getId())
                 .answer(dto.getAnswer())
-                .response_correct(dto.isResponseCorrect())
+                .responseCorrect(dto.isResponseCorrect())
                 .question(q)
                 .build();
     }
@@ -76,7 +99,7 @@ public class AnswerService {
         return answerDTO.builder()
                 .id(entity.getId())
                 .answer(entity.getAnswer())
-                .responseCorrect(entity.isResponse_correct())
+                .responseCorrect(entity.isResponseCorrect())
                 .questionId(entity.getQuestion() != null ? entity.getQuestion().getId() : 0)
                 .build();
     }

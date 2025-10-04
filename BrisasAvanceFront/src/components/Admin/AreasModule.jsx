@@ -10,7 +10,7 @@ export default function AreasModule() {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingArea, setEditingArea] = useState(null);
-    const [form, setForm] = useState({ name: "", description: "" });
+    const [form, setForm] = useState({ nameArea: "", description: "" });
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
@@ -45,7 +45,7 @@ export default function AreasModule() {
 
     const handleOpenModal = (area = null) => {
         setEditingArea(area);
-        setForm(area || { name: "", description: "" });
+        setForm(area || { nameArea: "", description: "" });
         setErrors({});
         setModalOpen(true);
     };
@@ -53,8 +53,8 @@ export default function AreasModule() {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!form.name || form.name.trim().length < 2) {
-            newErrors.name = "El nombre del área es obligatorio y debe tener al menos 2 caracteres.";
+        if (!form.nameArea || form.nameArea.trim().length < 2) {
+            newErrors.nameArea = "El nombre del área es obligatorio y debe tener al menos 2 caracteres.";
         }
 
         if (!form.description || form.description.trim().length < 5) {
@@ -139,14 +139,14 @@ export default function AreasModule() {
                             Nombre del Área:
                             <input
                                 type="text"
-                                value={form.name}
+                                value={form.nameArea}
                                 onChange={(e) => {
-                                    setForm({ ...form, name: e.target.value });
-                                    if (errors.name) setErrors({ ...errors, name: null });
+                                    setForm({ ...form, nameArea: e.target.value });
+                                    if (errors.nameArea) setErrors({ ...errors, nameArea: null });
                                 }}
-                                style={{ width: "100%", padding: 6, border: errors.name ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
+                                style={{ width: "100%", padding: 6, border: errors.nameArea ? "1px solid red" : "1px solid #ddd", borderRadius: 4 }}
                             />
-                            {errors.name && <span style={{ color: "red", fontSize: "12px" }}>{errors.name}</span>}
+                            {errors.nameArea && <span style={{ color: "red", fontSize: "12px" }}>{errors.nameArea}</span>}
                         </label>
                         <label>
                             Descripción:

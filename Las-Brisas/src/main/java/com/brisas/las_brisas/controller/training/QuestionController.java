@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/questions")
 @RequiredArgsConstructor
@@ -17,28 +19,32 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
-    // ADMIN: ver todas
+    // ADMIN: ver todas (en DTO)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(questionService.getAll());
+        List<questionDTO> list = questionService.getAll()
+                .stream()
+                .map(questionService::convertToDTO) // ✅ convertimos a DTO
+                .toList();
+        return ResponseEntity.ok(list);
     }
 
-    // EMPLEADO y ADMIN: ver una
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
         return questionService.findById(id)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .<ResponseEntity<?>>map(q -> ResponseEntity.ok(questionService.convertToDTO(q)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ResponseDTO<>("Pregunta no encontrada", HttpStatus.NOT_FOUND.toString(), null)));
     }
 
-    // ADMIN y EMPLEADO: ver preguntas por módulo
+    // ADMIN y EMPLEADO: ver preguntas por módulo (en DTO)
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/module/{moduleId}")
     public ResponseEntity<?> getByModule(@PathVariable int moduleId) {
-        return ResponseEntity.ok(questionService.getQuestionsByModule(moduleId));
+        List<questionDTO> list = questionService.getQuestionsByModule(moduleId); // ✅ ya devuelve DTOs
+        return ResponseEntity.ok(list);
     }
 
     // ADMIN: guardar

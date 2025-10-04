@@ -141,7 +141,27 @@ export default function EmployeesModule() {
         setModalOpen(false);
     };
 
-    const handleExport = () => exportCSV("empleados.csv", employees);
+    const handleExport = () => {
+        const cleanEmployees = employees.map(e => ({
+            id: e.id,
+            nombre: `${e.firstName} ${e.lastName}`,
+            tipo_documento: e.tipoDocumento?.toUpperCase(),
+            numero_documento: e.documentNumber,
+            correo: e.email,
+            telefono: e.phone,
+            direccion: e.address,
+            genero: e.gender === "male" ? "Masculino" :
+                e.gender === "female" ? "Femenino" : "Otro",
+            estado_civil:
+                e.civilStatus === "single" ? "Soltero" :
+                    e.civilStatus === "married" ? "Casado" :
+                        e.civilStatus === "divorced" ? "Divorciado" :
+                            e.civilStatus === "widowed" ? "Viudo" : "—",
+            fecha_nacimiento: e.birthdate,
+        }));
+
+        exportCSV("empleados.csv", cleanEmployees);
+    };
 
     if (loading) return <p>Cargando empleados...</p>;
 

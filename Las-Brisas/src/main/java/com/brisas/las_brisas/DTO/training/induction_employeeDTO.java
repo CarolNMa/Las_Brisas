@@ -13,6 +13,7 @@ public class induction_employeeDTO {
     private int employeeId;
     private String employeeName;
     private String inductionName;
+    private String inductionType; 
     private LocalDateTime dateAssignment;
     private LocalDateTime dateComplete;
     private LocalDateTime deadline;

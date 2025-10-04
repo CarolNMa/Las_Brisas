@@ -46,4 +46,21 @@ public class InductionController {
         ResponseDTO<inductionDTO> response = inductionService.delete(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    // Listar solo capacitaciones
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/capacitaciones")
+    public ResponseEntity<?> getAllCapacitaciones() {
+        return ResponseEntity.ok(inductionService.getAllCapacitaciones());
+    }
+
+    // Crear o actualizar capacitación
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping("/capacitaciones")
+    public ResponseEntity<Object> createOrUpdateCapacitacion(@RequestBody inductionDTO dto) {
+        dto.setType("capacitacion");
+        ResponseDTO<inductionDTO> response = inductionService.saveCapacitacion(dto);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

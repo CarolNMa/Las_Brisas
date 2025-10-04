@@ -243,9 +243,9 @@ class ApiService {
   }
 
   async updateAttendance(id, attendanceData) {
-    return this.request("/attendance/", {
-      method: "POST",
-      body: JSON.stringify({ ...attendanceData, id: id }),
+    return this.request(`/attendance/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(attendanceData),
     });
   }
 
@@ -514,73 +514,78 @@ class ApiService {
   // ==============================
   // RESPUESTAS
   // ==============================
-  getAnswersByQuestion(questionId) {
-    return this.request(`/answers/question/${questionId}`, { method: "GET" });
+  async getAnswersByQuestion(questionId) {
+    return this.request(`/answers/question/${questionId}`);
   }
 
-  saveAnswer(data) {
+  async saveAnswer(data) {
     return this.request("/answers", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  deleteAnswer(id) {
+  async deleteAnswer(id) {
     return this.request(`/answers/${id}`, { method: "DELETE" });
   }
 
-  // ==============================
-  // ASIGNACIONES (induction_employee)
-  // ==============================
+  // ASIGNACIONES
+
   getAllAssignments() {
-    return this.request("/induction-employees", { method: "GET" });
+    return this.request("/induction-employee", { method: "GET" });
   }
 
   getMyAssignments() {
-    return this.request("/induction-employees/me", { method: "GET" });
+    return this.request("/induction-employee/me", { method: "GET" });
   }
 
   assignInduction(data) {
-    return this.request("/induction-employees", {
+    return this.request("/induction-employee", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
   completeAssignment(id, points) {
-    return this.request(`/induction-employees/${id}/complete?points=${points}`, {
+    return this.request(`/induction-employee/${id}/complete?points=${points}`, {
       method: "PUT",
     });
   }
 
   deleteAssignment(id) {
-    return this.request(`/induction-employees/${id}`, { method: "DELETE" });
+    return this.request(`/induction-employee/${id}`, { method: "DELETE" });
   }
-
 
   //  CAPACITACIONES
 
+  // ======================= CAPACITACIONES =======================
+
+  // Listar capacitaciones
   async getAllTrainings() {
-    return this.request("/training/all");
+    return this.request("/inductions/capacitaciones");
   }
 
+  // Crear capacitación
   async createTraining(data) {
-    return this.request("/training/", {
+    return this.request("/inductions/capacitaciones", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
+  // Actualizar capacitación (usa el mismo endpoint POST)
   async updateTraining(id, data) {
-    return this.request(`/training/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
+    return this.request("/inductions/capacitaciones", {
+      method: "POST",
+      body: JSON.stringify({ ...data, id }),
     });
   }
 
+  // Eliminar capacitación
   async deleteTraining(id) {
-    return this.request(`/training/${id}`, { method: "DELETE" });
+    return this.request(`/inductions/${id}`, { method: "DELETE" });
   }
+
 
 
   // EMPLEADOS

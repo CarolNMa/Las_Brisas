@@ -75,8 +75,25 @@ export default function ApplicationsModule() {
     };
 
     const handleExport = () => {
-        exportCSV("solicitudes.csv", applications);
+        const cleanData = applications.map((a) => ({
+            Empleado: a.employeeName || "Desconocido",
+            Tipo: a.applicationTypeName || "—",
+            "Fecha Inicio": a.dateStart || "—",
+            "Fecha Fin": a.dateEnd || "—",
+            Motivo: a.reason || "—",
+            Estado:
+                a.status === "Pendiente"
+                    ? "Pendiente"
+                    : a.status === "Aprobada"
+                        ? "Aprobada"
+                        : a.status === "Rechazada"
+                            ? "Rechazada"
+                            : "—",
+        }));
+
+        exportCSV("solicitudes.csv", cleanData);
     };
+
 
     if (loading) return <p>Cargando solicitudes...</p>;
 

@@ -69,8 +69,35 @@ export default function ContractsModule() {
     };
 
     const handleExport = () => {
-        exportCSV("contratos.csv", contracts);
+        const cleanData = contracts.map((c) => {
+            const emp = employees.find((e) => e.id === c.employee);
+            return {
+                Empleado: emp ? `${emp.firstName} ${emp.lastName}` : `ID: ${c.employee}`,
+                "Fecha Inicio": c.dateStart || "—",
+                "Fecha Fin": c.dateEnd || "—",
+                Tipo:
+                    c.type === "practicas"
+                        ? "Prácticas"
+                        : c.type === "temporal"
+                            ? "Temporal"
+                            : c.type === "permanente"
+                                ? "Permanente"
+                                : "—",
+                Estado:
+                    c.status === "activo"
+                        ? "Activo"
+                        : c.status === "expirado"
+                            ? "Expirado"
+                            : c.status === "terminado"
+                                ? "Terminado"
+                                : "—",
+                Documento: c.documentUrl ? "Adjunto" : "No disponible",
+            };
+        });
+
+        exportCSV("contratos.csv", cleanData);
     };
+
 
     const handleOpenModal = (contract = null) => {
         setEditingContract(contract);

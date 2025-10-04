@@ -20,7 +20,7 @@ public class answer {
     private String answer;
 
     @Column(name = "response_correct", nullable = false)
-    private boolean response_correct;
+    private boolean responseCorrect;
 
     @ManyToOne
     @JoinColumn(name = "id_question", nullable = false)

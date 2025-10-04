@@ -49,8 +49,18 @@ export default function ResumesModule() {
     };
 
     const handleExport = () => {
-        exportCSV("resumes.csv", resumes);
+        const cleanData = resumes.map((r) => {
+            const emp = employees.find((e) => e.id === r.employeeId);
+            return {
+                Empleado: emp ? `${emp.firstName} ${emp.lastName}` : `ID: ${r.employeeId}`,
+                Observaciones: r.observations || "—",
+                Documento: r.fileName || "Archivo PDF",
+            };
+        });
+
+        exportCSV("hojas_de_vida.csv", cleanData);
     };
+
 
     const handleOpenModal = (resume = null) => {
         setEditingResume(resume);

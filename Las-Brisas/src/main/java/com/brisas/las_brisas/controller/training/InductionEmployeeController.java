@@ -4,7 +4,6 @@ import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.training.induction_employeeDTO;
 import com.brisas.las_brisas.service.training.InductionEmployeeService;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,51 +17,58 @@ public class InductionEmployeeController {
 
     private final InductionEmployeeService inductionEmployeeService;
 
-    // ADMIN: ver todas las asignaciones
+    // 🔹 ADMIN: ver todas las asignaciones
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(inductionEmployeeService.getAllFormatted());
     }
 
-    // EMPLEADO: ver solo las suyas
+    // 🔹 EMPLEADO: ver solo las suyas (ya formateadas con nombres)
     @PreAuthorize("hasRole('EMPLEADO')")
     @GetMapping("/me")
     public ResponseEntity<?> getMyInductions(Authentication auth) {
-        return ResponseEntity.ok(inductionEmployeeService.findByUserEmail(auth.getName()));
+        var list = inductionEmployeeService.findByUserEmailFormatted(auth.getName());
+        return ResponseEntity.ok(list);
     }
 
-    // ADMIN: ver detalle por id
+    // 🔹 ADMIN: guardar (asignar inducción a empleado)
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable int id) {
-        return inductionEmployeeService.findById(id)
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseDTO<>("Asignación no encontrada", HttpStatus.NOT_FOUND.toString(), null)));
-    }
-
-    // ADMIN: guardar (asignar)
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<?> save(@RequestBody induction_employeeDTO dto) {
         ResponseDTO<?> response = inductionEmployeeService.save(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(Integer.parseInt(response.getStatus())));
     }
 
-    // EMPLEADO: completar inducción
+    // 🔹 EMPLEADO: marcar como vista
+    @PreAuthorize("hasRole('EMPLEADO')")
+    @PutMapping("/{id}/seen")
+    public ResponseEntity<?> markAsSeen(@PathVariable int id) {
+        ResponseDTO<?> response = inductionEmployeeService.markAsSeen(id);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(Integer.parseInt(response.getStatus())));
+    }
+
+    // 🔹 EMPLEADO: completar inducción
     @PreAuthorize("hasRole('EMPLEADO')")
     @PutMapping("/{id}/complete")
     public ResponseEntity<?> completeInduction(@PathVariable int id, @RequestParam int points) {
         ResponseDTO<?> response = inductionEmployeeService.completeInduction(id, points);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(Integer.parseInt(response.getStatus())));
     }
 
-    // ADMIN: eliminar
+    // 🔹 ADMIN: eliminar asignación
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
         ResponseDTO<?> response = inductionEmployeeService.delete(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(Integer.parseInt(response.getStatus())));
     }
+
+    @PreAuthorize("hasRole('EMPLEADO')")
+    @PutMapping("/{id}/complete-training")
+    public ResponseEntity<?> completeCapacitacion(@PathVariable int id) {
+        ResponseDTO<?> response = inductionEmployeeService.completeCapacitacion(id);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(Integer.parseInt(response.getStatus())));
+    }
+
 }

@@ -8,7 +8,7 @@ import EmployeeProfile from '../components/Employee/EmployeeProfile';
 import EmployeeContract from '../components/Employee/EmployeeContract';
 import EmployeeResume from '../components/Employee/EmployeeResume';
 import EmployeeApplications from '../components/Employee/EmployeeApplications';
-import EmployeeInductions from '../components/Employee/EmployeeInductions';
+import EmployeeInductions from '../components/Employee/EmployeeFormaciones';
 import EmployeeAttendance from '../components/Employee/EmployeeAttendance';
 
 export default function EmployeeDashboard({ user, onLogout }) {
@@ -21,7 +21,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
     { key: 'contract', label: 'Mi Contrato', icon: '📄' },
     { key: 'resume', label: 'Hoja de Vida', icon: '📋' },
     { key: 'applications', label: 'Mis Solicitudes', icon: '📩' },
-    { key: 'inductions', label: 'Inducciones', icon: '🎓' },
+    { key: 'inductions', label: 'Formaciones', icon: '🎓' },
     { key: 'attendance', label: 'Mi Asistencia', icon: '⏰' },
   ];
 
