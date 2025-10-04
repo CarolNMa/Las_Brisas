@@ -83,6 +83,18 @@ interface ApplicationType {
   required: boolean;
 }
 
+interface Contract {
+  id: number;
+  fechaInicio: string;
+  fechaFin: string;
+  fechaRenovacion?: string;
+  documentoUrl?: string;
+  type: "practicas" | "temporal" | "permanente";
+  status: "activo" | "expirado" | "terminado";
+  employeeId: number;
+  employeeName: string;
+}
+
 class ApiService {
   private async getAuthHeaders() {
     const token = await AsyncStorage.getItem('jwt_token');
@@ -490,6 +502,93 @@ class ApiService {
     }
 
     return response.json();
+  }
+
+  // CONTRACTS METHODS
+  async getAllContracts(): Promise<Contract[]> {
+    const response = await fetch(`${API_BASE_URL}/contracts/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch contracts');
+    }
+
+    return response.json();
+  }
+
+  async getContractById(id: number): Promise<Contract> {
+    const response = await fetch(`${API_BASE_URL}/contracts/${id}`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch contract');
+    }
+
+    return response.json();
+  }
+
+  async createContract(formData: FormData): Promise<any> {
+    const token = await AsyncStorage.getItem('jwt_token');
+    const response = await fetch(`${API_BASE_URL}/contracts`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // Don't set Content-Type for FormData
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create contract');
+    }
+
+    return response.json();
+  }
+
+  async updateContract(id: number, contractData: Partial<Contract>): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/contracts/${id}`, {
+      method: 'PUT',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(contractData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update contract');
+    }
+
+    return response.json();
+  }
+
+  async deleteContract(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/contracts/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete contract');
+    }
+
+    return response.json();
+  }
+
+  async downloadContract(filename: string): Promise<Blob> {
+    const token = await AsyncStorage.getItem('jwt_token');
+    const response = await fetch(`${API_BASE_URL}/contracts/download/${filename}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download contract');
+    }
+
+    return response.blob();
   }
 }
 
