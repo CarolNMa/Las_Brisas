@@ -15,7 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/module-induction")
+@RequestMapping("/api/v1/modules")
 @RequiredArgsConstructor
 public class ModuleInductionController {
 

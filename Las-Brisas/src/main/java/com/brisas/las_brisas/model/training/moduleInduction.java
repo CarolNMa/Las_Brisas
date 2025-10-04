@@ -31,7 +31,7 @@ public class moduleInduction {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT" ,nullable = false)
     private String description;
 
     @Column(name = "video_url", nullable = false)

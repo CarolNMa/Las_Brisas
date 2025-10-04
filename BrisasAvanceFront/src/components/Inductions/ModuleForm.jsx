@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ApiService from "../../services/api";
+import { styles } from "../Dashboard/styles"; 
 
 export default function ModuleForm({ inductionId, moduleData = null, onClose, onSaved }) {
     const [form, setForm] = useState({
@@ -32,7 +33,6 @@ export default function ModuleForm({ inductionId, moduleData = null, onClose, on
         if (!form.name?.trim()) return alert("El nombre es obligatorio");
         if (!form.description?.trim()) return alert("La descripción es obligatoria");
         if (!form.videoUrl?.startsWith("http")) return alert("La URL del video debe ser válida (http/https)");
-        if (!form.inductionId) return alert("Falta el ID de la inducción");
 
         try {
             setSaving(true);
@@ -52,40 +52,35 @@ export default function ModuleForm({ inductionId, moduleData = null, onClose, on
     };
 
     return (
-        <div style={styles.wrapper}>
-            <h3>{form.id ? "Editar módulo" : "Nuevo módulo"}</h3>
+        <div>
+            <h3>{form.id ? "Editar Módulo" : "Nuevo Módulo"}</h3>
             <input
+                className={styles.input}
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 placeholder="Nombre del módulo"
-                style={styles.input}
             />
             <textarea
+                className={styles.textarea}
                 name="description"
                 value={form.description}
                 onChange={handleChange}
                 placeholder="Descripción"
-                style={styles.textarea}
             />
             <input
+                className={styles.input}
                 name="videoUrl"
                 value={form.videoUrl}
                 onChange={handleChange}
                 placeholder="URL del video"
-                style={styles.input}
             />
-            <div style={styles.actions}>
-                <button onClick={handleSave} disabled={saving}>{saving ? "Guardando..." : "💾 Guardar"}</button>
-                <button onClick={onClose}>❌ Cancelar</button>
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                <button className={styles.button} onClick={handleSave} disabled={saving}>
+                    {saving ? "Guardando..." : "Guardar"}
+                </button>
+                <button className={styles.buttonCancel} onClick={onClose}>Cancelar</button>
             </div>
         </div>
     );
 }
-
-const styles = {
-    wrapper: { padding: 12, background: "#fff", borderRadius: 8, maxWidth: 520 },
-    input: { width: "100%", margin: "6px 0", padding: 8 },
-    textarea: { width: "100%", minHeight: 90, margin: "6px 0", padding: 8 },
-    actions: { display: "flex", gap: 8, marginTop: 8 },
-};

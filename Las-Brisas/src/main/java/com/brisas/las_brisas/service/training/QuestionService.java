@@ -2,8 +2,11 @@ package com.brisas.las_brisas.service.training;
 
 import com.brisas.las_brisas.DTO.ResponseDTO;
 import com.brisas.las_brisas.DTO.training.questionDTO;
+import com.brisas.las_brisas.model.training.answer;
 import com.brisas.las_brisas.model.training.moduleInduction;
 import com.brisas.las_brisas.model.training.question;
+import com.brisas.las_brisas.repository.training.Ianswer;
+import com.brisas.las_brisas.repository.training.Imodule_induction;
 import com.brisas.las_brisas.repository.training.Iquestion;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,8 @@ import java.util.Optional;
 public class QuestionService {
 
     private final Iquestion iquestion;
+    private final Ianswer ianswer;
+    private final Imodule_induction imoduleInduction;
 
     public List<question> getAll() {
         return iquestion.findAll();
@@ -42,39 +47,54 @@ public class QuestionService {
 
     public ResponseDTO<questionDTO> save(questionDTO dto) {
         try {
-            if (dto.getModuleInductionId() <= 0) {
-                return new ResponseDTO<>("El ID del módulo de inducción es requerido",
-                        HttpStatus.BAD_REQUEST.toString(), null);
-            }
             if (dto.getQuestion() == null || dto.getQuestion().trim().isEmpty()) {
-                return new ResponseDTO<>("La pregunta no puede estar vacía", HttpStatus.BAD_REQUEST.toString(), null);
+                return new ResponseDTO<>("La pregunta es obligatoria", HttpStatus.BAD_REQUEST.toString(), null);
             }
 
-            question entity = convertToEntity(dto);
-            iquestion.save(entity);
+            Optional<moduleInduction> moduleOpt = imoduleInduction.findById(dto.getModuleInductionId());
+            if (moduleOpt.isEmpty()) {
+                return new ResponseDTO<>("El módulo no existe", HttpStatus.BAD_REQUEST.toString(), null);
+            }
 
-            return new ResponseDTO<>("Pregunta guardada correctamente", HttpStatus.OK.toString(), convertToDTO(entity));
+            question entity = convertToEntity(dto, moduleOpt.get());
+            question saved = iquestion.save(entity);
+
+            if (saved.getType() == question.type.TRUEFALSE) {
+                if (ianswer.findByQuestionId(saved.getId()).isEmpty()) {
+                    ianswer.save(answer.builder()
+                            .answer("Verdadero")
+                            .response_correct(true)
+                            .question(saved)
+                            .build());
+                    ianswer.save(answer.builder()
+                            .answer("Falso")
+                            .response_correct(false)
+                            .question(saved)
+                            .build());
+                }
+            }
+
+            return new ResponseDTO<>("Pregunta guardada correctamente", HttpStatus.OK.toString(),
+                    convertToDTO(saved));
+
         } catch (Exception e) {
-            return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
-                    null);
+            return new ResponseDTO<>("Error al guardar: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR.toString(), null);
         }
     }
 
-    private question convertToEntity(questionDTO dto) {
-        moduleInduction module = new moduleInduction();
-        module.setId(dto.getModuleInductionId());
-
-        question.type t;
+    private question convertToEntity(questionDTO dto, moduleInduction module) {
+        question.type qType;
         try {
-            t = question.type.valueOf(dto.getType().toLowerCase());
+            qType = question.type.valueOf(dto.getType().toUpperCase());
         } catch (Exception e) {
-            t = question.type.open; // valor por defecto
+            qType = question.type.MULTIPLECHOICE;
         }
 
         return question.builder()
                 .id(dto.getId())
                 .question(dto.getQuestion())
-                .type(t)
+                .type(qType)
                 .moduleInduction(module)
                 .build();
     }

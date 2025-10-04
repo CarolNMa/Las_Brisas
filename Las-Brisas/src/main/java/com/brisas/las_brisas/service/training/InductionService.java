@@ -52,17 +52,17 @@ public class InductionService {
 
             induction entity = convertToEntity(dto);
 
-            if (dto.getId() == 0) {
+            // Control de fechas
+            if (entity.getId() == 0) {
                 entity.setDateCreate(LocalDateTime.now());
-                entity.setDateUpdate(LocalDateTime.now()); 
-            } else {
-                entity.setDateUpdate(LocalDateTime.now());
             }
+            entity.setDateUpdate(LocalDateTime.now());
 
-            iinduction.save(entity);
+            // IMPORTANTE: guardar y recuperar entidad persistida
+            induction saved = iinduction.save(entity);
 
-            return new ResponseDTO<>("Inducción guardada correctamente", HttpStatus.OK.toString(),
-                    convertToDTO(entity));
+            return new ResponseDTO<>("Inducción guardada correctamente", HttpStatus.OK.toString(), convertToDTO(saved));
+
         } catch (Exception e) {
             return new ResponseDTO<>("Error al guardar: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                     null);
@@ -72,14 +72,14 @@ public class InductionService {
     private induction convertToEntity(inductionDTO dto) {
         induction.type t;
         try {
-            t = induction.type.valueOf(dto.getType().toLowerCase());
+            t = induction.type.valueOf(dto.getType().toUpperCase()); // 🔹 usar upperCase porque enums son en mayúsculas
         } catch (Exception e) {
             t = induction.type.induction;
         }
 
         induction.status s;
         try {
-            s = induction.status.valueOf(dto.getStatus().toLowerCase());
+            s = induction.status.valueOf(dto.getStatus().toUpperCase());
         } catch (Exception e) {
             s = induction.status.pendiente;
         }

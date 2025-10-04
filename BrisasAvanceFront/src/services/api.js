@@ -437,133 +437,125 @@ class ApiService {
     return this.request(`/role/${id}`, { method: "DELETE" });
   }
 
-  // ==================================================
-  // 📚 INDUCCIONES
-  // ==================================================
-
-  // ---- Induction (general) ----
-  async getAllInductions() {
-    return this.request("/induction/");
+  // ==============================
+  // INDUCCIONES
+  // ==============================
+  getAllInductions() {
+    return this.request("/inductions", { method: "GET" });
   }
 
-  async getInductionById(id) {
-    return this.request(`/induction/${id}`);
+  getInductionById(id) {
+    return this.request(`/inductions/${id}`, { method: "GET" });
   }
 
-  async createInduction(data) {
-    return this.request("/induction/", {
+  saveInduction(data) {
+    return this.request("/inductions", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateInduction(id, data) {
-    return this.request(`/induction/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
+  deleteInduction(id) {
+    return this.request(`/inductions/${id}`, { method: "DELETE" });
   }
 
-  async deleteInduction(id) {
-    return this.request(`/induction/${id}`, { method: "DELETE" });
+  // ==============================
+  // MÓDULOS
+  // ==============================
+  getModulesByInduction(inductionId) {
+    return this.request(`/modules/induction/${inductionId}`, { method: "GET" });
   }
 
-  // ---- Módulos de inducción ----
-  async getModulesByInduction(inductionId) {
-    return this.request(`/module-induction/induction/${inductionId}`);
+  getModuleById(id) {
+    return this.request(`/modules/${id}`, { method: "GET" });
   }
 
-  async createModule(data) {
-    return this.request("/module-induction", {
+  async getModuleFull(id) {
+    return this.request(`/modules/${id}`, { method: "GET" });
+  }
+
+
+  saveModule(data) {
+    return this.request("/modules", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateModule(id, data) {
-    return this.request(`/module-induction/${id}`, {
+  updateModule(id, data) {
+    return this.request(`/modules/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
   }
 
-  async deleteModule(id) {
-    return this.request(`/module-induction/${id}`, { method: "DELETE" });
+  deleteModule(id) {
+    return this.request(`/modules/${id}`, { method: "DELETE" });
   }
 
-  // ---- Preguntas ----
-  async getQuestionsByModule(moduleId) {
-    return this.request(`/question/module/${moduleId}`);
+  // ==============================
+  // PREGUNTAS
+  // ==============================
+  getQuestionsByModule(moduleId) {
+    return this.request(`/questions/module/${moduleId}`, { method: "GET" });
   }
 
-  async createQuestion(data) {
-    return this.request("/question/", {
+  saveQuestion(data) {
+    return this.request("/questions", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateQuestion(id, data) {
-    return this.request(`/question/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
+  deleteQuestion(id) {
+    return this.request(`/questions/${id}`, { method: "DELETE" });
   }
 
-  async deleteQuestion(id) {
-    return this.request(`/question/${id}`, { method: "DELETE" });
+  // ==============================
+  // RESPUESTAS
+  // ==============================
+  getAnswersByQuestion(questionId) {
+    return this.request(`/answers/question/${questionId}`, { method: "GET" });
   }
 
-  // ---- Respuestas ----
-  async getAnswersByQuestion(questionId) {
-    return this.request(`/answers/question/${questionId}`);
-  }
-
-  async createAnswer(data) {
-    return this.request("/answers/", {
+  saveAnswer(data) {
+    return this.request("/answers", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateAnswer(id, data) {
-    return this.request(`/answers/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deleteAnswer(id) {
+  deleteAnswer(id) {
     return this.request(`/answers/${id}`, { method: "DELETE" });
   }
 
-  // ---- Asignación de inducciones a empleados ----
-  async getAllInductionAssignments() {
-    return this.request("/induction-employee/");
+  // ==============================
+  // ASIGNACIONES (induction_employee)
+  // ==============================
+  getAllAssignments() {
+    return this.request("/induction-employees", { method: "GET" });
   }
 
-  async assignInduction(data) {
-    return this.request("/induction-employee/", {
+  getMyAssignments() {
+    return this.request("/induction-employees/me", { method: "GET" });
+  }
+
+  assignInduction(data) {
+    return this.request("/induction-employees", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async completeInduction(id, points) {
-    return this.request(`/induction-employee/${id}/complete?points=${points}`, {
+  completeAssignment(id, points) {
+    return this.request(`/induction-employees/${id}/complete?points=${points}`, {
       method: "PUT",
     });
   }
 
-  async deleteInductionAssignment(id) {
-    return this.request(`/induction-employee/${id}`, { method: "DELETE" });
+  deleteAssignment(id) {
+    return this.request(`/induction-employees/${id}`, { method: "DELETE" });
   }
-
-  // EMPLEADO: ver mis inducciones asignadas
-  async getMyInductions() {
-    return this.request("/induction-employee/me");
-  }
-
 
 
   //  CAPACITACIONES

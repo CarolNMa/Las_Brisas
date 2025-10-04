@@ -24,9 +24,8 @@ public class question {
     private type type;
 
     public enum type {
-        multiplechoice,
-        singlechoice,
-        open
+        MULTIPLECHOICE,
+        TRUEFALSE
     }
 
     @ManyToOne

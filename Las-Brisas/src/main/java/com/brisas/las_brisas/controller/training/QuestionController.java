@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/question")
+@RequestMapping("/api/v1/questions")
 @RequiredArgsConstructor
 public class QuestionController {
 
@@ -19,7 +19,7 @@ public class QuestionController {
 
     // ADMIN: ver todas
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(questionService.getAll());
     }
@@ -43,7 +43,7 @@ public class QuestionController {
 
     // ADMIN: guardar
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<?> save(@RequestBody questionDTO dto) {
         ResponseDTO<?> response = questionService.save(dto);
         return new ResponseEntity<>(response, HttpStatus.OK);

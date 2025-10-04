@@ -11,36 +11,36 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/induction")
+@RequestMapping("/api/v1/inductions")
 @RequiredArgsConstructor
 public class InductionController {
 
     private final InductionService inductionService;
 
     // ADMIN: listar todas
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping
     public ResponseEntity<?> getAllInductions() {
         return ResponseEntity.ok(inductionService.getAll());
     }
 
     // EMPLEADO y ADMIN: ver detalle
-    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getInductionById(@PathVariable int id) {
         return ResponseEntity.ok(inductionService.findById(id));
     }
 
     // ADMIN: crear o actualizar
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping
     public ResponseEntity<Object> createOrUpdateInduction(@RequestBody inductionDTO dto) {
         ResponseDTO<inductionDTO> response = inductionService.save(dto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // ADMIN: eliminar
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteInduction(@PathVariable int id) {
         ResponseDTO<inductionDTO> response = inductionService.delete(id);
