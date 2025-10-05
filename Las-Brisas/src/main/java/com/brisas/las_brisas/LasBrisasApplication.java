@@ -31,19 +31,11 @@ public class LasBrisasApplication {
 			if (rolRepo.findByName("ADMIN").isEmpty()) {
 				rol adminRole = rol.builder()
 					.name("ADMIN")
-					.description("Administrator role with full access")
+					.description("Administrator")
 					.build();
 				rolRepo.save(adminRole);
 			}
 
-			// Create USER role if it doesn't exist
-			if (rolRepo.findByName("USER").isEmpty()) {
-				rol userRole = rol.builder()
-					.name("USER")
-					.description("Regular user role")
-					.build();
-				rolRepo.save(userRole);
-			}
 
 			// Create default admin user if no users exist
 			if (userRepo.count() == 0) {

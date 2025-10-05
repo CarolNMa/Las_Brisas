@@ -41,7 +41,6 @@ export default function DashboardModules({ active }) {
             return <ApplicationTypesModule />;
         case "resumes":
             return <ResumesModule />;
-
         case "contratos":
             return <ContractsModule />;
         case "attendance":

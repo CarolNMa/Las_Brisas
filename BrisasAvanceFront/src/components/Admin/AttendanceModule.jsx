@@ -73,6 +73,27 @@ export default function AttendanceModule() {
         exportCSV("asistencias.csv", cleanData);
     };
 
+    // 🔹 Registrar asistencia (admin o empleado actual)
+    const handleRegister = async (type) => {
+        try {
+            await ApiService.registerAttendance(type);
+            alert(
+                type === "CHECK_IN"
+                    ? "✅ Entrada registrada correctamente"
+                    : "✅ Salida registrada correctamente"
+            );
+            loadData();
+        } catch (err) {
+            console.error("❌ Error registrando asistencia:", err);
+            if (err.message.includes("Ya registraste entrada")) {
+                alert("⚠️ Ya registraste tu entrada hoy.");
+            } else if (err.message.includes("Ya registraste salida")) {
+                alert("⚠️ Ya registraste tu salida hoy.");
+            } else {
+                alert("❌ Error registrando asistencia");
+            }
+        }
+    };
 
     if (loading) return <p>Cargando asistencias...</p>;
 
@@ -82,6 +103,31 @@ export default function AttendanceModule() {
                 <h2>📋 Registro de Asistencias</h2>
                 <button style={styles.btnSmall} onClick={handleExport}>
                     Exportar CSV
+                </button>
+            </div>
+
+            {/* 🔹 Botones de registro personal */}
+            <div style={{ margin: "15px 0", textAlign: "center" }}>
+                <button
+                    onClick={() => handleRegister("CHECK_IN")}
+                    style={{
+                        ...styles.btnSmall,
+                        backgroundColor: "#28a745",
+                        color: "#fff",
+                        marginRight: "10px",
+                    }}
+                >
+                    🕒 Registrar Entrada
+                </button>
+                <button
+                    onClick={() => handleRegister("CHECK_OUT")}
+                    style={{
+                        ...styles.btnSmall,
+                        backgroundColor: "#dc3545",
+                        color: "#fff",
+                    }}
+                >
+                    🚪 Registrar Salida
                 </button>
             </div>
 
@@ -166,7 +212,9 @@ export default function AttendanceModule() {
                                                         ? "green"
                                                         : a.status === "tarde"
                                                             ? "orange"
-                                                            : "red",
+                                                            : a.status === "ausente"
+                                                                ? "red"
+                                                                : "gray",
                                                 fontWeight: "bold",
                                             }}
                                         >

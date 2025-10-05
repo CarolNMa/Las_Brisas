@@ -59,7 +59,7 @@ public class AttendanceController {
         return ResponseEntity.ok(dtoList);
     }
 
-    @PreAuthorize("hasRole('EMPLEADO')")
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AttendanceRequest request, Authentication auth) {
         return ResponseEntity.ok(
