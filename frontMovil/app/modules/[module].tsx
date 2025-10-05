@@ -14,7 +14,7 @@ import ApplicationsModule from "./ApplicationsModule";
 import ApplicationTypesModule from "./ApplicationTypesModule";
 import ContractsModule from "./ContractsModule";
 import AttendanceModule from "./AttendanceModule";
-import EmployeePostsModule from "./EmployeePostsModule";
+import EmployeePostsModule from "./EmployeePostModule";
 import InductionsModule from "./InductionsModule";
 import AssignInductionsModule from "./AssignInductionsModule";
 import TrainingsModule from "./TrainingsModule";

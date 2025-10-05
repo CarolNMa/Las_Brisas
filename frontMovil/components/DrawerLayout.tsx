@@ -24,9 +24,6 @@ const items = [
   { key: "applicationTypes", label: "Tipos de Solicitud", icon: "📋" },
   { key: "contratos", label: "Contratos", icon: "📄" },
   { key: "employeePosts", label: "Relaciones Empleado - Cargo", icon: "👥" },
-  { key: "inductions", label: "Inducciones", icon: "📚" },
-  { key: "assignInductions", label: "Asignar Inducciones", icon: "📝" },
-  { key: "trainings", label: "Capacitaciones", icon: "🎓" },
 ];
 
 export default function DrawerLayout({ children, currentModule = "dashboard" }: DrawerLayoutProps) {

@@ -56,6 +56,14 @@ interface Employee {
   userId: number;
 }
 
+interface EmployeePost {
+ id: number;
+ employeeId: number;
+ employeeName: string;
+ postId: number;
+ postName: string;
+}
+
 interface Position {
   id: number;
   namePost: string;
@@ -589,6 +597,46 @@ class ApiService {
     }
 
     return response.blob();
+  }
+
+  async getEmployeePosts(): Promise<EmployeePost[]> {
+    const response = await fetch(`${API_BASE_URL}/employee-post`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch employee posts');
+    }
+
+    return response.json();
+  }
+
+  async createEmployeePost(employeePostData: { employeeId: number; postId: number }): Promise<EmployeePost> {
+    const response = await fetch(`${API_BASE_URL}/employee-post`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(employeePostData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create employee post');
+    }
+
+    return response.json();
+  }
+
+  async deleteEmployeePost(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/employee-post/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete employee post');
+    }
+
+    return response.json();
   }
 }
 
