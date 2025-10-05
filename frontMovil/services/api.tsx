@@ -57,11 +57,29 @@ interface Employee {
 }
 
 interface EmployeePost {
- id: number;
- employeeId: number;
- employeeName: string;
- postId: number;
- postName: string;
+  id: number;
+  employeeId: number;
+  employeeName: string;
+  postId: number;
+  postName: string;
+}
+
+interface Attendance {
+  id: number;
+  employee: number;
+  date: string;
+  timeStart?: string;
+  timeEnd?: string;
+  status: string;
+}
+
+interface Schedule {
+  id: number;
+  time_start: string;
+  time_end: string;
+  shift: "MANANA" | "TARDE" | "NOCHE";
+  overtime: string;
+  dayWeek: "LUNES" | "MARTES" | "MIERCOLES" | "JUEVES" | "VIERNES" | "SABADO" | "DOMINGO";
 }
 
 interface Position {
@@ -634,6 +652,89 @@ class ApiService {
 
     if (!response.ok) {
       throw new Error('Failed to delete employee post');
+    }
+
+    return response.json();
+  }
+
+  // ATTENDANCE METHODS
+  async getAllAttendance(): Promise<Attendance[]> {
+    const response = await fetch(`${API_BASE_URL}/attendance/all`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch attendance');
+    }
+
+    return response.json();
+  }
+
+  async registerAttendance(type: 'CHECK_IN' | 'CHECK_OUT'): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/attendance/register`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify({ type }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to register attendance');
+    }
+
+    return response.json();
+  }
+
+  // SCHEDULE METHODS
+  async getAllSchedules(): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/schedules`, {
+      method: 'GET',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch schedules');
+    }
+
+    return response.json();
+  }
+
+  async createSchedule(scheduleData: Omit<Schedule, 'id'>): Promise<Schedule> {
+    const response = await fetch(`${API_BASE_URL}/schedules`, {
+      method: 'POST',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(scheduleData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create schedule');
+    }
+
+    return response.json();
+  }
+
+  async updateSchedule(id: number, scheduleData: Partial<Schedule>): Promise<Schedule> {
+    const response = await fetch(`${API_BASE_URL}/schedules/${id}`, {
+      method: 'PUT',
+      headers: await this.getAuthHeaders(),
+      body: JSON.stringify(scheduleData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update schedule');
+    }
+
+    return response.json();
+  }
+
+  async deleteSchedule(id: number): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/schedules/${id}`, {
+      method: 'DELETE',
+      headers: await this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete schedule');
     }
 
     return response.json();

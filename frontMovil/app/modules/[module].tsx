@@ -14,6 +14,7 @@ import ApplicationsModule from "./ApplicationsModule";
 import ApplicationTypesModule from "./ApplicationTypesModule";
 import ContractsModule from "./ContractsModule";
 import AttendanceModule from "./AttendanceModule";
+import SchedulesModule from "./SchedulesModule";
 import EmployeePostsModule from "./EmployeePostModule";
 import InductionsModule from "./InductionsModule";
 import AssignInductionsModule from "./AssignInductionsModule";
@@ -29,6 +30,8 @@ const moduleTitles: { [key: string]: string } = {
   applications: "Solicitudes",
   applicationTypes: "Tipos de Solicitud",
   contratos: "Contratos",
+  attendance: "Asistencia",
+  schedules: "Horarios",
   employeePosts: "Relaciones Empleado - Cargo",
   inductions: "Inducciones",
   assignInductions: "Asignar Inducciones",
@@ -60,6 +63,8 @@ export default function ModuleScreen() {
         return <ContractsModule />;
       case "attendance":
         return <AttendanceModule />;
+      case "schedules":
+        return <SchedulesModule />;
       case "employeePosts":
         return <EmployeePostsModule />;
       case "inductions":

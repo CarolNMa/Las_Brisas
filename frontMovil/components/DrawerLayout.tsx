@@ -23,6 +23,8 @@ const items = [
   { key: "applications", label: "Solicitudes", icon: "📩" },
   { key: "applicationTypes", label: "Tipos de Solicitud", icon: "📋" },
   { key: "contratos", label: "Contratos", icon: "📄" },
+  { key: "attendance", label: "Asistencia", icon: "📋" },
+  { key: "schedules", label: "Horarios", icon: "🕒" },
   { key: "employeePosts", label: "Relaciones Empleado - Cargo", icon: "👥" },
 ];
 
