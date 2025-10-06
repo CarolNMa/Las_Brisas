@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Alert } from "react-native";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DrawerLayout from "@/components/DrawerLayout";
+import api from "@/services/api";
 
 export default function Dashboard() {
   const [summaryData, setSummaryData] = useState({
@@ -12,6 +13,7 @@ export default function Dashboard() {
     areas: 0,
   });
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -34,16 +36,26 @@ export default function Dashboard() {
   }, [isAuthenticated]);
 
   const fetchSummaryData = async () => {
+    setIsLoading(true);
     try {
-      // For now, hardcoded, but can fetch from API
+      const [employees, contracts, applications, areas] = await Promise.all([
+        api.getEmployees(),
+        api.getAllContracts(),
+        api.getAllApplications(),
+        api.getAreas(),
+      ]);
+
       setSummaryData({
-        empleados: 150,
-        contratos: 45,
-        solicitudes: 12,
-        areas: 8,
+        empleados: employees.length,
+        contratos: contracts.length,
+        solicitudes: applications.length,
+        areas: areas.length,
       });
     } catch (error) {
       console.error("Error fetching summary data:", error);
+      Alert.alert("Error", "No se pudo cargar los datos del resumen");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,6 +68,7 @@ export default function Dashboard() {
 
         <View style={styles.summaryContainer}>
           <Text style={styles.summaryTitle}>Resumen</Text>
+          {isLoading && <Text style={styles.loadingText}>Cargando datos...</Text>}
           <View style={styles.summaryGrid}>
             <View style={styles.summaryCard}>
               <Text style={styles.summaryIcon}>👥</Text>
@@ -139,5 +152,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     textAlign: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#a50000",
+    textAlign: "center",
+    marginBottom: 10,
   },
 });
