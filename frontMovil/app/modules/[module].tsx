@@ -16,8 +16,7 @@ import ContractsModule from "./ContractsModule";
 import AttendanceModule from "./AttendanceModule";
 import SchedulesModule from "./SchedulesModule";
 import EmployeePostsModule from "./EmployeePostModule";
-import InductionsModule from "./InductionsModule";
-import AssignInductionsModule from "./AssignInductionsModule";
+
 import TrainingsModule from "./TrainingsModule";
 
 const moduleTitles: { [key: string]: string } = {
@@ -33,8 +32,6 @@ const moduleTitles: { [key: string]: string } = {
   attendance: "Asistencia",
   schedules: "Horarios",
   employeePosts: "Relaciones Empleado - Cargo",
-  inductions: "Inducciones",
-  assignInductions: "Asignar Inducciones",
   trainings: "Capacitaciones",
 };
 
@@ -67,10 +64,6 @@ export default function ModuleScreen() {
         return <SchedulesModule />;
       case "employeePosts":
         return <EmployeePostsModule />;
-      case "inductions":
-        return <InductionsModule />;
-      case "assignInductions":
-        return <AssignInductionsModule />;
       case "trainings":
         return <TrainingsModule />;
       default:

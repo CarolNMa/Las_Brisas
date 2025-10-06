@@ -21,7 +21,6 @@ interface Role {
 }
 
 interface RoleFormData {
-  id?: number;
   name: string;
   description: string;
 }
@@ -30,7 +29,6 @@ export default function RolesModule() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [formData, setFormData] = useState<RoleFormData>({
     name: "",
     description: "",
@@ -39,7 +37,7 @@ export default function RolesModule() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('jwt_token');
+      const token = await AsyncStorage.getItem("jwt_token");
       if (!token) {
         setIsAuthenticated(false);
         Alert.alert("Error", "Debes iniciar sesión primero");
@@ -58,7 +56,10 @@ export default function RolesModule() {
           const rolesData = await api.getRoles();
           setRoles(rolesData);
         } catch (error) {
-          Alert.alert("Error", "No se pudieron cargar los roles. Verifica tu conexión y permisos.");
+          Alert.alert(
+            "Error",
+            "No se pudieron cargar los roles. Verifica tu conexión y permisos."
+          );
         }
       };
       fetchRoles();
@@ -70,43 +71,8 @@ export default function RolesModule() {
   };
 
   const handleCreateRole = () => {
-    setEditingRole(null);
-    setFormData({ name: "", description: "" });
+    resetForm();
     setModalVisible(true);
-  };
-
-  const handleEditRole = (role: Role) => {
-    setEditingRole(role);
-    setFormData({ id: role.id, name: role.name, description: role.description });
-    setModalVisible(true);
-  };
-
-  const handleDeleteRole = (role: Role) => {
-    Alert.alert(
-      "Eliminar Rol",
-      `¿Estás seguro de que quieres eliminar el rol "${role.name}"?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => performDeleteRole(role.id),
-        },
-      ]
-    );
-  };
-
-  const performDeleteRole = async (id: number) => {
-    try {
-      await api.deleteRole(id);
-      Alert.alert("Éxito", "Rol eliminado correctamente");
-
-      // Refresh data
-      const rolesData = await api.getRoles();
-      setRoles(rolesData);
-    } catch (error) {
-      Alert.alert("Error", "No se pudo eliminar el rol");
-    }
   };
 
   const handleSubmit = async () => {
@@ -116,19 +82,15 @@ export default function RolesModule() {
     }
 
     try {
-      if (!editingRole) {
-        // Create role
-        await api.createRole({ name: formData.name, description: formData.description });
-        Alert.alert("Éxito", "Rol creado correctamente");
-      } else {
-        // Update role - backend doesn't have PUT, so alert
-        Alert.alert("Información", "Funcionalidad de actualización no implementada en el backend");
-      }
-
+      await api.createRole({
+        name: formData.name,
+        description: formData.description,
+      });
+      Alert.alert("Éxito", "Rol creado correctamente");
       setModalVisible(false);
       resetForm();
 
-      // Refresh data
+      // Refrescar lista
       const rolesData = await api.getRoles();
       setRoles(rolesData);
     } catch (error) {
@@ -136,9 +98,10 @@ export default function RolesModule() {
     }
   };
 
-  const filteredRoles = roles.filter(role =>
-    (role.name?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
-    (role.description?.toLowerCase() || '').includes(searchText.toLowerCase())
+  const filteredRoles = roles.filter(
+    (role) =>
+      (role.name?.toLowerCase() || "").includes(searchText.toLowerCase()) ||
+      (role.description?.toLowerCase() || "").includes(searchText.toLowerCase())
   );
 
   const renderRole = ({ item }: { item: Role }) => (
@@ -148,25 +111,12 @@ export default function RolesModule() {
         <Text style={styles.fieldValue}>{item.id}</Text>
 
         <Text style={styles.fieldLabel}>Nombre:</Text>
-        <Text style={styles.fieldValue}>{item.name || 'Sin nombre'}</Text>
+        <Text style={styles.fieldValue}>{item.name || "Sin nombre"}</Text>
 
         <Text style={styles.fieldLabel}>Descripción:</Text>
-        <Text style={styles.fieldValue}>{item.description || 'Sin descripción'}</Text>
-      </View>
-
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.editButton]}
-          onPress={() => handleEditRole(item)}
-        >
-          <Text style={styles.editButtonText}>Editar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.deleteButton]}
-          onPress={() => handleDeleteRole(item)}
-        >
-          <Text style={styles.deleteButtonText}>Eliminar</Text>
-        </TouchableOpacity>
+        <Text style={styles.fieldValue}>
+          {item.description || "Sin descripción"}
+        </Text>
       </View>
     </View>
   );
@@ -197,7 +147,7 @@ export default function RolesModule() {
         }
       />
 
-      {/* Modal para Crear/Editar */}
+      {/* Modal para Crear Rol */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -206,16 +156,16 @@ export default function RolesModule() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {editingRole ? "Editar Rol" : "Crear Rol"}
-            </Text>
+            <Text style={styles.modalTitle}>Crear Rol</Text>
 
             <ScrollView style={styles.form}>
               <Text style={styles.label}>Nombre:</Text>
               <TextInput
                 style={styles.input}
                 value={formData.name}
-                onChangeText={(text) => setFormData({ ...formData, name: text })}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, name: text })
+                }
                 placeholder="Ingrese el nombre del rol"
               />
 
@@ -223,7 +173,9 @@ export default function RolesModule() {
               <TextInput
                 style={styles.input}
                 value={formData.description}
-                onChangeText={(text) => setFormData({ ...formData, description: text })}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, description: text })
+                }
                 placeholder="Ingrese la descripción del rol"
               />
             </ScrollView>
@@ -239,9 +191,7 @@ export default function RolesModule() {
                 style={[styles.modalButton, styles.submitButton]}
                 onPress={handleSubmit}
               >
-                <Text style={styles.submitButtonText}>
-                  {editingRole ? "Actualizar" : "Crear"}
-                </Text>
+                <Text style={styles.submitButtonText}>Crear</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -299,23 +249,6 @@ const styles = StyleSheet.create({
     color: "#333",
     marginBottom: 4,
   },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 15,
-    gap: 10,
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  editButton: { backgroundColor: "#007bff" },
-  editButtonText: { color: "#fff", fontWeight: "bold", fontSize: 14 },
-  deleteButton: { backgroundColor: "#dc3545" },
-  deleteButtonText: { color: "#fff", fontWeight: "bold", fontSize: 14 },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -369,11 +302,5 @@ const styles = StyleSheet.create({
   cancelButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   submitButton: { backgroundColor: "#a50000" },
   submitButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  emptyText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
+  emptyText: { fontSize: 16, color: "#666", textAlign: "center" },
 });
-
-

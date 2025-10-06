@@ -36,7 +36,6 @@ interface Employee {
 }
 
 interface EmployeeFormData {
-  id?: number;
   firstName: string;
   lastName: string;
   tipoDocumento: string;
@@ -55,7 +54,6 @@ export default function EmployeeList() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [formData, setFormData] = useState<EmployeeFormData>({
     firstName: "",
     lastName: "",
@@ -73,9 +71,10 @@ export default function EmployeeList() {
   const [submitting, setSubmitting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
+  // ✅ Verificar autenticación
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('jwt_token');
+      const token = await AsyncStorage.getItem("jwt_token");
       if (!token) {
         setIsAuthenticated(false);
         Alert.alert("Error", "Debes iniciar sesión primero");
@@ -87,6 +86,7 @@ export default function EmployeeList() {
     checkAuth();
   }, []);
 
+  // ✅ Cargar empleados
   useEffect(() => {
     if (isAuthenticated === true) {
       const fetchEmployees = async () => {
@@ -94,7 +94,10 @@ export default function EmployeeList() {
           const employeesData = await api.getEmployees();
           setEmployees(employeesData);
         } catch (error) {
-          Alert.alert("Error", "No se pudieron cargar los empleados. Verifica tu conexión y permisos.");
+          Alert.alert(
+            "Error",
+            "No se pudieron cargar los empleados. Verifica tu conexión y permisos."
+          );
         }
       };
       fetchEmployees();
@@ -119,82 +122,28 @@ export default function EmployeeList() {
   }, []);
 
   const handleCreateEmployee = useCallback(() => {
-    setEditingEmployee(null);
     resetForm();
     setModalVisible(true);
   }, [resetForm]);
 
-  const handleEditEmployee = useCallback((employee: Employee) => {
-    setEditingEmployee(employee);
-    setFormData({
-      id: employee.id,
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      tipoDocumento: employee.tipoDocumento,
-      documentNumber: employee.documentNumber,
-      birthdate: employee.birthdate,
-      photoProfile: employee.photoProfile || "",
-      gender: employee.gender,
-      phone: employee.phone,
-      email: employee.email,
-      civilStatus: employee.civilStatus,
-      address: employee.address,
-      userId: employee.userId,
-    });
-    setModalVisible(true);
-  }, []);
-
-  const handleDeleteEmployee = useCallback((employee: Employee) => {
-    Alert.alert(
-      "Eliminar Empleado",
-      `¿Estás seguro de que quieres eliminar al empleado "${employee.firstName} ${employee.lastName}"?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => performDeleteEmployee(employee.id),
-        },
-      ]
-    );
-  }, []);
-
-  const performDeleteEmployee = useCallback(async (id: number) => {
-    try {
-      await api.deleteEmployee(id);
-      Alert.alert("Éxito", "Empleado eliminado correctamente");
-
-      // Refresh data
-      const employeesData = await api.getEmployees();
-      setEmployees(employeesData);
-    } catch (error) {
-      Alert.alert("Error", "No se pudo eliminar el empleado");
-    }
-  }, []);
-
+  // ✅ Crear empleado
   const handleSubmit = useCallback(async () => {
-    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
+    if (
+      !formData.firstName.trim() ||
+      !formData.lastName.trim() ||
+      !formData.email.trim()
+    ) {
       Alert.alert("Error", "Los campos nombre, apellido y email son obligatorios");
       return;
     }
 
     try {
       setSubmitting(true);
-
-      if (!editingEmployee) {
-        // Create employee
-        await api.createEmployee(formData);
-        Alert.alert("Éxito", "Empleado creado correctamente");
-      } else {
-        // Update employee
-        await api.updateEmployee(editingEmployee.id, formData);
-        Alert.alert("Éxito", "Empleado actualizado correctamente");
-      }
-
+      await api.createEmployee(formData);
+      Alert.alert("Éxito", "Empleado creado correctamente");
       setModalVisible(false);
       resetForm();
 
-      // Refresh data
       const employeesData = await api.getEmployees();
       setEmployees(employeesData);
     } catch (error) {
@@ -202,76 +151,56 @@ export default function EmployeeList() {
     } finally {
       setSubmitting(false);
     }
-  }, [formData, editingEmployee, resetForm]);
+  }, [formData, resetForm]);
 
-  const filteredEmployees = employees.filter(employee =>
-    (employee.firstName?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
-    (employee.lastName?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
-    (employee.email?.toLowerCase() || '').includes(searchText.toLowerCase())
+  // ✅ Filtrar lista
+  const filteredEmployees = employees.filter(
+    (employee) =>
+      (employee.firstName?.toLowerCase() || "").includes(searchText.toLowerCase()) ||
+      (employee.lastName?.toLowerCase() || "").includes(searchText.toLowerCase()) ||
+      (employee.email?.toLowerCase() || "").includes(searchText.toLowerCase())
   );
 
-  const renderEmployee = useCallback(
-    ({ item }: { item: Employee }) => (
-      <View style={styles.employeeCard}>
-        <View style={styles.employeeInfo}>
-          <Text style={styles.fieldLabel}>ID Empleado:</Text>
-          <Text style={styles.fieldValue}>{item.id}</Text>
+  const renderEmployee = ({ item }: { item: Employee }) => (
+    <View style={styles.employeeCard}>
+      <View style={styles.employeeInfo}>
+        <Text style={styles.fieldLabel}>ID Empleado:</Text>
+        <Text style={styles.fieldValue}>{item.id}</Text>
 
-          <Text style={styles.fieldLabel}>Nombre:</Text>
-          <Text style={styles.fieldValue}>{item.firstName || 'Sin nombre'}</Text>
+        <Text style={styles.fieldLabel}>Nombre:</Text>
+        <Text style={styles.fieldValue}>{item.firstName}</Text>
 
-          <Text style={styles.fieldLabel}>Apellido:</Text>
-          <Text style={styles.fieldValue}>{item.lastName || 'Sin apellido'}</Text>
+        <Text style={styles.fieldLabel}>Apellido:</Text>
+        <Text style={styles.fieldValue}>{item.lastName}</Text>
 
-          <Text style={styles.fieldLabel}>Tipo Documento:</Text>
-          <Text style={styles.fieldValue}>{item.tipoDocumento || 'Sin tipo'}</Text>
+        <Text style={styles.fieldLabel}>Tipo Documento:</Text>
+        <Text style={styles.fieldValue}>{item.tipoDocumento}</Text>
 
-          <Text style={styles.fieldLabel}>Número Documento:</Text>
-          <Text style={styles.fieldValue}>{item.documentNumber || 'Sin número'}</Text>
+        <Text style={styles.fieldLabel}>Número Documento:</Text>
+        <Text style={styles.fieldValue}>{item.documentNumber}</Text>
 
-          <Text style={styles.fieldLabel}>Fecha Nacimiento:</Text>
-          <Text style={styles.fieldValue}>{item.birthdate || 'Sin fecha'}</Text>
+        <Text style={styles.fieldLabel}>Fecha Nacimiento:</Text>
+        <Text style={styles.fieldValue}>{item.birthdate}</Text>
 
-          <Text style={styles.fieldLabel}>Género:</Text>
-          <Text style={styles.fieldValue}>{item.gender || 'Sin género'}</Text>
+        <Text style={styles.fieldLabel}>Género:</Text>
+        <Text style={styles.fieldValue}>{item.gender}</Text>
 
-          <Text style={styles.fieldLabel}>Teléfono:</Text>
-          <Text style={styles.fieldValue}>{item.phone || 'Sin teléfono'}</Text>
+        <Text style={styles.fieldLabel}>Teléfono:</Text>
+        <Text style={styles.fieldValue}>{item.phone}</Text>
 
-          <Text style={styles.fieldLabel}>Email:</Text>
-          <Text style={styles.fieldValue}>{item.email || 'Sin email'}</Text>
+        <Text style={styles.fieldLabel}>Email:</Text>
+        <Text style={styles.fieldValue}>{item.email}</Text>
 
-          <Text style={styles.fieldLabel}>Estado Civil:</Text>
-          <Text style={styles.fieldValue}>{item.civilStatus || 'Sin estado'}</Text>
+        <Text style={styles.fieldLabel}>Estado Civil:</Text>
+        <Text style={styles.fieldValue}>{item.civilStatus}</Text>
 
-          <Text style={styles.fieldLabel}>Dirección:</Text>
-          <Text style={styles.fieldValue}>{item.address || 'Sin dirección'}</Text>
+        <Text style={styles.fieldLabel}>Dirección:</Text>
+        <Text style={styles.fieldValue}>{item.address}</Text>
 
-          <Text style={styles.fieldLabel}>ID Usuario:</Text>
-          <Text style={styles.fieldValue}>{item.userId}</Text>
-        </View>
-
-        <View style={styles.actions}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.editButton]}
-            onPress={() => handleEditEmployee(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Editar empleado ${item.firstName} ${item.lastName}`}
-          >
-            <Text style={styles.editButtonText}>Editar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
-            onPress={() => handleDeleteEmployee(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Eliminar empleado ${item.firstName} ${item.lastName}`}
-          >
-            <Text style={styles.deleteButtonText}>Eliminar</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.fieldLabel}>ID Usuario:</Text>
+        <Text style={styles.fieldValue}>{item.userId}</Text>
       </View>
-    ),
-    [handleEditEmployee, handleDeleteEmployee]
+    </View>
   );
 
   return (
@@ -301,18 +230,14 @@ export default function EmployeeList() {
             <TouchableOpacity
               style={styles.createButton}
               onPress={handleCreateEmployee}
-              accessibilityRole="button"
-              accessibilityLabel="Crear Empleado"
             >
               <Text style={styles.createButtonText}>Crear Empleado</Text>
             </TouchableOpacity>
           </View>
         }
-        initialNumToRender={10}
-        windowSize={10}
-        removeClippedSubviews
       />
 
+      {/* Modal para Crear Empleado */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -325,144 +250,41 @@ export default function EmployeeList() {
             style={{ width: "90%" }}
           >
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                {editingEmployee ? "Editar Empleado" : "Crear Empleado"}
-              </Text>
+              <Text style={styles.modalTitle}>Crear Empleado</Text>
 
               <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
-                <Text style={styles.label}>Nombre:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.firstName}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, firstName: text }))
-                  }
-                  placeholder="Ingrese el nombre"
-                  autoCapitalize="words"
-                />
-
-                <Text style={styles.label}>Apellido:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.lastName}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, lastName: text }))
-                  }
-                  placeholder="Ingrese el apellido"
-                  autoCapitalize="words"
-                />
-
-                <Text style={styles.label}>Tipo Documento:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.tipoDocumento}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, tipoDocumento: text }))
-                  }
-                  placeholder="CC, TI, CE, etc."
-                  autoCapitalize="characters"
-                />
-
-                <Text style={styles.label}>Número Documento:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.documentNumber}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, documentNumber: text }))
-                  }
-                  placeholder="Ingrese el número de documento"
-                  keyboardType="numeric"
-                />
-
-                <Text style={styles.label}>Fecha Nacimiento (YYYY-MM-DD):</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.birthdate}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, birthdate: text }))
-                  }
-                  placeholder="1990-01-01"
-                />
-
-                <Text style={styles.label}>Foto Perfil (URL):</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.photoProfile}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, photoProfile: text }))
-                  }
-                  placeholder="URL de la foto de perfil"
-                  autoCapitalize="none"
-                />
-
-                <Text style={styles.label}>Género:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.gender}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, gender: text }))
-                  }
-                  placeholder="Masculino, Femenino, Otro"
-                  autoCapitalize="words"
-                />
-
-                <Text style={styles.label}>Teléfono:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.phone}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, phone: text }))
-                  }
-                  placeholder="Ingrese el teléfono"
-                  keyboardType="phone-pad"
-                />
-
-                <Text style={styles.label}>Email:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.email}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, email: text }))
-                  }
-                  placeholder="Ingrese el email"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-
-                <Text style={styles.label}>Estado Civil:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.civilStatus}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, civilStatus: text }))
-                  }
-                  placeholder="Soltero, Casado, etc."
-                  autoCapitalize="words"
-                />
-
-                <Text style={styles.label}>Dirección:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.address}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, address: text }))
-                  }
-                  placeholder="Ingrese la dirección"
-                  multiline
-                  numberOfLines={2}
-                  textAlignVertical="top"
-                />
-
-                <Text style={styles.label}>ID Usuario:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={formData.userId.toString()}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, userId: parseInt(text) || 0 }))
-                  }
-                  placeholder="ID del usuario asociado"
-                  keyboardType="numeric"
-                />
+                {[
+                  { label: "Nombre", key: "firstName" },
+                  { label: "Apellido", key: "lastName" },
+                  { label: "Tipo Documento", key: "tipoDocumento" },
+                  { label: "Número Documento", key: "documentNumber" },
+                  { label: "Fecha Nacimiento (YYYY-MM-DD)", key: "birthdate" },
+                  { label: "Foto Perfil (URL)", key: "photoProfile" },
+                  { label: "Género", key: "gender" },
+                  { label: "Teléfono", key: "phone" },
+                  { label: "Email", key: "email" },
+                  { label: "Estado Civil", key: "civilStatus" },
+                  { label: "Dirección", key: "address" },
+                  { label: "ID Usuario", key: "userId" },
+                ].map((field) => (
+                  <View key={field.key}>
+                    <Text style={styles.label}>{field.label}:</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={
+                        formData[field.key as keyof EmployeeFormData]?.toString() || ""
+                      }
+                      onChangeText={(text) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          [field.key]:
+                            field.key === "userId" ? parseInt(text) || 0 : text,
+                        }))
+                      }
+                      placeholder={`Ingrese ${field.label.toLowerCase()}`}
+                    />
+                  </View>
+                ))}
               </ScrollView>
 
               <View style={styles.modalButtons}>
@@ -470,8 +292,6 @@ export default function EmployeeList() {
                   style={[styles.modalButton, styles.cancelButton]}
                   onPress={() => setModalVisible(false)}
                   disabled={submitting}
-                  accessibilityRole="button"
-                  accessibilityLabel="Cancelar"
                 >
                   <Text style={styles.cancelButtonText}>Cancelar</Text>
                 </TouchableOpacity>
@@ -483,15 +303,9 @@ export default function EmployeeList() {
                   ]}
                   onPress={handleSubmit}
                   disabled={submitting}
-                  accessibilityRole="button"
-                  accessibilityLabel={editingEmployee ? "Actualizar" : "Crear"}
                 >
                   <Text style={styles.submitButtonText}>
-                    {submitting
-                      ? "Guardando..."
-                      : editingEmployee
-                      ? "Actualizar"
-                      : "Crear"}
+                    {submitting ? "Guardando..." : "Crear"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -507,12 +321,12 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8f9fa" },
   centered: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
   header: { padding: 20, paddingBottom: 10 },
-  title: { 
-    fontSize: 24, 
-    fontWeight: "bold", 
-    marginBottom: 15, 
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 15,
     color: "#a50000",
-    textAlign: "center"
+    textAlign: "center",
   },
   searchInput: {
     borderWidth: 1,
@@ -559,31 +373,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     marginBottom: 4,
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 15,
-    gap: 10,
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  editButton: { backgroundColor: "#007bff" },
-  editButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  deleteButton: { backgroundColor: "#dc3545" },
-  deleteButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
@@ -635,20 +424,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cancelButton: { backgroundColor: "#6c757d" },
-  cancelButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
+  cancelButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   submitButton: { backgroundColor: "#a50000" },
-  submitButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
+  submitButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  emptyText: { fontSize: 16, color: "#666", textAlign: "center" },
 });

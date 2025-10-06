@@ -18,13 +18,12 @@ import api from "../../services/api";
 
 interface Area {
   id: number;
-  name: string;
+  nameArea: string;
   description: string;
 }
 
 interface AreaFormData {
-  id?: number;
-  name: string;
+  nameArea: string;
   description: string;
 }
 
@@ -32,17 +31,17 @@ export default function AreasModule() {
   const [areas, setAreas] = useState<Area[]>([]);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingArea, setEditingArea] = useState<Area | null>(null);
   const [formData, setFormData] = useState<AreaFormData>({
-    name: "",
+    nameArea: "",
     description: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
+  // 🔐 Verificación de sesión
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('jwt_token');
+      const token = await AsyncStorage.getItem("jwt_token");
       if (!token) {
         setIsAuthenticated(false);
         Alert.alert("Error", "Debes iniciar sesión primero");
@@ -54,6 +53,7 @@ export default function AreasModule() {
     checkAuth();
   }, []);
 
+  // 🔄 Cargar áreas
   useEffect(() => {
     if (isAuthenticated === true) {
       const fetchAreas = async () => {
@@ -69,71 +69,31 @@ export default function AreasModule() {
   }, [isAuthenticated]);
 
   const resetForm = useCallback(() => {
-    setFormData({ name: "", description: "" });
+    setFormData({ nameArea: "", description: "" });
   }, []);
 
   const handleCreateArea = useCallback(() => {
-    setEditingArea(null);
     resetForm();
     setModalVisible(true);
   }, [resetForm]);
 
-  const handleEditArea = useCallback((area: Area) => {
-    setEditingArea(area);
-    setFormData({ id: area.id, name: area.name, description: area.description });
-    setModalVisible(true);
-  }, []);
-
-  const handleDeleteArea = useCallback((area: Area) => {
-    Alert.alert(
-      "Eliminar Área",
-      `¿Estás seguro de que quieres eliminar el área "${area.name}"?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => performDeleteArea(area.id),
-        },
-      ]
-    );
-  }, []);
-
-  const performDeleteArea = useCallback(async (id: number) => {
-    try {
-      await api.deleteArea(id);
-      Alert.alert("Éxito", "Área eliminada correctamente");
-
-      // Refresh data
-      const areasData = await api.getAreas();
-      setAreas(areasData);
-    } catch (error) {
-      Alert.alert("Error", "No se pudo eliminar el área");
-    }
-  }, []);
-
   const handleSubmit = useCallback(async () => {
-    if (!formData.name.trim() || !formData.description.trim()) {
+    if (!formData.nameArea.trim() || !formData.description.trim()) {
       Alert.alert("Error", "Todos los campos son obligatorios");
       return;
     }
 
     try {
       setSubmitting(true);
-
-      if (!editingArea) {
-        // Create area
-        await api.createArea({ name: formData.name, description: formData.description });
-        Alert.alert("Éxito", "Área creada correctamente");
-      } else {
-        // Update area - backend doesn't have PUT, so alert
-        Alert.alert("Información", "Funcionalidad de actualización no implementada en el backend");
-      }
-
+      await api.createArea({
+        name: formData.nameArea,
+        description: formData.description,
+      });
+      Alert.alert("Éxito", "Área creada correctamente");
       setModalVisible(false);
       resetForm();
 
-      // Refresh data
+      // Recargar lista
       const areasData = await api.getAreas();
       setAreas(areasData);
     } catch (error) {
@@ -141,52 +101,50 @@ export default function AreasModule() {
     } finally {
       setSubmitting(false);
     }
-  }, [formData, editingArea, resetForm]);
+  }, [formData, resetForm]);
 
-  const filteredAreas = areas.filter(area =>
-    (area.name?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
-    (area.description?.toLowerCase() || '').includes(searchText.toLowerCase())
+  const filteredAreas = areas.filter(
+    (area) =>
+      (area.nameArea?.toLowerCase() || "").includes(searchText.toLowerCase()) ||
+      (area.description?.toLowerCase() || "").includes(searchText.toLowerCase())
   );
 
-  const renderArea = useCallback(
-    ({ item }: { item: Area }) => (
-      <View style={styles.areaCard}>
-        <View style={styles.areaInfo}>
-          <Text style={styles.fieldLabel}>ID Área:</Text>
-          <Text style={styles.fieldValue}>{item.id}</Text>
+  const renderArea = ({ item }: { item: Area }) => (
+    <View style={styles.areaCard}>
+      <View style={styles.areaInfo}>
+        <Text style={styles.fieldLabel}>ID Área:</Text>
+        <Text style={styles.fieldValue}>{item.id}</Text>
 
-          <Text style={styles.fieldLabel}>Nombre del Área:</Text>
-          <Text style={styles.fieldValue}>{item.name || 'Sin nombre'}</Text>
+        <Text style={styles.fieldLabel}>Nombre del Área:</Text>
+        <Text style={styles.fieldValue}>{item.nameArea || "Sin nombre"}</Text>
 
-          <Text style={styles.fieldLabel}>Descripción:</Text>
-          <Text style={styles.fieldValue}>{item.description || 'Sin descripción'}</Text>
-        </View>
-
-        <View style={styles.actions}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.editButton]}
-            onPress={() => handleEditArea(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Editar área ${item.name}`}
-          >
-            <Text style={styles.editButtonText}>Editar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
-            onPress={() => handleDeleteArea(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Eliminar área ${item.name}`}
-          >
-            <Text style={styles.deleteButtonText}>Eliminar</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.fieldLabel}>Descripción:</Text>
+        <Text style={styles.fieldValue}>{item.description || "Sin descripción"}</Text>
       </View>
-    ),
-    [handleEditArea, handleDeleteArea]
+    </View>
   );
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar por nombre o descripción..."
+          value={searchText}
+          onChangeText={setSearchText}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={handleCreateArea}
+          accessibilityRole="button"
+          accessibilityLabel="Crear Área"
+        >
+          <Text style={styles.createButtonText}>Crear Área</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={filteredAreas}
         keyExtractor={(item) => item.id.toString()}
@@ -197,31 +155,9 @@ export default function AreasModule() {
             <Text style={styles.emptyText}>No se encontraron áreas</Text>
           </View>
         }
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Buscar por nombre o descripción..."
-              value={searchText}
-              onChangeText={setSearchText}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <TouchableOpacity
-              style={styles.createButton}
-              onPress={handleCreateArea}
-              accessibilityRole="button"
-              accessibilityLabel="Crear Área"
-            >
-              <Text style={styles.createButtonText}>Crear Área</Text>
-            </TouchableOpacity>
-          </View>
-        }
-        initialNumToRender={10}
-        windowSize={10}
-        removeClippedSubviews
       />
 
+      {/* Modal Crear Área */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -234,18 +170,14 @@ export default function AreasModule() {
             style={{ width: "90%" }}
           >
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                {editingArea ? "Editar Área" : "Crear Área"}
-              </Text>
+              <Text style={styles.modalTitle}>Crear Área</Text>
 
               <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
                 <Text style={styles.label}>Nombre:</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData.name}
-                  onChangeText={(text) =>
-                    setFormData((p) => ({ ...p, name: text }))
-                  }
+                  value={formData.nameArea}
+                  onChangeText={(text) => setFormData((p) => ({ ...p, nameArea: text }))}
                   placeholder="Ingrese el nombre del área"
                   autoCapitalize="words"
                 />
@@ -269,8 +201,6 @@ export default function AreasModule() {
                   style={[styles.modalButton, styles.cancelButton]}
                   onPress={() => setModalVisible(false)}
                   disabled={submitting}
-                  accessibilityRole="button"
-                  accessibilityLabel="Cancelar"
                 >
                   <Text style={styles.cancelButtonText}>Cancelar</Text>
                 </TouchableOpacity>
@@ -282,15 +212,9 @@ export default function AreasModule() {
                   ]}
                   onPress={handleSubmit}
                   disabled={submitting}
-                  accessibilityRole="button"
-                  accessibilityLabel={editingArea ? "Actualizar" : "Crear"}
                 >
                   <Text style={styles.submitButtonText}>
-                    {submitting
-                      ? "Guardando..."
-                      : editingArea
-                      ? "Actualizar"
-                      : "Crear"}
+                    {submitting ? "Guardando..." : "Crear"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -350,31 +274,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     marginBottom: 4,
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 15,
-    gap: 10,
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  editButton: { backgroundColor: "#007bff" },
-  editButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  deleteButton: { backgroundColor: "#dc3545" },
-  deleteButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
@@ -437,10 +336,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-  emptyText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
+  emptyText: { fontSize: 16, color: "#666", textAlign: "center" },
 });
-

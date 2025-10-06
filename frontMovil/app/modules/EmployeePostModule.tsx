@@ -17,9 +17,9 @@ import api from "../../services/api";
 interface EmployeePost {
   id: number;
   employeeId: number;
-  employeeName: string;
+  employeeName?: string; // opcional para evitar undefined
   postId: number;
-  postName: string;
+  postName?: string; // opcional
 }
 
 interface Employee {
@@ -54,7 +54,6 @@ export default function EmployeePostModule() {
     try {
       setLoading(true);
 
-      // Fetch relations, employees, and positions
       const [relationsResponse, employeesResponse, positionsResponse] = await Promise.all([
         api.getEmployeePosts(),
         api.getEmployees(),
@@ -70,35 +69,6 @@ export default function EmployeePostModule() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDelete = async (id: number) => {
-    Alert.alert(
-      "Confirmar eliminación",
-      "¿Seguro que deseas eliminar esta relación empleado-cargo?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await api.deleteEmployeePost(id);
-              setRelations(relations.filter((r) => r.id !== id));
-            } catch (err) {
-              console.error("Error eliminando relación:", err);
-              Alert.alert("Error", "Error al eliminar la relación");
-            }
-          },
-        },
-      ]
-    );
-  };
-
-  const handleOpenModal = () => {
-    setForm({ employeeId: "", postId: "" });
-    setErrors({});
-    setModalVisible(true);
   };
 
   const validateForm = () => {
@@ -117,18 +87,27 @@ export default function EmployeePostModule() {
   };
 
   const handleSave = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
+      const employee = employees.find((e) => e.id === parseInt(form.employeeId));
+      const position = positions.find((p) => p.id === parseInt(form.postId));
+
       const employeePostData = {
         employeeId: parseInt(form.employeeId, 10),
         postId: parseInt(form.postId, 10),
       };
 
       const newRelation = await api.createEmployeePost(employeePostData);
-      setRelations([...relations, newRelation]);
+
+      // Añadir datos locales para evitar undefined
+      const completeRelation: EmployeePost = {
+        ...newRelation,
+        employeeName: employee ? `${employee.firstName} ${employee.lastName}` : "Desconocido",
+        postName: position ? position.namePost : "Desconocido",
+      };
+
+      setRelations([...relations, completeRelation]);
       setModalVisible(false);
     } catch (err) {
       console.error("Error guardando relación:", err);
@@ -136,34 +115,26 @@ export default function EmployeePostModule() {
     }
   };
 
-  const filteredRelations = relations.filter(relation =>
-    relation.employeeName.toLowerCase().includes(searchText.toLowerCase()) ||
-    relation.postName.toLowerCase().includes(searchText.toLowerCase())
+  // 🔹 Evita el error con valores por defecto
+  const filteredRelations = relations.filter((relation) =>
+    (relation.employeeName ?? "").toLowerCase().includes(searchText.toLowerCase()) ||
+    (relation.postName ?? "").toLowerCase().includes(searchText.toLowerCase())
   );
 
   const renderRelation = ({ item }: { item: EmployeePost }) => (
     <View style={styles.relationCard}>
-      <View style={styles.relationInfo}>
-        <Text style={styles.fieldLabel}>ID Relación:</Text>
-        <Text style={styles.fieldValue}>{item.id}</Text>
+      <Text style={styles.fieldLabel}>ID Relación:</Text>
+      <Text style={styles.fieldValue}>{item.id}</Text>
 
-        <Text style={styles.fieldLabel}>ID Empleado:</Text>
-        <Text style={styles.fieldValue}>{item.employeeId}</Text>
+      <Text style={styles.fieldLabel}>Empleado:</Text>
+      <Text style={styles.fieldValue}>
+        {item.employeeName ?? "Desconocido"} (ID {item.employeeId})
+      </Text>
 
-        <Text style={styles.fieldLabel}>Nombre Empleado:</Text>
-        <Text style={styles.fieldValue}>{item.employeeName}</Text>
-
-        <Text style={styles.fieldLabel}>ID Cargo:</Text>
-        <Text style={styles.fieldValue}>{item.postId}</Text>
-
-        <Text style={styles.fieldLabel}>Nombre del Cargo:</Text>
-        <Text style={styles.fieldValue}>{item.postName}</Text>
-      </View>
-      <View style={styles.actions}>
-        <TouchableOpacity style={[styles.btnSmall, styles.btnAlt]} onPress={() => handleDelete(item.id)}>
-          <Text style={styles.btnText}>Eliminar</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.fieldLabel}>Cargo:</Text>
+      <Text style={styles.fieldValue}>
+        {item.postName ?? "Desconocido"} (ID {item.postId})
+      </Text>
     </View>
   );
 
@@ -185,7 +156,7 @@ export default function EmployeePostModule() {
           value={searchText}
           onChangeText={setSearchText}
         />
-        <TouchableOpacity style={styles.btn} onPress={handleOpenModal}>
+        <TouchableOpacity style={styles.btn} onPress={() => setModalVisible(true)}>
           <Text style={styles.btnText}>Nuevo</Text>
         </TouchableOpacity>
       </View>
@@ -202,12 +173,7 @@ export default function EmployeePostModule() {
         }
       />
 
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
+      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
           <ScrollView contentContainerStyle={styles.modalContent}>
             <Text style={styles.modalTitle}>Nueva relación Empleado ↔ Cargo</Text>
@@ -284,51 +250,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     elevation: 3,
   },
-  relationInfo: {},
-  fieldLabel: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#666",
-    marginTop: 8,
-    textTransform: "uppercase",
-  },
-  fieldValue: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 4,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 10,
-  },
-  btnSmall: {
-    backgroundColor: "#007bff",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    minWidth: 70,
-    alignItems: "center",
-  },
-  btnAlt: {
-    backgroundColor: "#dc3545",
-  },
-  btnText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  btn: {
-    backgroundColor: "#28a745",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-  },
+  fieldLabel: { fontSize: 12, fontWeight: "bold", color: "#666", marginTop: 8 },
+  fieldValue: { fontSize: 16, color: "#333", marginBottom: 4 },
+  emptyText: { fontSize: 16, color: "#666", textAlign: "center" },
+  btn: { backgroundColor: "#28a745", paddingVertical: 10, paddingHorizontal: 20, borderRadius: 6 },
+  btnText: { color: "#fff", fontSize: 14, fontWeight: "bold" },
+  btnSmall: { backgroundColor: "#007bff", paddingVertical: 8, paddingHorizontal: 12, borderRadius: 6 },
+  btnAlt: { backgroundColor: "#dc3545" },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -342,47 +270,11 @@ const styles = StyleSheet.create({
     width: "90%",
     maxWidth: 400,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#333",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  inputError: {
-    borderColor: "red",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginBottom: 10,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  picker: {
-    height: 50,
-  },
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 10,
-    marginTop: 20,
-  },
+  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  label: { fontSize: 16, fontWeight: "bold", marginBottom: 8, color: "#333" },
+  pickerContainer: { borderWidth: 1, borderColor: "#ddd", borderRadius: 8, marginBottom: 10 },
+  picker: { height: 50 },
+  modalActions: { flexDirection: "row", justifyContent: "flex-end", gap: 10, marginTop: 20 },
+  errorText: { color: "red", fontSize: 12, marginBottom: 10 },
+  inputError: { borderColor: "red" },
 });

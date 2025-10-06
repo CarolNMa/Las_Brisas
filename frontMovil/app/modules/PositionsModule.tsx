@@ -25,7 +25,6 @@ interface Position {
 }
 
 interface PositionFormData {
-  id?: number;
   namePost: string;
   description: string;
   jobFunction: string;
@@ -36,7 +35,6 @@ export default function PositionsModule() {
   const [positions, setPositions] = useState<Position[]>([]);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingPosition, setEditingPosition] = useState<Position | null>(null);
   const [formData, setFormData] = useState<PositionFormData>({
     namePost: "",
     description: "",
@@ -46,9 +44,10 @@ export default function PositionsModule() {
   const [submitting, setSubmitting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
+  // 🔐 Verificación de autenticación
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('jwt_token');
+      const token = await AsyncStorage.getItem("jwt_token");
       if (!token) {
         setIsAuthenticated(false);
         Alert.alert("Error", "Debes iniciar sesión primero");
@@ -60,6 +59,7 @@ export default function PositionsModule() {
     checkAuth();
   }, []);
 
+  // 🔄 Cargar posiciones
   useEffect(() => {
     if (isAuthenticated === true) {
       const fetchPositions = async () => {
@@ -67,7 +67,10 @@ export default function PositionsModule() {
           const positionsData = await api.getPositions();
           setPositions(positionsData);
         } catch (error) {
-          Alert.alert("Error", "No se pudieron cargar las posiciones. Verifica tu conexión y permisos.");
+          Alert.alert(
+            "Error",
+            "No se pudieron cargar las posiciones. Verifica tu conexión y permisos."
+          );
         }
       };
       fetchPositions();
@@ -75,54 +78,18 @@ export default function PositionsModule() {
   }, [isAuthenticated]);
 
   const resetForm = useCallback(() => {
-    setFormData({ namePost: "", description: "", jobFunction: "", requirements: "" });
+    setFormData({
+      namePost: "",
+      description: "",
+      jobFunction: "",
+      requirements: "",
+    });
   }, []);
 
   const handleCreatePosition = useCallback(() => {
-    setEditingPosition(null);
     resetForm();
     setModalVisible(true);
   }, [resetForm]);
-
-  const handleEditPosition = useCallback((position: Position) => {
-    setEditingPosition(position);
-    setFormData({
-      id: position.id,
-      namePost: position.namePost,
-      description: position.description,
-      jobFunction: position.jobFunction,
-      requirements: position.requirements,
-    });
-    setModalVisible(true);
-  }, []);
-
-  const handleDeletePosition = useCallback((position: Position) => {
-    Alert.alert(
-      "Eliminar Posición",
-      `¿Estás seguro de que quieres eliminar la posición "${position.namePost}"?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => performDeletePosition(position.id),
-        },
-      ]
-    );
-  }, []);
-
-  const performDeletePosition = useCallback(async (id: number) => {
-    try {
-      await api.deletePosition(id);
-      Alert.alert("Éxito", "Posición eliminada correctamente");
-
-      // Refresh data
-      const positionsData = await api.getPositions();
-      setPositions(positionsData);
-    } catch (error) {
-      Alert.alert("Error", "No se pudo eliminar la posición");
-    }
-  }, []);
 
   const handleSubmit = useCallback(async () => {
     if (!formData.namePost.trim() || !formData.description.trim()) {
@@ -132,20 +99,11 @@ export default function PositionsModule() {
 
     try {
       setSubmitting(true);
-
-      if (!editingPosition) {
-        // Create position
-        await api.createPosition(formData);
-        Alert.alert("Éxito", "Posición creada correctamente");
-      } else {
-        // Update position - backend doesn't have PUT, so alert
-        Alert.alert("Información", "Funcionalidad de actualización no implementada en el backend");
-      }
-
+      await api.createPosition(formData);
+      Alert.alert("Éxito", "Posición creada correctamente");
       setModalVisible(false);
       resetForm();
 
-      // Refresh data
       const positionsData = await api.getPositions();
       setPositions(positionsData);
     } catch (error) {
@@ -153,58 +111,54 @@ export default function PositionsModule() {
     } finally {
       setSubmitting(false);
     }
-  }, [formData, editingPosition, resetForm]);
+  }, [formData, resetForm]);
 
-  const filteredPositions = positions.filter(position =>
-    (position.namePost?.toLowerCase() || '').includes(searchText.toLowerCase()) ||
-    (position.description?.toLowerCase() || '').includes(searchText.toLowerCase())
+  const filteredPositions = positions.filter(
+    (position) =>
+      (position.namePost?.toLowerCase() || "").includes(searchText.toLowerCase()) ||
+      (position.description?.toLowerCase() || "").includes(searchText.toLowerCase())
   );
 
-  const renderPosition = useCallback(
-    ({ item }: { item: Position }) => (
-      <View style={styles.positionCard}>
-        <View style={styles.positionInfo}>
-          <Text style={styles.fieldLabel}>ID Posición:</Text>
-          <Text style={styles.fieldValue}>{item.id}</Text>
+  const renderPosition = ({ item }: { item: Position }) => (
+    <View style={styles.positionCard}>
+      <View style={styles.positionInfo}>
+        <Text style={styles.fieldLabel}>ID Posición:</Text>
+        <Text style={styles.fieldValue}>{item.id}</Text>
 
-          <Text style={styles.fieldLabel}>Nombre del Cargo:</Text>
-          <Text style={styles.fieldValue}>{item.namePost || 'Sin nombre'}</Text>
+        <Text style={styles.fieldLabel}>Nombre del Cargo:</Text>
+        <Text style={styles.fieldValue}>{item.namePost}</Text>
 
-          <Text style={styles.fieldLabel}>Descripción:</Text>
-          <Text style={styles.fieldValue}>{item.description || 'Sin descripción'}</Text>
+        <Text style={styles.fieldLabel}>Descripción:</Text>
+        <Text style={styles.fieldValue}>{item.description}</Text>
 
-          <Text style={styles.fieldLabel}>Función del Trabajo:</Text>
-          <Text style={styles.fieldValue}>{item.jobFunction || 'Sin función'}</Text>
+        <Text style={styles.fieldLabel}>Función del Trabajo:</Text>
+        <Text style={styles.fieldValue}>{item.jobFunction}</Text>
 
-          <Text style={styles.fieldLabel}>Requisitos:</Text>
-          <Text style={styles.fieldValue}>{item.requirements || 'Sin requisitos'}</Text>
-        </View>
-
-        <View style={styles.actions}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.editButton]}
-            onPress={() => handleEditPosition(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Editar posición ${item.namePost}`}
-          >
-            <Text style={styles.editButtonText}>Editar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
-            onPress={() => handleDeletePosition(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Eliminar posición ${item.namePost}`}
-          >
-            <Text style={styles.deleteButtonText}>Eliminar</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.fieldLabel}>Requisitos:</Text>
+        <Text style={styles.fieldValue}>{item.requirements}</Text>
       </View>
-    ),
-    [handleEditPosition, handleDeletePosition]
+    </View>
   );
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar por nombre o descripción..."
+          value={searchText}
+          onChangeText={setSearchText}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={handleCreatePosition}
+        >
+          <Text style={styles.createButtonText}>Crear Posición</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={filteredPositions}
         keyExtractor={(item) => item.id.toString()}
@@ -215,31 +169,9 @@ export default function PositionsModule() {
             <Text style={styles.emptyText}>No se encontraron posiciones</Text>
           </View>
         }
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Buscar por nombre o descripción..."
-              value={searchText}
-              onChangeText={setSearchText}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <TouchableOpacity
-              style={styles.createButton}
-              onPress={handleCreatePosition}
-              accessibilityRole="button"
-              accessibilityLabel="Crear Posición"
-            >
-              <Text style={styles.createButtonText}>Crear Posición</Text>
-            </TouchableOpacity>
-          </View>
-        }
-        initialNumToRender={10}
-        windowSize={10}
-        removeClippedSubviews
       />
 
+      {/* Modal para crear posición */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -252,9 +184,7 @@ export default function PositionsModule() {
             style={{ width: "90%" }}
           >
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                {editingPosition ? "Editar Posición" : "Crear Posición"}
-              </Text>
+              <Text style={styles.modalTitle}>Crear Posición</Text>
 
               <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
                 <Text style={styles.label}>Nombre del Cargo:</Text>
@@ -313,8 +243,6 @@ export default function PositionsModule() {
                   style={[styles.modalButton, styles.cancelButton]}
                   onPress={() => setModalVisible(false)}
                   disabled={submitting}
-                  accessibilityRole="button"
-                  accessibilityLabel="Cancelar"
                 >
                   <Text style={styles.cancelButtonText}>Cancelar</Text>
                 </TouchableOpacity>
@@ -326,15 +254,9 @@ export default function PositionsModule() {
                   ]}
                   onPress={handleSubmit}
                   disabled={submitting}
-                  accessibilityRole="button"
-                  accessibilityLabel={editingPosition ? "Actualizar" : "Crear"}
                 >
                   <Text style={styles.submitButtonText}>
-                    {submitting
-                      ? "Guardando..."
-                      : editingPosition
-                      ? "Actualizar"
-                      : "Crear"}
+                    {submitting ? "Guardando..." : "Crear"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -395,31 +317,6 @@ const styles = StyleSheet.create({
     color: "#333",
     marginBottom: 4,
   },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 15,
-    gap: 10,
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  editButton: { backgroundColor: "#007bff" },
-  editButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  deleteButton: { backgroundColor: "#dc3545" },
-  deleteButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -470,21 +367,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cancelButton: { backgroundColor: "#6c757d" },
-  cancelButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
+  cancelButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   submitButton: { backgroundColor: "#a50000" },
-  submitButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
+  submitButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  emptyText: { fontSize: 16, color: "#666", textAlign: "center" },
 });
-

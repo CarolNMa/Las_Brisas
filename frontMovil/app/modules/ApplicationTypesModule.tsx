@@ -5,11 +5,11 @@ import {
   StyleSheet,
   FlatList,
   TextInput,
-  ActivityIndicator,
   Alert,
   TouchableOpacity,
   Modal,
   Switch,
+  ActivityIndicator,
 } from "react-native";
 import ApiService from "../../services/api";
 
@@ -24,7 +24,6 @@ export default function ApplicationTypesModule() {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingType, setEditingType] = useState<ApplicationType | null>(null);
   const [form, setForm] = useState({ name: "", required: false });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -36,43 +35,24 @@ export default function ApplicationTypesModule() {
     try {
       setLoading(true);
       const data = await ApiService.getAllApplicationTypes();
-      setApplicationTypes(data);
+
+      if (Array.isArray(data)) {
+        const cleanData = data.map((item) => ({
+          id: item?.id ?? 0,
+          name: item?.name ?? "Sin nombre",
+          required: !!item?.required,
+        }));
+        setApplicationTypes(cleanData);
+      } else {
+        console.error("Respuesta inesperada del backend:", data);
+        setApplicationTypes([]);
+      }
     } catch (err) {
       console.error("Error cargando tipos de solicitud:", err);
-      Alert.alert("Error", "Error al cargar tipos de solicitud");
+      Alert.alert("Error", "Error al cargar los tipos de solicitud.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDelete = async (id: number) => {
-    Alert.alert(
-      "Confirmar eliminación",
-      "¿Seguro que deseas eliminar este tipo de solicitud?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await ApiService.deleteApplicationType(id);
-              setApplicationTypes(applicationTypes.filter((t) => t.id !== id));
-            } catch (err) {
-              console.error("Error eliminando tipo:", err);
-              Alert.alert("Error", "Error al eliminar tipo de solicitud");
-            }
-          },
-        },
-      ]
-    );
-  };
-
-  const handleOpenModal = (type: ApplicationType | null = null) => {
-    setEditingType(type);
-    setForm(type ? { name: type.name, required: type.required } : { name: "", required: false });
-    setErrors({});
-    setModalVisible(true);
   };
 
   const validateForm = () => {
@@ -87,44 +67,31 @@ export default function ApplicationTypesModule() {
   const handleSave = async () => {
     if (!validateForm()) return;
     try {
-      if (editingType) {
-        await ApiService.updateApplicationType(editingType.id, form);
-        setApplicationTypes(applicationTypes.map((t) =>
-          t.id === editingType.id ? { ...t, ...form } : t
-        ));
-      } else {
-        const newType = await ApiService.createApplicationType(form);
-        setApplicationTypes([...applicationTypes, newType]);
-      }
+      const newType = await ApiService.createApplicationType(form);
+      setApplicationTypes((prev) => [...prev, newType]);
       setModalVisible(false);
+      setForm({ name: "", required: false });
+      Alert.alert("Éxito", "Tipo de solicitud creado correctamente");
     } catch (err) {
       console.error("Error guardando tipo:", err);
       Alert.alert("Error", "Error al guardar tipo de solicitud");
     }
   };
 
-  const filteredApplicationTypes = applicationTypes.filter(type =>
-    type.name.toLowerCase().includes(searchText.toLowerCase())
+  const filteredApplicationTypes = applicationTypes.filter((type) =>
+    (type?.name?.toLowerCase() || "").includes(searchText.toLowerCase())
   );
 
   const renderApplicationType = ({ item }: { item: ApplicationType }) => (
     <View style={styles.applicationTypeCard}>
       <View style={styles.applicationTypeInfo}>
         <Text style={styles.fieldLabel}>Nombre:</Text>
-        <Text style={styles.fieldValue}>{item.name}</Text>
+        <Text style={styles.fieldValue}>{item.name || "Sin nombre"}</Text>
 
         <Text style={styles.fieldLabel}>Requiere Documento:</Text>
         <Text style={[styles.required, item.required ? styles.yes : styles.no]}>
           {item.required ? "Sí" : "No"}
         </Text>
-      </View>
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.btnSmall} onPress={() => handleOpenModal(item)}>
-          <Text style={styles.btnText}>Editar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.btnSmall, styles.btnAlt]} onPress={() => handleDelete(item.id)}>
-          <Text style={styles.btnText}>Eliminar</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -132,7 +99,8 @@ export default function ApplicationTypesModule() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <Text>Cargando tipos de solicitud...</Text>
+        <ActivityIndicator size="large" color="#a50000" />
+        <Text style={{ marginTop: 10 }}>Cargando tipos de solicitud...</Text>
       </View>
     );
   }
@@ -146,7 +114,7 @@ export default function ApplicationTypesModule() {
           value={searchText}
           onChangeText={setSearchText}
         />
-        <TouchableOpacity style={styles.btn} onPress={() => handleOpenModal()}>
+        <TouchableOpacity style={styles.btn} onPress={() => setModalVisible(true)}>
           <Text style={styles.btnText}>Nuevo</Text>
         </TouchableOpacity>
       </View>
@@ -171,9 +139,7 @@ export default function ApplicationTypesModule() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {editingType ? "Editar Tipo de Solicitud" : "Nuevo Tipo de Solicitud"}
-            </Text>
+            <Text style={styles.modalTitle}>Nuevo Tipo de Solicitud</Text>
 
             <TextInput
               style={[styles.input, errors.name && styles.inputError]}
@@ -192,7 +158,10 @@ export default function ApplicationTypesModule() {
             </View>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity style={[styles.btnSmall, styles.btnAlt]} onPress={() => setModalVisible(false)}>
+              <TouchableOpacity
+                style={[styles.btnSmall, styles.btnAlt]}
+                onPress={() => setModalVisible(false)}
+              >
                 <Text style={styles.btnText}>Cancelar</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.btnSmall} onPress={handleSave}>
@@ -209,14 +178,32 @@ export default function ApplicationTypesModule() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-  header: { padding: 20 },
+  headerActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+  },
   searchInput: {
+    flex: 1,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     backgroundColor: "#fff",
+  },
+  btn: {
+    backgroundColor: "#28a745",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    marginLeft: 10,
+  },
+  btnText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   list: { padding: 20 },
   applicationTypeCard: {
@@ -226,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     elevation: 3,
   },
-  applicationTypeInfo: {},
+  applicationTypeInfo: { marginBottom: 10 },
   fieldLabel: {
     fontSize: 12,
     fontWeight: "bold",
@@ -250,44 +237,6 @@ const styles = StyleSheet.create({
   },
   yes: { backgroundColor: "#d4edda", color: "#155724" },
   no: { backgroundColor: "#f8d7da", color: "#721c24" },
-  emptyText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-  btnSmall: {
-    backgroundColor: "#007bff",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    minWidth: 70,
-    alignItems: "center",
-  },
-  btnAlt: {
-    backgroundColor: "#dc3545",
-  },
-  btnText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  headerActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-  },
-  btn: {
-    backgroundColor: "#28a745",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -315,27 +264,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
-  inputError: {
-    borderColor: "red",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginBottom: 10,
-  },
+  inputError: { borderColor: "red" },
+  errorText: { color: "red", fontSize: 12, marginBottom: 10 },
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
   },
-  switchLabel: {
-    fontSize: 16,
-    marginRight: 10,
-  },
+  switchLabel: { fontSize: 16, marginRight: 10 },
   modalActions: {
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 10,
   },
+  btnSmall: {
+    backgroundColor: "#007bff",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    minWidth: 70,
+    alignItems: "center",
+  },
+  btnAlt: { backgroundColor: "#6c757d" },
+  emptyText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginTop: 20,
+  },
 });
-

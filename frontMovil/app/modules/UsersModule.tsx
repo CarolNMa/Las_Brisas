@@ -24,7 +24,7 @@ interface User {
   status?: "active" | "inactive";
   createdAt?: string;
   resetCode?: string;
-  resetCodeExpire?: number; // epoch en ms
+  resetCodeExpire?: number;
   roles?: { id: number; name: string; description: string }[];
 }
 
@@ -46,7 +46,6 @@ export default function UsersModule() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<UserFormData>({
     username: "",
     email: "",
@@ -59,7 +58,7 @@ export default function UsersModule() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('jwt_token');
+      const token = await AsyncStorage.getItem("jwt_token");
       if (!token) {
         setIsAuthenticated(false);
         Alert.alert("Error", "Debes iniciar sesión primero");
@@ -81,8 +80,11 @@ export default function UsersModule() {
           ]);
           setUsers(usersData);
           setRoles(rolesData);
-        } catch (error) {
-          Alert.alert("Error", "No se pudieron cargar los datos. Verifica tu conexión y permisos.");
+        } catch {
+          Alert.alert(
+            "Error",
+            "No se pudieron cargar los datos. Verifica tu conexión y permisos."
+          );
         }
       };
       fetchData();
@@ -95,50 +97,9 @@ export default function UsersModule() {
   }, []);
 
   const handleCreateUser = useCallback(() => {
-    setEditingUser(null);
     resetForm();
     setModalVisible(true);
   }, [resetForm]);
-
-  const handleEditUser = useCallback((user: User) => {
-    setEditingUser(user);
-    setFormData({
-      username: user.username,
-      email: user.email,
-      password: "",
-      roleIds: user.roles ? user.roles.map((r) => r.id) : [],
-    });
-    setShowPass(false);
-    setModalVisible(true);
-  }, []);
-
-  const performDeleteUser = useCallback(async (id: number) => {
-    try {
-      await api.deleteUser(id);
-      Alert.alert("Éxito", "Usuario eliminado correctamente");
-
-      // Refresh data
-      const usersData = await api.getUsers();
-      setUsers(usersData);
-    } catch (error) {
-      Alert.alert("Error", "No se pudo eliminar el usuario");
-    }
-  }, []);
-
-  const handleDeleteUser = useCallback((user: User) => {
-    Alert.alert(
-      "Eliminar Usuario",
-      `¿Estás seguro de que quieres eliminar al usuario "${user.username}"?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => performDeleteUser(user.idUser),
-        },
-      ]
-    );
-  }, [performDeleteUser]);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -151,9 +112,11 @@ export default function UsersModule() {
     if (!emailRegex.test(email)) {
       return Alert.alert("Error", "Email inválido");
     }
-    // Solo exigir contraseña al crear
-    if (!editingUser && (!password.trim() || password.length < 6)) {
-      return Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres");
+    if (!password.trim() || password.length < 6) {
+      return Alert.alert(
+        "Error",
+        "La contraseña debe tener al menos 6 caracteres"
+      );
     }
     if (roleIds.length === 0) {
       return Alert.alert("Error", "Selecciona al menos un rol");
@@ -161,40 +124,33 @@ export default function UsersModule() {
 
     try {
       setSubmitting(true);
-
-      if (!editingUser) {
-        // Create user
-        await api.createUser({ username, email, password });
-        Alert.alert("Éxito", "Usuario creado correctamente");
-      } else {
-        // Update user - backend doesn't have PUT, so alert
-        Alert.alert("Información", "Funcionalidad de actualización no implementada en el backend");
-      }
+      await api.createUser({ username, email, password });
+      Alert.alert("Éxito", "Usuario creado correctamente");
 
       setModalVisible(false);
       resetForm();
 
-      // Refresh data
       const [usersData, rolesData] = await Promise.all([
         api.getUsers(),
         api.getRoles(),
       ]);
       setUsers(usersData);
       setRoles(rolesData);
-    } catch (e) {
+    } catch {
       Alert.alert("Error", "Ocurrió un error inesperado");
     } finally {
       setSubmitting(false);
     }
-  }, [formData, editingUser, resetForm]);
+  }, [formData, resetForm]);
 
   const filteredUsers = useMemo(() => {
     const q = searchText.trim().toLowerCase();
     if (!q) return users;
-    return users.filter((u) =>
-      u.username.toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q) ||
-      (u.roles?.some((r) => r.name.toLowerCase().includes(q)) ?? false)
+    return users.filter(
+      (u) =>
+        u.username.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        (u.roles?.some((r) => r.name.toLowerCase().includes(q)) ?? false)
     );
   }, [users, searchText]);
 
@@ -238,45 +194,10 @@ export default function UsersModule() {
               </Text>
             </>
           )}
-
-          {!!item.resetCode && (
-            <>
-              <Text style={styles.fieldLabel}>Código Reset:</Text>
-              <Text style={styles.fieldValue}>{item.resetCode}</Text>
-            </>
-          )}
-
-          {!!item.resetCodeExpire && (
-            <>
-              <Text style={styles.fieldLabel}>Expiración Reset:</Text>
-              <Text style={styles.fieldValue}>
-                {new Date(item.resetCodeExpire).toLocaleString()}
-              </Text>
-            </>
-          )}
-        </View>
-
-        <View style={styles.actions}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.editButton]}
-            onPress={() => handleEditUser(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Editar usuario ${item.username}`}
-          >
-            <Text style={styles.editButtonText}>Editar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
-            onPress={() => handleDeleteUser(item)}
-            accessibilityRole="button"
-            accessibilityLabel={`Eliminar usuario ${item.username}`}
-          >
-            <Text style={styles.deleteButtonText}>Eliminar</Text>
-          </TouchableOpacity>
         </View>
       </View>
     ),
-    [handleEditUser, handleDeleteUser]
+    []
   );
 
   return (
@@ -304,16 +225,11 @@ export default function UsersModule() {
             <TouchableOpacity
               style={styles.createButton}
               onPress={handleCreateUser}
-              accessibilityRole="button"
-              accessibilityLabel="Crear Usuario"
             >
               <Text style={styles.createButtonText}>Crear Usuario</Text>
             </TouchableOpacity>
           </View>
         }
-        initialNumToRender={10}
-        windowSize={10}
-        removeClippedSubviews
       />
 
       <Modal
@@ -328,9 +244,7 @@ export default function UsersModule() {
             style={{ width: "90%" }}
           >
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                {editingUser ? "Editar Usuario" : "Crear Usuario"}
-              </Text>
+              <Text style={styles.modalTitle}>Crear Usuario</Text>
 
               <ScrollView style={styles.form} keyboardShouldPersistTaps="handled">
                 <Text style={styles.label}>Usuario:</Text>
@@ -364,19 +278,13 @@ export default function UsersModule() {
                     onChangeText={(text) =>
                       setFormData((p) => ({ ...p, password: text }))
                     }
-                    placeholder={
-                      editingUser
-                        ? "Deja en blanco para no cambiar"
-                        : "Ingrese la contraseña"
-                    }
+                    placeholder="Ingrese la contraseña"
                     secureTextEntry={!showPass}
                     autoCapitalize="none"
                   />
                   <TouchableOpacity
                     onPress={() => setShowPass((v) => !v)}
                     style={{ position: "absolute", right: 12, top: 12, padding: 4 }}
-                    accessibilityRole="button"
-                    accessibilityLabel={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
                   >
                     <Text style={{ fontWeight: "bold" }}>
                       {showPass ? "🙈" : "👁️"}
@@ -402,9 +310,6 @@ export default function UsersModule() {
                             : [...formData.roleIds, role.id];
                           setFormData((p) => ({ ...p, roleIds: newRoleIds }));
                         }}
-                        accessibilityRole="checkbox"
-                        accessibilityState={{ checked: selected }}
-                        accessibilityLabel={`Rol ${role.name}`}
                       >
                         <View
                           style={[
@@ -433,28 +338,16 @@ export default function UsersModule() {
                   style={[styles.modalButton, styles.cancelButton]}
                   onPress={() => setModalVisible(false)}
                   disabled={submitting}
-                  accessibilityRole="button"
-                  accessibilityLabel="Cancelar"
                 >
                   <Text style={styles.cancelButtonText}>Cancelar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[
-                    styles.modalButton,
-                    styles.submitButton,
-                    submitting && { opacity: 0.7 },
-                  ]}
+                  style={[styles.modalButton, styles.submitButton]}
                   onPress={handleSubmit}
                   disabled={submitting}
-                  accessibilityRole="button"
-                  accessibilityLabel={editingUser ? "Actualizar" : "Crear"}
                 >
                   <Text style={styles.submitButtonText}>
-                    {submitting
-                      ? "Guardando..."
-                      : editingUser
-                      ? "Actualizar"
-                      : "Crear"}
+                    {submitting ? "Guardando..." : "Crear"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -502,7 +395,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 2,
   },
-  userInfo: {},
   fieldLabel: {
     fontSize: 12,
     fontWeight: "bold",
@@ -510,11 +402,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textTransform: "uppercase",
   },
-  fieldValue: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 4,
-  },
+  fieldValue: { fontSize: 16, color: "#333", marginBottom: 4 },
   status: {
     fontSize: 12,
     fontWeight: "bold",
@@ -526,31 +414,6 @@ const styles = StyleSheet.create({
   },
   active: { backgroundColor: "#d4edda", color: "#155724" },
   inactive: { backgroundColor: "#f8d7da", color: "#721c24" },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 15,
-    gap: 10,
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  editButton: { backgroundColor: "#007bff" },
-  editButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  deleteButton: { backgroundColor: "#dc3545" },
-  deleteButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -635,6 +498,9 @@ const styles = StyleSheet.create({
   checkboxSelected: {
     backgroundColor: "#a50000",
     borderColor: "#a50000",
+  },
+  userInfo: {
+    flexDirection: "column",
   },
   checkmark: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   roleInfo: { flex: 1 },
