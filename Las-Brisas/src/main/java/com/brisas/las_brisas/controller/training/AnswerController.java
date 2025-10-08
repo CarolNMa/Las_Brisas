@@ -16,21 +16,18 @@ public class AnswerController {
 
     private final AnswerService answerService;
 
-    // 🔹 ADMIN: Ver todas las respuestas
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(answerService.getAll());
     }
 
-    // 🔹 EMPLEADO o ADMIN: Ver respuestas por pregunta
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/question/{questionId}")
     public ResponseEntity<?> getByQuestion(@PathVariable int questionId) {
         return ResponseEntity.ok(answerService.getAnswersByQuestion(questionId));
     }
 
-    // 🔹 EMPLEADO o ADMIN: Ver una respuesta por ID
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
@@ -45,10 +42,9 @@ public class AnswerController {
     public ResponseEntity<?> save(@RequestBody answerDTO dto) {
         ResponseDTO<?> response = answerService.save(dto);
 
-        // Extraer solo el número si la cadena tiene "200 OK"
         HttpStatus status = HttpStatus.OK;
         try {
-            String code = response.getStatus().split(" ")[0]; // 👈 toma solo "200"
+            String code = response.getStatus().split(" ")[0];
             status = HttpStatus.resolve(Integer.parseInt(code));
         } catch (Exception e) {
             status = HttpStatus.OK;
@@ -57,7 +53,6 @@ public class AnswerController {
         return new ResponseEntity<>(response, status != null ? status : HttpStatus.OK);
     }
 
-    // 🔹 ADMIN: Eliminar respuesta
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {

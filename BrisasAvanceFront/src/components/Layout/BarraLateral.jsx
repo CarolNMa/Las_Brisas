@@ -9,7 +9,7 @@ export default function Sidebar({ items, active, onChange }) {
                         onClick={() => onChange(i.key)}
                         style={{ ...styles.navItem, ...(active === i.key ? styles.navItemActive : {}) }}
                     >
-                        {i.icon} <span style={{ marginLeft: 8 }}>{i.label}</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center' }}>{i.icon}</span> <span style={{ marginLeft: 8 }}>{i.label}</span>
                     </div>
                 ))}
             </nav>

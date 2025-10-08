@@ -193,16 +193,19 @@ export default function PositionsModule() {
                                     if (errors.requirements) setErrors({ ...errors, requirements: null });
                                 }}
                                 style={{
-                                    width: "100%",
-                                    padding: 6,
+                                    ...styles.textarea, 
                                     border: errors.requirements ? "1px solid red" : "1px solid #ddd",
-                                    borderRadius: 4,
-                                    minHeight: "80px",
-                                    resize: "vertical"
+                                    minHeight: "100px", 
                                 }}
+                                placeholder="Escribe los requisitos mínimos para este cargo (experiencia, formación, habilidades...)"
                             />
-                            {errors.requirements && <span style={{ color: "red", fontSize: "12px" }}>{errors.requirements}</span>}
+                            {errors.requirements && (
+                                <span style={{ color: "red", fontSize: "12px" }}>
+                                    {errors.requirements}
+                                </span>
+                            )}
                         </label>
+
                         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
                             <button style={styles.btnAlt} onClick={() => setModalOpen(false)}>
                                 Cancelar

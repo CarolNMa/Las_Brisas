@@ -19,13 +19,12 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
-    // ADMIN: ver todas (en DTO)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAll() {
         List<questionDTO> list = questionService.getAll()
                 .stream()
-                .map(questionService::convertToDTO) // ✅ convertimos a DTO
+                .map(questionService::convertToDTO) 
                 .toList();
         return ResponseEntity.ok(list);
     }
@@ -39,15 +38,13 @@ public class QuestionController {
                         .body(new ResponseDTO<>("Pregunta no encontrada", HttpStatus.NOT_FOUND.toString(), null)));
     }
 
-    // ADMIN y EMPLEADO: ver preguntas por módulo (en DTO)
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/module/{moduleId}")
     public ResponseEntity<?> getByModule(@PathVariable int moduleId) {
-        List<questionDTO> list = questionService.getQuestionsByModule(moduleId); // ✅ ya devuelve DTOs
+        List<questionDTO> list = questionService.getQuestionsByModule(moduleId); 
         return ResponseEntity.ok(list);
     }
 
-    // ADMIN: guardar
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> save(@RequestBody questionDTO dto) {
@@ -55,7 +52,6 @@ public class QuestionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // ADMIN: eliminar
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {

@@ -21,21 +21,18 @@ public class ModuleInductionController {
 
     private final ModuleInductionService moduleInductionService;
 
-    // ADMIN: listar todos los módulos
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<moduleInduction>> getAll() {
         return ResponseEntity.ok(moduleInductionService.getAll());
     }
 
-    // EMPLEADO y ADMIN: listar módulos de una inducción
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/induction/{inductionId}")
     public ResponseEntity<List<moduleInduction>> getByInduction(@PathVariable int inductionId) {
         return ResponseEntity.ok(moduleInductionService.findByInductionId(inductionId));
     }
 
-    // EMPLEADO y ADMIN: ver un módulo
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
@@ -45,7 +42,6 @@ public class ModuleInductionController {
                         .body(new ResponseDTO<>("Módulo no encontrado", HttpStatus.NOT_FOUND.toString(), null)));
     }
 
-    // ADMIN: guardar
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ResponseDTO<module_inductionDTO>> save(@RequestBody module_inductionDTO dto) {
@@ -53,7 +49,6 @@ public class ModuleInductionController {
         return ResponseEntity.ok(response);
     }
 
-    // ADMIN: actualizar
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDTO<module_inductionDTO>> update(
@@ -64,7 +59,6 @@ public class ModuleInductionController {
         return ResponseEntity.ok(response);
     }
 
-    // ADMIN: eliminar
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO<module_inductionDTO>> delete(@PathVariable int id) {

@@ -33,7 +33,7 @@ export default function AnswerForm({ question, answerData = null, onClose, onSav
 
     const handleSave = async () => {
         if (!form.answer?.trim()) {
-            alert("⚠️ El texto de la respuesta es obligatorio");
+            alert("El texto de la respuesta es obligatorio");
             return;
         }
 
@@ -43,7 +43,7 @@ export default function AnswerForm({ question, answerData = null, onClose, onSav
             onSaved?.();
             onClose?.();
         } catch (err) {
-            console.error("❌ Error guardando respuesta:", err);
+            console.error("Error guardando respuesta:", err);
             alert("Error guardando respuesta");
         } finally {
             setSaving(false);
@@ -51,22 +51,24 @@ export default function AnswerForm({ question, answerData = null, onClose, onSav
     };
 
     return (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <h3>{form.id ? "Editar Respuesta" : "Nueva Respuesta"}</h3>
-            <p><strong>Pregunta:</strong> {question?.question}</p>
+            <p>
+                <strong>Pregunta:</strong> {question?.question}
+            </p>
 
             {/* Campo de texto */}
             <textarea
-                className={styles.textarea}
                 name="answer"
                 value={form.answer}
                 onChange={handleChange}
                 placeholder="Escribe la respuesta (ej: Verdadero, Falso, Opción A...)"
+                style={styles.textarea}
             />
 
-            {/* Checkbox de respuesta correcta */}
-            <div style={{ marginTop: "10px" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            {/* Checkbox*/}
+            <label>
+                <div style={{ alignItems: "center", gap: 8, display: "inline-flex", marginTop: "10px" }}>
                     <input
                         type="checkbox"
                         name="responseCorrect"
@@ -74,16 +76,23 @@ export default function AnswerForm({ question, answerData = null, onClose, onSav
                         onChange={handleChange}
                     />
                     Es la respuesta correcta
-                </label>
-            </div>
+                </div>
+            </label>
 
             {/* Botones */}
-            <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-                <button className={styles.button} onClick={handleSave} disabled={saving}>
-                    {saving ? "Guardando..." : "💾 Guardar"}
+            <div style={{ display: "flex", gap: "10px", marginTop: "15px", justifyContent: "flex-end" }}>
+                <button
+                    style={styles.btnAlt}
+                    onClick={onClose}
+                >
+                    Cancelar
                 </button>
-                <button className={styles.buttonCancel} onClick={onClose}>
-                    ❌ Cancelar
+                <button
+                    style={styles.btn}
+                    onClick={handleSave}
+                    disabled={saving}
+                >
+                    {saving ? "Guardando..." : "Guardar"}
                 </button>
             </div>
         </div>

@@ -23,11 +23,7 @@ public class InductionEmployeeService {
     private final Iemployee employeeRepository;
     private final Iinduction inductionRepository;
 
-    // =========================================
-    // LISTADOS
-    // =========================================
-
-    /** 🔹 Devuelve todas las asignaciones con nombres (solo para ADMIN) */
+  
     public List<induction_employeeDTO> getAllFormatted() {
         return inductionEmployeeRepository.findAll()
                 .stream()
@@ -35,7 +31,6 @@ public class InductionEmployeeService {
                 .toList();
     }
 
-    /** 🔹 Devuelve asignaciones del empleado autenticado (vista EMPLEADO) */
     public List<induction_employeeDTO> findByUserEmailFormatted(String email) {
         return inductionEmployeeRepository.findByUserEmail(email)
                 .stream()
@@ -47,9 +42,6 @@ public class InductionEmployeeService {
         return inductionEmployeeRepository.findById(id);
     }
 
-    // =========================================
-    // GUARDAR / ASIGNAR (ADMIN)
-    // =========================================
     public ResponseDTO<induction_employeeDTO> save(induction_employeeDTO dto) {
         try {
             if (dto.getEmployeeId() <= 0)
@@ -82,7 +74,7 @@ public class InductionEmployeeService {
             induction_employee entity = convertToEntity(dto, empOpt.get(), indOpt.get());
             inductionEmployeeRepository.saveAndFlush(entity);
 
-            System.out.println("✅ Asignación guardada con ID: " + entity.getId());
+            System.out.println("Asignación guardada con ID: " + entity.getId());
 
             return new ResponseDTO<>("Asignación guardada correctamente", "200", convertToDTO(entity));
 
@@ -92,9 +84,7 @@ public class InductionEmployeeService {
         }
     }
 
-    // =========================================
-    // EMPLEADO: Marcar como vista
-    // =========================================
+
     public ResponseDTO<induction_employeeDTO> markAsSeen(int id) {
         Optional<induction_employee> opt = inductionEmployeeRepository.findById(id);
         if (opt.isEmpty()) {
@@ -113,9 +103,6 @@ public class InductionEmployeeService {
         return new ResponseDTO<>("Inducción vista registrada", "200", convertToDTO(entity));
     }
 
-    // =========================================
-    // EMPLEADO: Completar inducción
-    // =========================================
     public ResponseDTO<induction_employeeDTO> completeInduction(int id, int points) {
         Optional<induction_employee> opt = inductionEmployeeRepository.findById(id);
         if (opt.isEmpty()) {
@@ -143,9 +130,7 @@ public class InductionEmployeeService {
                 convertToDTO(entity));
     }
 
-    // =========================================
-    // ELIMINAR
-    // =========================================
+
     public ResponseDTO<induction_employeeDTO> delete(int id) {
         Optional<induction_employee> opt = inductionEmployeeRepository.findById(id);
         if (opt.isEmpty()) {
@@ -163,7 +148,6 @@ public class InductionEmployeeService {
 
         induction_employee entity = opt.get();
 
-        // Solo marcar como vista y aprobar con 100 puntos
         entity.setVisto(induction_employee.visto.si);
         entity.setDateSeen(LocalDateTime.now());
         entity.setStatus(induction_employee.status.aprobado);
@@ -177,9 +161,6 @@ public class InductionEmployeeService {
         return new ResponseDTO<>("Capacitación completada correctamente con 100 puntos", "200", convertToDTO(entity));
     }
 
-    // =========================================
-    // CONVERSORES
-    // =========================================
     private induction_employee convertToEntity(induction_employeeDTO dto, employee emp, induction ind) {
         induction_employee.status s;
         try {

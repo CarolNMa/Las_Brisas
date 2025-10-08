@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Trash2, PenTool, RefreshCw, Eye, X, Plus, Save } from "lucide-react";
 import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
 import Modal from "../Layout/Modal";
@@ -27,7 +28,7 @@ export default function AssignFormacionesModule() {
             setFormaciones(inds.data || inds);
             setAssignments(assigns.data || assigns);
         } catch (err) {
-            console.error("❌ Error cargando datos:", err);
+            console.error("Error cargando datos:", err);
         }
     };
 
@@ -72,7 +73,7 @@ export default function AssignFormacionesModule() {
         if (!window.confirm("¿Seguro que deseas eliminar esta asignación?")) return;
         try {
             await ApiService.deleteAssignment(id);
-            alert("🗑️ Asignación eliminada");
+            alert("Asignación eliminada");
             loadData();
         } catch (err) {
             console.error("Error eliminando asignación:", err);
@@ -81,14 +82,14 @@ export default function AssignFormacionesModule() {
 
     return (
         <div style={styles.card}>
-            <h2>📝 Asignar Formaciones (Inducciones y Capacitaciones)</h2>
+            <h2>Asignar Formaciones (Inducciones y Capacitaciones)</h2>
 
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
                 <button className={styles.btn} onClick={() => setModalOpen(true)}>
                     Nueva Asignación
                 </button>
                 <button className={styles.btnAlt} onClick={loadData}>
-                    🔄 Actualizar
+                    <RefreshCw size={16} style={{ marginRight: 8 }} /> Actualizar
                 </button>
             </div>
 
@@ -128,7 +129,7 @@ export default function AssignFormacionesModule() {
                                     </span>
                                 </td>
                                 <td style={styles.td}>
-                                    {a.visto === "si" ? "👀 Sí" : "🚫 No"}
+                                    {a.visto === "si" ? <><Eye size={16} style={{ marginRight: 4 }} /> Sí</> : <><X size={16} style={{ marginRight: 4 }} /> No</>}
                                 </td>
                                 <td style={styles.td}>{a.points}</td>
                                 <td style={styles.td}>
@@ -136,7 +137,7 @@ export default function AssignFormacionesModule() {
                                         className={styles.btnAlt}
                                         onClick={() => handleDelete(a.id)}
                                     >
-                                        🗑️ Eliminar
+                                        <Trash2 size={16} style={{ marginRight: 4 }} /> Eliminar
                                     </button>
                                 </td>
                             </tr>
@@ -155,7 +156,7 @@ export default function AssignFormacionesModule() {
             {modalOpen && (
                 <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
                     <div>
-                        <h3>➕ Nueva Asignación</h3>
+                        <h3><Plus size={16} style={{ marginRight: 8 }} /> Nueva Asignación</h3>
 
                         {/* Selección de empleado */}
                         <div style={{ marginBottom: "10px" }}>
@@ -208,13 +209,13 @@ export default function AssignFormacionesModule() {
                         {/* Botones */}
                         <div style={{ display: "flex", gap: "10px" }}>
                             <button className={styles.button} onClick={handleAssign}>
-                                💾 Guardar
+                                <Save size={16} style={{ marginRight: 4 }} /> Guardar
                             </button>
                             <button
                                 className={styles.buttonCancel}
                                 onClick={() => setModalOpen(false)}
                             >
-                                ❌ Cancelar
+                                <X size={16} style={{ marginRight: 4 }} /> Cancelar
                             </button>
                         </div>
                     </div>

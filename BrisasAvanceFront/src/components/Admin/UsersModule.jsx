@@ -217,7 +217,7 @@ export default function UsersModule() {
                             )}
                         </div>
 
-                        {/* Contraseña (solo al crear) */}
+                        {/* Contraseña */}
                         {!editing && (
                             <div>
                                 <input

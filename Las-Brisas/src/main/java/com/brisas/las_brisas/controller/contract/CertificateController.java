@@ -17,9 +17,7 @@ public class CertificateController {
 
     private final CertificateService certificateService;
 
-    /**
-     * Generar certificado laboral de un empleado específico (solo ADMIN).
-     */
+   
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/employee/{employeeId}")
     public ResponseEntity<?> generateForEmployee(@PathVariable int employeeId) {
@@ -37,9 +35,7 @@ public class CertificateController {
         }
     }
 
-    /**
-     * Generar certificado laboral para el usuario autenticado (Empleado o Admin).
-     */
+   
     @PreAuthorize("hasAnyRole('EMPLEADO','ADMIN')")
     @GetMapping("/me")
     public ResponseEntity<?> generateForCurrentUser(Authentication auth) {

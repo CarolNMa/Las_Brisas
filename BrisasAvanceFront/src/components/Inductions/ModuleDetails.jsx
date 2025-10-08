@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
+import { Video, ArrowLeft, FileText, Brain } from "lucide-react";
 import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
-import QuestionList from "./QuestionList"; // Solo se usa en inducciones
+import QuestionList from "./QuestionList"; 
 
 export default function ModuleDetail({ moduleId, showQuestions = true }) {
     const [module, setModule] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [inductionType, setInductionType] = useState("induction"); // por defecto
+    const [inductionType, setInductionType] = useState("induction"); 
     const [showQs, setShowQs] = useState(false);
 
-    // =============================
-    // Cargar datos del módulo
-    // =============================
+
     useEffect(() => {
         loadModule();
     }, [moduleId]);
@@ -22,20 +21,17 @@ export default function ModuleDetail({ moduleId, showQuestions = true }) {
             const data = await ApiService.getModuleById(moduleId);
             setModule(data);
 
-            // Obtener tipo de la inducción (o capacitación)
             if (data?.induction?.type) {
                 setInductionType(data.induction.type);
             }
         } catch (err) {
-            console.error("❌ Error cargando módulo:", err);
+            console.error("Error cargando módulo:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    // =============================
-    // Renderizado
-    // =============================
+
     if (loading) return <p>Cargando módulo...</p>;
     if (!module) return <p>No se encontró el módulo</p>;
 
@@ -49,7 +45,7 @@ export default function ModuleDetail({ moduleId, showQuestions = true }) {
             {/* Mostrar video */}
             {module.videoUrl && (
                 <div style={{ marginTop: 20 }}>
-                    <h4>🎬 Video:</h4>
+                    <h4><Video size={16} style={{ marginRight: 4 }} /> Video:</h4>
                     <iframe
                         width="640"
                         height="360"
@@ -75,7 +71,7 @@ export default function ModuleDetail({ moduleId, showQuestions = true }) {
                         style={styles.btn}
                         onClick={() => setShowQs(!showQs)}
                     >
-                        {showQs ? "⬅️ Ocultar Preguntas" : "📑 Ver Preguntas"}
+                        {showQs ? <><ArrowLeft size={16} style={{ marginRight: 4 }} /> Ocultar Preguntas</> : <><FileText size={16} style={{ marginRight: 4 }} /> Ver Preguntas</>}
                     </button>
 
                     {showQs && (
@@ -98,7 +94,7 @@ export default function ModuleDetail({ moduleId, showQuestions = true }) {
                     }}
                 >
                     <p>
-                        🧠 Esta formación es una{" "}
+                        <Brain size={16} style={{ marginRight: 4 }} /> Esta formación es una{" "}
                         <strong>Capacitación</strong>. No contiene preguntas;
                         el empleado solo debe visualizar el video para
                         completarla y recibirá automáticamente{" "}

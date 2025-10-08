@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Home, User, Key, Users, Calendar, Clock, Briefcase, MapPin, Building, Mail, ClipboardList, FileText, BookOpen, PenTool } from "lucide-react";
 
 import Topbar from "../components/Layout/BarraSuperior";
 import Sidebar from "../components/Layout/BarraLateral";
@@ -38,25 +39,25 @@ export default function Inicio({ user, onLogout }) {
   const [resumes, setResumes] = useState([]);
 
   const items = [
-    { key: "dashboard", label: "Resumen", icon: "🏠" },
-    { key: "users", label: "Usuarios", icon: "👤" },
-    { key: "roles", label: "Roles", icon: "🔑" },
-    { key: "empleados", label: "Empleados", icon: "👥" },
-    { key: "shedules", label: "Horarios", icon: "📅" },
-    { key: "attendance", label: "Asistencia", icon: "⏰" },
-    { key: "positions", label: "Cargo", icon: "💼" },
-    { key: "locations", label: "Ubicaciones", icon: "📍" },
-    { key: "areas", label: "Áreas", icon: "🏢" },
-    { key: "applications", label: "Solicitudes", icon: "📩" },
-    { key: "applicationTypes", label: "Tipos de Solicitud", icon: "📋" },
-    { key: "resumes", label: "Hojas de Vida", icon: "📄" },
-    { key: "contratos", label: "Contratos", icon: "📄" },
-    { key: "employeePosts", label: "Relaciones Empleado - Cargo", icon: "👥" },
-    { key: "employeeAreas", label: "Relaciones Empleado - Área", icon: "👥" },
-    { key: "employeeLocations", label: "Relaciones Empleado - Ubicación", icon: "👥" },
-    { key: "employeeSchedules", label: "Relaciones Empleado - Horario", icon: "👥" },
-    { key: "inductions", label: "Formación", icon: "📚" },
-    { key: "assignInductions", label: "Asignar Formaciones", icon: "📝" },
+    { key: "dashboard", label: "Resumen", icon: <Home size={16} /> },
+    { key: "users", label: "Usuarios", icon: <User size={16} /> },
+    { key: "roles", label: "Roles", icon: <Key size={16} /> },
+    { key: "empleados", label: "Empleados", icon: <Users size={16} /> },
+    { key: "shedules", label: "Horarios", icon: <Calendar size={16} /> },
+    { key: "attendance", label: "Asistencia", icon: <Clock size={16} /> },
+    { key: "positions", label: "Cargo", icon: <Briefcase size={16} /> },
+    { key: "locations", label: "Ubicaciones", icon: <MapPin size={16} /> },
+    { key: "areas", label: "Áreas", icon: <Building size={16} /> },
+    { key: "applications", label: "Solicitudes", icon: <Mail size={16} /> },
+    { key: "applicationTypes", label: "Tipos de Solicitud", icon: <ClipboardList size={16} /> },
+    { key: "resumes", label: "Hojas de Vida", icon: <FileText size={16} /> },
+    { key: "contratos", label: "Contratos", icon: <FileText size={16} /> },
+    { key: "employeePosts", label: "Relaciones Empleado - Cargo", icon: <Users size={16} /> },
+    { key: "employeeAreas", label: "Relaciones Empleado - Área", icon: <Users size={16} /> },
+    { key: "employeeLocations", label: "Relaciones Empleado - Ubicación", icon: <Users size={16} /> },
+    { key: "employeeSchedules", label: "Relaciones Empleado - Horario", icon: <Users size={16} /> },
+    { key: "inductions", label: "Formación", icon: <BookOpen size={16} /> },
+    { key: "assignInductions", label: "Asignar Formaciones", icon: <PenTool size={16} /> },
   ];
 
   useEffect(() => {

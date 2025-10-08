@@ -16,7 +16,6 @@ public class EmployeePostController {
 
     private final EmployeePostService employeePostService;
 
-    // 🔹 Devuelve todas las relaciones con nombres incluidos
     @GetMapping
     public ResponseEntity<?> getAllDetails() {
         return ResponseEntity.ok(employeePostService.getAllDetails());

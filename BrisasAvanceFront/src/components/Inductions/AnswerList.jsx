@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CheckCircle, X, Plus, RefreshCw, Edit, Trash2 } from "lucide-react";
 import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
 import Modal from "../Layout/Modal";
@@ -23,7 +24,7 @@ export default function AnswerList({ question, onBack }) {
             const data = await ApiService.getAnswersByQuestion(question.id);
             setAnswers(data.data || data);
         } catch (err) {
-            console.error("❌ Error cargando respuestas:", err);
+            console.error("Error cargando respuestas:", err);
         } finally {
             setLoading(false);
         }
@@ -35,7 +36,7 @@ export default function AnswerList({ question, onBack }) {
             await ApiService.deleteAnswer(id);
             setAnswers(answers.filter((a) => a.id !== id));
         } catch (err) {
-            console.error("❌ Error eliminando respuesta:", err);
+            console.error("Error eliminando respuesta:", err);
         }
     };
 
@@ -60,10 +61,10 @@ export default function AnswerList({ question, onBack }) {
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
                 <button className={styles.btn} onClick={() => handleOpenModal()}>
-                    ➕ Nueva Respuesta
+                    <Plus size={16} style={{ marginRight: 4 }} /> Nueva Respuesta
                 </button>
                 <button className={styles.btnAlt} onClick={load}>
-                    🔄 Actualizar
+                    <RefreshCw size={16} style={{ marginRight: 4 }} /> Actualizar
                 </button>
             </div>
 
@@ -82,17 +83,17 @@ export default function AnswerList({ question, onBack }) {
                                 <td style={styles.td}>{a.answer}</td>
                                 <td style={styles.td}>
                                     {a.responseCorrect ? (
-                                        <span style={{ color: "green" }}>✅ Sí</span>
+                                        <span style={{ color: "green", display: 'flex', alignItems: 'center' }}><CheckCircle size={16} style={{ marginRight: 4 }} /> Sí</span>
                                     ) : (
-                                        <span style={{ color: "red" }}>❌ No</span>
+                                        <span style={{ color: "red", display: 'flex', alignItems: 'center' }}><X size={16} style={{ marginRight: 4 }} /> No</span>
                                     )}
                                 </td>
                                 <td style={styles.td}>
                                     <button className={styles.btnSmall} onClick={() => handleOpenModal(a)}>
-                                        ✏️ Editar
+                                        <Edit size={16} style={{ marginRight: 4 }} /> Editar
                                     </button>{" "}
                                     <button className={styles.btnAlt} onClick={() => handleDelete(a.id)}>
-                                        🗑️ Eliminar
+                                        <Trash2 size={16} style={{ marginRight: 4 }} /> Eliminar
                                     </button>
                                 </td>
                             </tr>

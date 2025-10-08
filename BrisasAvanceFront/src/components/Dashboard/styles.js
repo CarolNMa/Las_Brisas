@@ -114,6 +114,9 @@ export const styles = {
         fontWeight: 500,
     },
 
+
+
+
     // Tablas
     table: {
         width: "100%",
@@ -162,5 +165,18 @@ export const styles = {
         padding: 20,
         borderRadius: 10,
         boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+    },
+    textarea: {
+        width: "97%",
+        minHeight: "100px",
+        resize: "vertical",
+        padding: "8px",
+        border: "1px solid #ddd",
+        borderRadius: "6px",
+        fontSize: "14px",
+        backgroundColor: "#fff",
+        color: "#111",
+        outline: "none",
+        transition: "border-color 0.2s, box-shadow 0.2s",
     },
 };

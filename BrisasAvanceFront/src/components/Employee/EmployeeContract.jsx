@@ -36,8 +36,8 @@ export default function EmployeeContract() {
   }
 
   return (
-    <div>
-      <h2>Mi Contrato</h2>
+    <div style={styles.page}>
+      <h2 style={styles.title}>Mi Contrato</h2>
       <div style={styles.contractContainer}>
         <div style={styles.contractCard}>
           <div style={styles.contractHeader}>
@@ -91,7 +91,7 @@ export default function EmployeeContract() {
                   href={contract.documentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#2563eb', textDecoration: 'underline' }}
+                  style={styles.downloadLink}
                 >
                   Descargar Contrato
                 </a>
@@ -105,41 +105,63 @@ export default function EmployeeContract() {
 }
 
 const styles = {
-  contractContainer: {
-    padding: '20px',
+  page: {
+    marginLeft: '250px',
+    padding: '30px 40px',
+    background: '#f9fafb',
+    minHeight: '100vh',
   },
+
+  title: {
+    color: '#b00',
+    fontSize: '22px',
+    fontWeight: '700',
+    marginBottom: '25px',
+  },
+
+  contractContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+
   contractCard: {
     background: '#fff',
     borderRadius: '12px',
     padding: '30px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     maxWidth: '800px',
-    margin: '0 auto',
+    width: '100%',
   },
+
   contractHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '30px',
     borderBottom: '2px solid #f0f0f0',
-    paddingBottom: '20px',
+    paddingBottom: '15px',
   },
+
   contractDetails: {
     display: 'flex',
     flexDirection: 'column',
     gap: '20px',
   },
+
   detailRow: {
     display: 'flex',
     gap: '40px',
     flexWrap: 'wrap',
   },
+
   detailItem: {
     flex: 1,
     minWidth: '200px',
     fontSize: '16px',
     color: '#333',
   },
+
   status: {
     padding: '5px 12px',
     borderRadius: '20px',
@@ -147,10 +169,18 @@ const styles = {
     fontSize: '14px',
     color: '#fff',
   },
+
   statusActive: {
     background: '#22c55e',
   },
+
   statusInactive: {
     background: '#ef4444',
+  },
+
+  downloadLink: {
+    color: '#2563eb',
+    textDecoration: 'underline',
+    fontWeight: '500',
   },
 };

@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import ApiService from '../../services/api';
-import EmployeeTakeInduction from './EmployeeTakeInduction';
-import EmployeeTakeTraining from './EmployeeTakeTraining';
+import { useState, useEffect } from "react";
+import { CheckCircle, Clock } from "lucide-react";
+import ApiService from "../../services/api";
+import EmployeeTakeInduction from "./EmployeeTakeInduction";
+import EmployeeTakeTraining from "./EmployeeTakeTraining";
 
 export default function EmployeeFormaciones() {
   const [assignments, setAssignments] = useState([]);
@@ -20,7 +21,7 @@ export default function EmployeeFormaciones() {
       setAssignments(Array.isArray(data) ? data : data.data || []);
     } catch (err) {
       setError("Error al cargar tus formaciones");
-      console.error("❌ Error cargando asignaciones:", err);
+      console.error("Error cargando asignaciones:", err);
     } finally {
       setLoading(false);
     }
@@ -32,29 +33,45 @@ export default function EmployeeFormaciones() {
 
   const handleComplete = () => {
     setTakingAssignment(null);
-    loadAssignments(); // recargar estado actualizado
+    loadAssignments();
   };
 
   const getStatusLabel = (status) => {
     switch (status?.toLowerCase()) {
       case "aprobado":
-        return "✅ Completada";
+        return (
+          <>
+            <CheckCircle size={16} style={{ marginRight: 4, color: "#16a34a" }} />{" "}
+            Completada
+          </>
+        );
       case "pendiente":
-        return "⌛ Pendiente";
+        return (
+          <>
+            <Clock size={16} style={{ marginRight: 4, color: "#f59e0b" }} />{" "}
+            Pendiente
+          </>
+        );
       default:
         return status;
     }
   };
 
   if (loading)
-    return <div style={{ textAlign: 'center', padding: '50px' }}>Cargando formaciones...</div>;
+    return (
+      <div style={{ textAlign: "center", padding: "50px" }}>
+        Cargando formaciones...
+      </div>
+    );
   if (error)
-    return <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>{error}</div>;
+    return (
+      <div style={{ textAlign: "center", padding: "50px", color: "red" }}>
+        {error}
+      </div>
+    );
 
-  // Si está dentro de una inducción
   if (takingAssignment) {
     if (takingAssignment.inductionType === "capacitacion") {
-      // 🚀 Mostrar vista simplificada de capacitación
       return (
         <EmployeeTakeTraining
           assignment={takingAssignment}
@@ -63,12 +80,11 @@ export default function EmployeeFormaciones() {
       );
     }
 
-    // 🚀 Vista normal de inducción
     return (
-      <div>
+      <div style={styles.page}>
         <button
           onClick={() => setTakingAssignment(null)}
-          style={{ marginBottom: "20px", padding: "8px 16px" }}
+          style={styles.backButton}
         >
           ← Volver
         </button>
@@ -82,14 +98,15 @@ export default function EmployeeFormaciones() {
   }
 
   return (
-    <div>
-      <h2>Mis Formaciones (Inducciones y Capacitaciones)</h2>
+    <div style={styles.page}>
+      <h2 style={styles.title}>Mis Formaciones (Inducciones y Capacitaciones)</h2>
+
       <div style={styles.container}>
         {assignments.length > 0 ? (
           assignments.map((a) => (
             <div key={a.id} style={styles.card}>
               <div style={styles.header}>
-                <h3>{a.inductionName}</h3>
+                <h3 style={styles.cardTitle}>{a.inductionName}</h3>
                 <span
                   style={{
                     ...styles.status,
@@ -99,17 +116,29 @@ export default function EmployeeFormaciones() {
                       a.inductionType === "capacitacion" ? "#0F5132" : "#084298",
                   }}
                 >
-                  {a.inductionType === "capacitacion" ? "Capacitación" : "Inducción"}
+                  {a.inductionType === "capacitacion"
+                    ? "Capacitación"
+                    : "Inducción"}
                 </span>
               </div>
 
               <div style={styles.body}>
-                <p><strong>Fecha asignación:</strong> {new Date(a.dateAssignment).toLocaleDateString()}</p>
+                <p>
+                  <strong>Fecha asignación:</strong>{" "}
+                  {new Date(a.dateAssignment).toLocaleDateString()}
+                </p>
                 {a.dateComplete && (
-                  <p><strong>Finalizada:</strong> {new Date(a.dateComplete).toLocaleDateString()}</p>
+                  <p>
+                    <strong>Finalizada:</strong>{" "}
+                    {new Date(a.dateComplete).toLocaleDateString()}
+                  </p>
                 )}
-                <p><strong>Puntos:</strong> {a.points}</p>
-                <p><strong>Estado:</strong> {getStatusLabel(a.status)}</p>
+                <p>
+                  <strong>Puntos:</strong> {a.points}
+                </p>
+                <p>
+                  <strong>Estado:</strong> {getStatusLabel(a.status)}
+                </p>
               </div>
 
               {a.status?.toLowerCase() === "pendiente" && (
@@ -132,13 +161,33 @@ export default function EmployeeFormaciones() {
   );
 }
 
-// ✅ Estilos reutilizables
 const styles = {
+  page: {
+    marginLeft: "250px", 
+    padding: "30px 40px",
+    background: "#f9fafb",
+    minHeight: "100vh",
+  },
+  title: {
+    color: "#b00",
+    fontSize: "22px",
+    fontWeight: "700",
+    marginBottom: "25px",
+  },
+  backButton: {
+    background: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    padding: "8px 16px",
+    cursor: "pointer",
+    fontWeight: "500",
+    color: "#111",
+    marginBottom: "20px",
+  },
   container: {
-    padding: "20px",
     display: "grid",
     gap: "20px",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
   },
   card: {
     background: "#fff",
@@ -148,6 +197,12 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    transition: "transform 0.2s ease",
+  },
+  cardTitle: {
+    color: "#333",
+    fontSize: "16px",
+    fontWeight: "600",
   },
   header: {
     display: "flex",
@@ -160,7 +215,6 @@ const styles = {
     fontWeight: "bold",
     padding: "4px 8px",
     borderRadius: "6px",
-    background: "#f1f1f1",
   },
   body: {
     flex: 1,
@@ -169,13 +223,15 @@ const styles = {
     marginBottom: "15px",
   },
   takeBtn: {
-    background: "#007bff",
+    background: "#b00",
     color: "#fff",
-    padding: "8px 12px",
+    padding: "10px 14px",
     border: "none",
     borderRadius: "6px",
     cursor: "pointer",
     alignSelf: "flex-start",
+    fontWeight: "600",
+    transition: "background 0.3s ease",
   },
   noData: {
     textAlign: "center",

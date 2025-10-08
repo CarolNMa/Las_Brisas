@@ -31,7 +31,6 @@ export default function ResetPassword() {
     try {
       const res = await resetPassword(email, code, newPassword);
       setMessage(res);
-      // Navigate to login after success
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setMessage(err.message);
@@ -92,11 +91,6 @@ export default function ResetPassword() {
 
           {message && <p style={{ marginTop: "10px", color: message.includes("Error") ? "red" : "green" }}>{message}</p>}
 
-          <div className="links">
-            <Link to="/verify-code" className="btn-login" style={{ backgroundColor: '#666', marginTop: '10px' }}>
-              Volver
-            </Link>
-          </div>
         </form>
       </div>
     </div>

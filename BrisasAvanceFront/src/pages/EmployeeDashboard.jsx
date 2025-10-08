@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { User, FileText, ClipboardList, Mail, GraduationCap, Clock } from 'lucide-react';
 
 import Topbar from '../components/Layout/BarraSuperior';
 import Sidebar from '../components/Layout/BarraLateral';
@@ -17,12 +18,12 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [loading, setLoading] = useState(true);
 
   const items = [
-    { key: 'profile', label: 'Mi Perfil', icon: '👤' },
-    { key: 'contract', label: 'Mi Contrato', icon: '📄' },
-    { key: 'resume', label: 'Hoja de Vida', icon: '📋' },
-    { key: 'applications', label: 'Mis Solicitudes', icon: '📩' },
-    { key: 'inductions', label: 'Formaciones', icon: '🎓' },
-    { key: 'attendance', label: 'Mi Asistencia', icon: '⏰' },
+    { key: 'profile', label: 'Mi Perfil', icon: <User size={16} /> },
+    { key: 'contract', label: 'Mi Contrato', icon: <FileText size={16} /> },
+    { key: 'resume', label: 'Hoja de Vida', icon: <ClipboardList size={16} /> },
+    { key: 'applications', label: 'Mis Solicitudes', icon: <Mail size={16} /> },
+    { key: 'inductions', label: 'Formaciones', icon: <GraduationCap size={16} /> },
+    { key: 'attendance', label: 'Mi Asistencia', icon: <Clock size={16} /> },
   ];
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import api from '../../services/api';
 import EmployeeNewApplication from './EmployeeNewApplication';
 
@@ -6,7 +7,7 @@ export default function EmployeeApplications({ employeeId }) {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     loadApplications();
@@ -57,9 +58,10 @@ export default function EmployeeApplications({ employeeId }) {
   }
 
   return (
-    <div>
+    <div style={styles.page}>
+      <h2 style={styles.title}>Mis Solicitudes</h2>
+
       <div style={styles.header}>
-        <h2>Mis Solicitudes</h2>
         <button style={styles.button} onClick={() => setShowModal(true)}>
           Nueva Solicitud
         </button>
@@ -69,16 +71,27 @@ export default function EmployeeApplications({ employeeId }) {
         {applications.length > 0 ? (
           applications.map((application, index) => (
             <div key={index} style={styles.applicationCard}>
-            <div style={styles.applicationHeader}>
-              <h3>{application.applicationTypeName || application.applicationType || application.type || 'Solicitud'}</h3>
-                <span style={{
-                  ...styles.status,
-                  background: getStatusColor(application.status),
-                  color: getStatusTextColor(application.status)
-                }}>
-                  {application.status === 'Aprobado' ? 'Aprobada' :
-                    application.status === 'Rechazado' ? 'Rechazada' :
-                      application.status === 'Pendiente' ? 'Pendiente' : application.status}
+              <div style={styles.applicationHeader}>
+                <h3>
+                  {application.applicationTypeName ||
+                    application.applicationType ||
+                    application.type ||
+                    'Solicitud'}
+                </h3>
+                <span
+                  style={{
+                    ...styles.status,
+                    background: getStatusColor(application.status),
+                    color: getStatusTextColor(application.status),
+                  }}
+                >
+                  {application.status === 'Aprobado'
+                    ? 'Aprobada'
+                    : application.status === 'Rechazado'
+                      ? 'Rechazada'
+                      : application.status === 'Pendiente'
+                        ? 'Pendiente'
+                        : application.status}
                 </span>
               </div>
 
@@ -86,11 +99,21 @@ export default function EmployeeApplications({ employeeId }) {
                 <div style={styles.detailRow}>
                   <div style={styles.detailItem}>
                     <strong>Fecha de Solicitud:</strong>
-                    <span>{new Date(application.dateCreate || application.createdAt || application.date).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(
+                        application.dateCreate ||
+                        application.createdAt ||
+                        application.date
+                      ).toLocaleDateString()}
+                    </span>
                   </div>
                   <div style={styles.detailItem}>
                     <strong>Tipo:</strong>
-                    <span>{application.applicationTypeName || application.applicationType || application.type}</span>
+                    <span>
+                      {application.applicationTypeName ||
+                        application.applicationType ||
+                        application.type}
+                    </span>
                   </div>
                 </div>
 
@@ -135,7 +158,9 @@ export default function EmployeeApplications({ employeeId }) {
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
             <div style={styles.modalHeader}>
-              <button style={styles.closeButton} onClick={() => setShowModal(false)}>✖</button>
+              <button style={styles.closeButton} onClick={() => setShowModal(false)}>
+                <X size={16} />
+              </button>
             </div>
             <EmployeeNewApplication employeeId={employeeId} onCreated={handleCreated} />
           </div>
@@ -146,41 +171,60 @@ export default function EmployeeApplications({ employeeId }) {
 }
 
 const styles = {
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
+  page: {
+    marginLeft: "250px",
+    padding: "30px 40px",
+    background: "#f9fafb",
+    minHeight: "100vh",
+  },
+
+  title: {
+    color: "#b00",
+    fontSize: "22px",
+    fontWeight: "700",
     marginBottom: "20px",
   },
+
+  header: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginBottom: "20px",
+  },
+
   button: {
     padding: "10px 20px",
-    background: "#dc3545",
+    background: "#b00",
     color: "#fff",
     border: "none",
     borderRadius: "8px",
     cursor: "pointer",
     fontWeight: "bold",
+    transition: "background 0.3s ease",
   },
+
   applicationsContainer: {
-    padding: "20px",
+    padding: "10px",
   },
+
   applicationCard: {
     background: "#fff",
     borderRadius: "12px",
     padding: "20px",
     marginBottom: "20px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    maxWidth: "800px",
+    maxWidth: "850px",
     margin: "0 auto 20px auto",
   },
+
   applicationHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "20px",
+    marginBottom: "15px",
     borderBottom: "2px solid #f0f0f0",
-    paddingBottom: "15px",
+    paddingBottom: "10px",
   },
+
   status: {
     padding: "4px 8px",
     borderRadius: "4px",
@@ -188,34 +232,40 @@ const styles = {
     fontWeight: "bold",
     textTransform: "uppercase",
   },
+
   applicationDetails: {
     display: "flex",
     flexDirection: "column",
     gap: "15px",
   },
+
   detailRow: {
     display: "flex",
     gap: "40px",
     flexWrap: "wrap",
   },
+
   detailItem: {
     flex: 1,
     minWidth: "200px",
   },
+
   description: {
     margin: "5px 0 0 0",
     color: "#555",
     lineHeight: "1.5",
   },
+
   noApplications: {
     textAlign: "center",
     padding: "50px",
     background: "#fff",
     borderRadius: "12px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    maxWidth: "800px",
+    maxWidth: "850px",
     margin: "0 auto",
   },
+
   modalOverlay: {
     position: "fixed",
     top: 0,
@@ -228,6 +278,7 @@ const styles = {
     alignItems: "center",
     zIndex: 1000,
   },
+
   modalContent: {
     background: "#fff",
     padding: "20px",
@@ -237,12 +288,14 @@ const styles = {
     overflowY: "auto",
     boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
   },
+
   modalHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "15px",
+    marginBottom: "10px",
   },
+
   closeButton: {
     background: "transparent",
     border: "none",

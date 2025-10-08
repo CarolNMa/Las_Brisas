@@ -19,7 +19,6 @@ export default function ForgotPassword() {
     try {
       const res = await forgotPassword(email);
       setMessage(res);
-      // Navigate to verify code after success
       setTimeout(() => navigate("/verify-code", { state: { email } }), 2000);
     } catch (err) {
       setMessage(err.message);
@@ -54,13 +53,16 @@ export default function ForgotPassword() {
             {loading ? "Enviando..." : "Enviar código de verificación"}
           </button>
 
-          {message && <p style={{ marginTop: "10px", color: message.includes("Error") ? "red" : "green" }}>{message}</p>}
-
-          <div className="links">
-            <Link to="/login" className="btn-login" style={{ backgroundColor: '#666', marginTop: '10px' }}>
-              Volver al Login
-            </Link>
-          </div>
+          {message && (
+            <p
+              style={{
+                marginTop: "10px",
+                color: message.includes("Error") ? "red" : "green",
+              }}
+            >
+              {message}
+            </p>
+          )}
         </form>
       </div>
     </div>

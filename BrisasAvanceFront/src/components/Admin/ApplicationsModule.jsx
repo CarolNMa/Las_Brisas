@@ -16,7 +16,6 @@ export default function ApplicationsModule() {
             setLoading(true);
             const data = await ApiService.getAllApplications();
 
-            // Enriquecer con datos de empleado
             const withDetails = await Promise.all(
                 (data.data || data).map(async (app) => {
                     let employeeName = "";

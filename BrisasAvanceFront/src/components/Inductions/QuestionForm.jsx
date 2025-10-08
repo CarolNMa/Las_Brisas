@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
 
-// ✅ Solo dos tipos permitidos
+
 const TYPE_OPTIONS = [
     { value: "truefalse", label: "Verdadero / Falso" },
     { value: "multiplechoice", label: "Selección múltiple" },
@@ -12,9 +12,10 @@ export default function QuestionForm({ moduleId, questionData = null, onClose, o
     const [form, setForm] = useState({
         id: 0,
         question: "",
-        type: "truefalse", // ✅ por defecto ahora Verdadero/Falso
+        type: "truefalse",
         moduleInductionId: moduleId,
     });
+
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -22,7 +23,7 @@ export default function QuestionForm({ moduleId, questionData = null, onClose, o
             setForm({
                 id: questionData.id,
                 question: questionData.question,
-                type: (questionData.type || "truefalse").toLowerCase(), // ✅ usar solo permitido
+                type: (questionData.type || "truefalse").toLowerCase(),
                 moduleInductionId: moduleId,
             });
         }
@@ -39,7 +40,7 @@ export default function QuestionForm({ moduleId, questionData = null, onClose, o
             onSaved?.();
             onClose?.();
         } catch (err) {
-            console.error("❌ Error guardando pregunta:", err);
+            console.error("Error guardando pregunta:", err);
             alert("Error guardando pregunta");
         } finally {
             setSaving(false);
@@ -47,22 +48,24 @@ export default function QuestionForm({ moduleId, questionData = null, onClose, o
     };
 
     return (
-        <div>
-            <h3>{form.id ? "✏️ Editar Pregunta" : "➕ Nueva Pregunta"}</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <h3>{form.id ? "Editar Pregunta" : "Nueva Pregunta"}</h3>
 
+            {/* Campo de texto */}
             <textarea
-                className={styles.textarea}
                 name="question"
                 value={form.question}
                 onChange={handleChange}
                 placeholder="Escribe la pregunta"
+                style={styles.textarea}
             />
 
+            {/* Selector de tipo */}
             <select
-                className={styles.input}
                 name="type"
                 value={form.type}
                 onChange={handleChange}
+                style={styles.input} 
             >
                 {TYPE_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -71,19 +74,21 @@ export default function QuestionForm({ moduleId, questionData = null, onClose, o
                 ))}
             </select>
 
+            {/* Botones */}
             <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
                 <button
-                    className={styles.button}
+                    style={styles.btn}
                     onClick={handleSave}
                     disabled={saving}
                 >
-                    {saving ? "Guardando..." : "💾 Guardar"}
+                    {saving ? "Guardando..." : "Guardar"}
                 </button>
+
                 <button
-                    className={styles.buttonCancel}
+                    style={styles.btnAlt}
                     onClick={onClose}
                 >
-                    ❌ Cancelar
+                    Cancelar
                 </button>
             </div>
         </div>

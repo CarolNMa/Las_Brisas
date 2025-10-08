@@ -27,7 +27,6 @@ export default function VerifyCode() {
     try {
       const res = await verifyCode(email, code);
       setMessage(res);
-      // Navigate to reset password after success
       setTimeout(() => navigate("/reset-password", { state: { email, code } }), 2000);
     } catch (err) {
       setMessage(err.message);
@@ -76,11 +75,6 @@ export default function VerifyCode() {
 
           {message && <p style={{ marginTop: "10px", color: message.includes("Error") ? "red" : "green" }}>{message}</p>}
 
-          <div className="links">
-            <Link to="/forgot-password" className="btn-login" style={{ backgroundColor: '#666', marginTop: '10px' }}>
-              Volver
-            </Link>
-          </div>
         </form>
       </div>
     </div>

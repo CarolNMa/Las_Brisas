@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CheckCircle, X, AlertTriangle, ClipboardList, Clock, LogOut, RefreshCw } from "lucide-react";
 import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
 import { exportCSV } from "../Comunes/Utils/exportCSV";
@@ -27,7 +28,7 @@ export default function AttendanceModule() {
             setAttendances(att.data || att);
             setEmployees(emp.data || emp);
         } catch (err) {
-            console.error("❌ Error cargando asistencias:", err);
+            console.error("Error cargando asistencias:", err);
             alert("Error cargando asistencias. Verifica el backend.");
         } finally {
             setLoading(false);
@@ -73,24 +74,23 @@ export default function AttendanceModule() {
         exportCSV("asistencias.csv", cleanData);
     };
 
-    // 🔹 Registrar asistencia (admin o empleado actual)
     const handleRegister = async (type) => {
         try {
             await ApiService.registerAttendance(type);
             alert(
                 type === "CHECK_IN"
-                    ? "✅ Entrada registrada correctamente"
-                    : "✅ Salida registrada correctamente"
+                    ? "Entrada registrada correctamente"
+                    : "Salida registrada correctamente"
             );
             loadData();
         } catch (err) {
-            console.error("❌ Error registrando asistencia:", err);
+            console.error("Error registrando asistencia:", err);
             if (err.message.includes("Ya registraste entrada")) {
-                alert("⚠️ Ya registraste tu entrada hoy.");
+                alert("Ya registraste tu entrada hoy.");
             } else if (err.message.includes("Ya registraste salida")) {
-                alert("⚠️ Ya registraste tu salida hoy.");
+                alert("Ya registraste tu salida hoy.");
             } else {
-                alert("❌ Error registrando asistencia");
+                alert("Error registrando asistencia");
             }
         }
     };
@@ -100,13 +100,13 @@ export default function AttendanceModule() {
     return (
         <div style={styles.card}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2>📋 Registro de Asistencias</h2>
+                <h2>Registro de Asistencias</h2>
                 <button style={styles.btnSmall} onClick={handleExport}>
                     Exportar CSV
                 </button>
             </div>
 
-            {/* 🔹 Botones de registro personal */}
+            {/* Botones de registro personal */}
             <div style={{ margin: "15px 0", textAlign: "center" }}>
                 <button
                     onClick={() => handleRegister("CHECK_IN")}
@@ -117,7 +117,7 @@ export default function AttendanceModule() {
                         marginRight: "10px",
                     }}
                 >
-                    🕒 Registrar Entrada
+                    <Clock size={16} style={{ marginRight: 4 }} /> Registrar Entrada
                 </button>
                 <button
                     onClick={() => handleRegister("CHECK_OUT")}
@@ -127,11 +127,11 @@ export default function AttendanceModule() {
                         color: "#fff",
                     }}
                 >
-                    🚪 Registrar Salida
+                    <LogOut size={16} style={{ marginRight: 4 }} /> Registrar Salida
                 </button>
             </div>
 
-            {/* 🔹 Filtros */}
+            {/* Filtros */}
             <div
                 style={{
                     display: "flex",
@@ -175,11 +175,11 @@ export default function AttendanceModule() {
                 </select>
 
                 <button style={styles.btnAlt} onClick={loadData}>
-                    🔄 Actualizar
+                    <RefreshCw size={16} style={{ marginRight: 4 }} /> Actualizar
                 </button>
             </div>
 
-            {/* 🔹 Tabla de asistencias */}
+            {/* Tabla de asistencias */}
             <table style={styles.table}>
                 <thead>
                     <tr>

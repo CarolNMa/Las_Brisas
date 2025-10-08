@@ -17,21 +17,18 @@ public class InductionController {
 
     private final InductionService inductionService;
 
-    // ADMIN: listar todas
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllInductions() {
         return ResponseEntity.ok(inductionService.getAll());
     }
 
-    // EMPLEADO y ADMIN: ver detalle
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getInductionById(@PathVariable int id) {
         return ResponseEntity.ok(inductionService.findById(id));
     }
 
-    // ADMIN: crear o actualizar
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<Object> createOrUpdateInduction(@RequestBody inductionDTO dto) {
@@ -39,7 +36,6 @@ public class InductionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // ADMIN: eliminar
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteInduction(@PathVariable int id) {
@@ -47,14 +43,12 @@ public class InductionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // Listar solo capacitaciones
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/capacitaciones")
     public ResponseEntity<?> getAllCapacitaciones() {
         return ResponseEntity.ok(inductionService.getAllCapacitaciones());
     }
 
-    // Crear o actualizar capacitación
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/capacitaciones")
     public ResponseEntity<Object> createOrUpdateCapacitacion(@RequestBody inductionDTO dto) {

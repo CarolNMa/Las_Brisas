@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Video } from "lucide-react";
 import ApiService from "../../services/api";
 
 export default function EmployeeTakeInduction({ assignmentId, inductionId, onComplete }) {
@@ -10,7 +11,6 @@ export default function EmployeeTakeInduction({ assignmentId, inductionId, onCom
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
-    // 🔹 Cargar datos de inducción y módulos
     useEffect(() => {
         loadInductionData();
     }, [inductionId]);
@@ -26,24 +26,22 @@ export default function EmployeeTakeInduction({ assignmentId, inductionId, onCom
             setInduction(indData.data || indData);
             setModules(modData.data || modData);
         } catch (err) {
-            console.error("❌ Error cargando inducción:", err);
+            console.error("Error cargando inducción:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    // 🔹 Marcar inducción como vista al abrirla
     useEffect(() => {
         if (assignmentId) {
             ApiService.request(`/induction-employee/${assignmentId}/seen`, {
                 method: "PUT",
             })
-                .then(() => console.log("👁️ Inducción marcada como vista"))
-                .catch((err) => console.warn("⚠️ No se pudo marcar como vista:", err));
+                .then(() => console.log("Inducción marcada como vista"))
+                .catch((err) => console.warn("No se pudo marcar como vista:", err));
         }
     }, [assignmentId]);
 
-    // 🔹 Cargar preguntas y respuestas al cambiar de módulo
     useEffect(() => {
         if (modules[currentModule]) {
             loadQuestions(modules[currentModule].id);
@@ -61,7 +59,7 @@ export default function EmployeeTakeInduction({ assignmentId, inductionId, onCom
             );
             setQuestions(withAnswers);
         } catch (err) {
-            console.error("❌ Error cargando preguntas:", err);
+            console.error("Error cargando preguntas:", err);
         }
     };
 
@@ -103,16 +101,14 @@ export default function EmployeeTakeInduction({ assignmentId, inductionId, onCom
                 }
             });
 
-            const points = totalQuestions > 0
-                ? Math.round((correctCount / totalQuestions) * 100)
-                : 0;
+            const points =
+                totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
             console.log(`Puntos obtenidos: ${points} (${correctCount}/${totalQuestions} correctas)`);
 
             await ApiService.completeAssignment(assignmentId, points);
             alert(`Inducción completada con ${points} puntos`);
             onComplete && onComplete(points);
-
         } catch (err) {
             console.error("Error completando inducción:", err);
             alert("Error completando inducción");
@@ -120,7 +116,6 @@ export default function EmployeeTakeInduction({ assignmentId, inductionId, onCom
             setSubmitting(false);
         }
     };
-
 
     if (loading) return <div>Cargando inducción...</div>;
     const module = modules[currentModule];
@@ -172,9 +167,7 @@ export default function EmployeeTakeInduction({ assignmentId, inductionId, onCom
             {/* Detalles del módulo */}
             <div style={{ marginBottom: "20px" }}>
                 <h3>{module.name}</h3>
-                {module.description && (
-                    <p style={{ color: "#555" }}>{module.description}</p>
-                )}
+                {module.description && <p style={{ color: "#555" }}>{module.description}</p>}
             </div>
 
             {/* Link al video */}
@@ -197,7 +190,7 @@ export default function EmployeeTakeInduction({ assignmentId, inductionId, onCom
                             fontWeight: "bold",
                         }}
                     >
-                        🎥 Ver video aquí
+                        <Video size={16} style={{ marginRight: 4 }} /> Ver video aquí
                     </a>
                 </div>
             )}
@@ -215,54 +208,100 @@ export default function EmployeeTakeInduction({ assignmentId, inductionId, onCom
                                 paddingBottom: "10px",
                             }}
                         >
-                            <p>
-                                <strong>{q.question}</strong>
-                            </p>
+                            <p style={{ fontWeight: "600" }}>{q.question}</p>
+
+                            {/* Verdadero / Falso */}
                             {q.type === "truefalse" ? (
-                                <>
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            name={`q-${q.id}`}
-                                            value="true"
-                                            onChange={() =>
-                                                handleAnswerChange(q.id, "true")
-                                            }
-                                        />{" "}
-                                        Verdadero
-                                    </label>
-                                    <label style={{ marginLeft: "10px" }}>
-                                        <input
-                                            type="radio"
-                                            name={`q-${q.id}`}
-                                            value="false"
-                                            onChange={() =>
-                                                handleAnswerChange(q.id, "false")
-                                            }
-                                        />{" "}
-                                        Falso
-                                    </label>
-                                </>
-                            ) : (
-                                q.answers?.map((a) => (
+                                <div style={{ display: "flex", gap: "20px", marginTop: "8px" }}>
                                     <label
-                                        key={a.id}
                                         style={{
-                                            display: "block",
-                                            marginTop: "5px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "6px",
+                                            cursor: "pointer",
                                         }}
                                     >
                                         <input
                                             type="radio"
                                             name={`q-${q.id}`}
-                                            value={a.id}
-                                            onChange={() =>
-                                                handleAnswerChange(q.id, a.id)
-                                            }
-                                        />{" "}
-                                        {a.answer}
+                                            value="true"
+                                            onChange={() => handleAnswerChange(q.id, "true")}
+                                            style={{
+                                                accentColor: "#b00",
+                                                cursor: "pointer",
+                                                transform: "translateY(-1px)",
+                                            }}
+                                        />
+                                        Verdadero
                                     </label>
-                                ))
+
+                                    <label
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "6px",
+                                            cursor: "pointer",
+                                        }}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name={`q-${q.id}`}
+                                            value="false"
+                                            onChange={() => handleAnswerChange(q.id, "false")}
+                                            style={{
+                                                accentColor: "#b00",
+                                                cursor: "pointer",
+                                                transform: "translateY(-1px)",
+                                            }}
+                                        />
+                                        Falso
+                                    </label>
+                                </div>
+                            ) : (
+                                // Selección múltiple (alineada)
+                                <div
+                                    style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "auto 1fr",
+                                        rowGap: "8px",
+                                        columnGap: "10px",
+                                        marginTop: "8px",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    {q.answers?.map((a) => (
+                                        <label
+                                            key={a.id}
+                                            style={{
+                                                display: "contents",
+                                                cursor: "pointer",
+                                            }}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name={`q-${q.id}`}
+                                                value={a.id}
+                                                onChange={() => handleAnswerChange(q.id, a.id)}
+                                                style={{
+                                                    accentColor: "#b00",
+                                                    cursor: "pointer",
+                                                    width: "18px",
+                                                    height: "18px",
+                                                    marginLeft: "5px",
+                                                }}
+                                            />
+                                            <span
+                                                style={{
+                                                    fontSize: "15px",
+                                                    color: "#333",
+                                                    userSelect: "none",
+                                                }}
+                                            >
+                                                {a.answer}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     ))}

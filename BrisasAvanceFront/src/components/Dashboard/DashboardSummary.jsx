@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { RefreshCw, Users, User, Mail, FileText, Building, BarChart3, ClipboardList } from "lucide-react";
 import Card from "../Layout/Tarjeta";
 import { exportCSV } from "../Comunes/Utils/exportCSV";
 import ApiService from "../../services/api";
@@ -49,7 +50,7 @@ export default function DashboardSummary({ setActive }) {
                 setError("Error al cargar los datos desde las APIs. Verifica que el backend esté ejecutándose y que tengas permisos de administrador.");
             }
         } catch (err) {
-            console.error("❌ Error general cargando datos del dashboard:", err);
+            console.error("Error general cargando datos del dashboard:", err);
             setError("Error general al cargar los datos. Revisa la consola para más detalles.");
         } finally {
             setLoading(false);
@@ -89,7 +90,7 @@ export default function DashboardSummary({ setActive }) {
                 <h2>Error al cargar datos</h2>
                 <p>{error}</p>
                 <button onClick={loadData} style={styles.btn}>
-                    🔄 Reintentar
+                    <RefreshCw size={16} style={{ marginRight: 4 }} /> Reintentar
                 </button>
             </div>
         );
@@ -99,11 +100,11 @@ export default function DashboardSummary({ setActive }) {
         <div>
             <h2>Resumen general</h2>
             <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
-                <Card title="👥 Empleados" value={empleados.length} />
-                <Card title="👤 Usuarios" value={users.length} />
-                <Card title="📩 Solicitudes" value={applications.length} />
-                <Card title="📄 Contratos" value={contratos.length} />
-                <Card title="🏢 Áreas" value={areas.length} />
+                <Card title={<><Users size={14} style={{ marginRight: 4 }} /> Empleados</>} value={empleados.length} />
+                <Card title={<><User size={14} style={{ marginRight: 4 }} /> Usuarios</>} value={users.length} />
+                <Card title={<><Mail size={14} style={{ marginRight: 4 }} /> Solicitudes</>} value={applications.length} />
+                <Card title={<><FileText size={14} style={{ marginRight: 4 }} /> Contratos</>} value={contratos.length} />
+                <Card title={<><Building size={14} style={{ marginRight: 4 }} /> Áreas</>} value={areas.length} />
             </div>
 
             <div style={{ display: "flex", gap: 20, marginTop: 30, flexWrap: "wrap" }}>
@@ -150,19 +151,19 @@ export default function DashboardSummary({ setActive }) {
                         onClick={() => exportCSV("empleados_all.csv", empleados)}
                         style={styles.btn}
                     >
-                        📊 Exportar Empleados
+                        <BarChart3 size={16} style={{ marginRight: 4 }} /> Exportar Empleados
                     </button>
                     <button
                         onClick={() => exportCSV("applications_all.csv", applications)}
                         style={styles.btnAlt}
                     >
-                        📋 Exportar Solicitudes
+                        <ClipboardList size={16} style={{ marginRight: 4 }} /> Exportar Solicitudes
                     </button>
                     <button onClick={() => setActive("empleados")} style={styles.btn}>
-                        👥 Gestionar Empleados
+                        <Users size={16} style={{ marginRight: 4 }} /> Gestionar Empleados
                     </button>
                     <button onClick={() => setActive("applications")} style={styles.btnAlt}>
-                        📩 Ver Solicitudes
+                        <Mail size={16} style={{ marginRight: 4 }} /> Ver Solicitudes
                     </button>
                 </div>
             </div>

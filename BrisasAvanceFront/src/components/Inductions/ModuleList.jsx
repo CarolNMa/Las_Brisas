@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Folder, Plus, BookOpen, Edit, Trash2 } from "lucide-react";
 import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
 import Modal from "../Layout/Modal";
@@ -20,7 +21,7 @@ export default function ModuleList({ induction, onSelectModule }) {
             const data = await ApiService.getModulesByInduction(induction.id);
             setModules(data.data || data);
         } catch (err) {
-            console.error("❌ Error cargando módulos:", err);
+            console.error("Error cargando módulos:", err);
         } finally {
             setLoading(false);
         }
@@ -32,7 +33,7 @@ export default function ModuleList({ induction, onSelectModule }) {
             await ApiService.deleteModule(id);
             setModules(modules.filter((m) => m.id !== id));
         } catch (err) {
-            console.error("❌ Error eliminando módulo:", err);
+            console.error("Error eliminando módulo:", err);
         }
     };
 
@@ -43,7 +44,7 @@ export default function ModuleList({ induction, onSelectModule }) {
 
     const handleSaved = () => {
         setModalOpen(false);
-        load(); // refrescar lista
+        load();
     };
 
     if (loading) return <p>Cargando módulos...</p>;
@@ -52,9 +53,9 @@ export default function ModuleList({ induction, onSelectModule }) {
         <div>
             {/* Encabezado */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h3>📂 Módulos de {induction.name}</h3>
+                <h3><Folder size={16} style={{ marginRight: 8 }} /> Módulos de {induction.name}</h3>
                 <button style={styles.btn} onClick={() => handleOpenModal()}>
-                    ➕ Nuevo Módulo
+                    <Plus size={16} style={{ marginRight: 4 }} /> Nuevo Módulo
                 </button>
             </div>
 
@@ -83,13 +84,13 @@ export default function ModuleList({ induction, onSelectModule }) {
                                 </td>
                                 <td style={styles.td}>
                                     <button style={styles.btnSmall} onClick={() => onSelectModule(m)}>
-                                        📖 Ver
+                                        <BookOpen size={16} style={{ marginRight: 4 }} /> Ver
                                     </button>{" "}
                                     <button style={styles.btnSmall} onClick={() => handleOpenModal(m)}>
-                                        ✏️ Editar
+                                        <Edit size={16} style={{ marginRight: 4 }} /> Editar
                                     </button>{" "}
                                     <button style={styles.btnAlt} onClick={() => handleDelete(m.id)}>
-                                        🗑️ Eliminar
+                                        <Trash2 size={16} style={{ marginRight: 4 }} /> Eliminar
                                     </button>
                                 </td>
                             </tr>

@@ -24,7 +24,7 @@ public class resumeService {
     private final Iresume iResume;
     private final Iemployee iEmployee;
 
-    // 🔹 Listar todas las hojas de vida
+   
     public List<resumeDTO> getAllResumesDTO() {
         return iResume.findAll()
                 .stream()
@@ -32,22 +32,19 @@ public class resumeService {
                 .toList();
     }
 
-    // 🔹 Buscar por ID
+ 
     public Optional<resume> findById(int id) {
         return iResume.findById(id);
     }
 
-    // 🔹 Validar existencia de empleado
     public boolean existsEmployee(int id) {
         return iEmployee.existsById(id);
     }
 
-    // 🔹 Buscar DTO por ID
     public Optional<resumeDTO> getResumeDTOById(int id) {
         return iResume.findById(id).map(this::convertToDTO);
     }
 
-    // 🔹 Buscar hoja de vida de un empleado por email (para rol EMPLEADO)
     public Optional<resumeDTO> getResumeDTOByUserEmail(String email) {
         return iResume.findByEmployee_User_Email(email).map(this::convertToDTO);
     }
@@ -56,10 +53,8 @@ public class resumeService {
         return iResume.findByEmployee_User_Email(email);
     }
 
-    // 🔹 Guardar hoja de vida (crear o actualizar)
     public ResponseDTO<resumeDTO> save(resumeDTO dto) {
         try {
-            // Validación: empleado válido
             if (dto.getEmployeeId() <= 0) {
                 return new ResponseDTO<>(
                         "El ID del empleado es requerido",
@@ -67,7 +62,6 @@ public class resumeService {
                         null);
             }
 
-            // Validación: documento obligatorio
             if (!StringUtils.hasText(dto.getDocumentUrl())) {
                 return new ResponseDTO<>(
                         "El documento de la hoja de vida es obligatorio",
@@ -83,7 +77,6 @@ public class resumeService {
                         null);
             }
 
-            // Validar si ya existe hoja de vida para ese empleado (solo creación)
             if (dto.getId() == 0) {
                 Optional<resume> existingResume = iResume.findByEmployee_Id(dto.getEmployeeId());
                 if (existingResume.isPresent()) {
@@ -94,11 +87,9 @@ public class resumeService {
                 }
             }
 
-            // Construcción entidad
             resume entity = convertToEntity(dto);
             entity.setEmployee(empOpt.get());
 
-            // Manejo de fechas
             if (dto.getId() == 0) {
                 entity.setDate_create(LocalDateTime.now());
                 entity.setDate_update(LocalDateTime.now());
@@ -150,15 +141,12 @@ public class resumeService {
 
             resume existing = existingOpt.get();
 
-            // Mantener la fecha de creación
             LocalDateTime dateCreate = existing.getDate_create();
 
-            // ✅ Solo reemplaza documento si vino un archivo nuevo (documentUrl no null)
             if (StringUtils.hasText(dto.getDocumentUrl())) {
                 existing.setDocument_url(dto.getDocumentUrl());
             }
 
-            // ✅ Siempre actualiza observaciones, empleado y fecha update
             existing.setObservations(dto.getObservations());
             existing.setEmployee(empOpt.get());
             existing.setDate_update(LocalDateTime.now());
@@ -179,7 +167,6 @@ public class resumeService {
         }
     }
 
-    // 🔹 Eliminar hoja de vida
     public ResponseDTO<resumeDTO> deleteResume(int id) {
         Optional<resume> opt = findById(id);
         if (opt.isEmpty()) {
@@ -195,24 +182,21 @@ public class resumeService {
                 null);
     }
 
-    // 🔹 Convertir DTO -> Entidad
     private resume convertToEntity(resumeDTO dto) {
         return resume.builder()
                 .id(dto.getId())
                 .date_create(dto.getDateCreate())
                 .date_update(dto.getDateUpdate())
-                .document_url(dto.getDocumentUrl()) // Ruta física del archivo
+                .document_url(dto.getDocumentUrl())
                 .observations(dto.getObservations())
                 .build();
     }
 
-    // 🔹 Convertir Entidad -> DTO
     private resumeDTO convertToDTO(resume entity) {
         return resumeDTO.builder()
                 .id(entity.getId())
                 .dateCreate(entity.getDate_create())
                 .dateUpdate(entity.getDate_update())
-                // aquí devolvemos un endpoint de descarga, no la ruta física
                 .documentUrl("/api/v1/resumes/" + entity.getId() + "/download")
                 .observations(entity.getObservations())
                 .employeeId(entity.getEmployee().getId())

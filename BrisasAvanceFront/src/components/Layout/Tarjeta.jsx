@@ -1,7 +1,7 @@
 export default function Card({ title, value, children }) {
     return (
         <div style={styles.card}>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{title}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>{title}</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>{value}</div>
             {children}
         </div>

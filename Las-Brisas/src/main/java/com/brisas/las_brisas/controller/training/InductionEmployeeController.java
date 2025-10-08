@@ -17,14 +17,12 @@ public class InductionEmployeeController {
 
     private final InductionEmployeeService inductionEmployeeService;
 
-    // 🔹 ADMIN: ver todas las asignaciones
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(inductionEmployeeService.getAllFormatted());
     }
 
-    // 🔹 EMPLEADO: ver solo las suyas (ya formateadas con nombres)
     @PreAuthorize("hasRole('EMPLEADO')")
     @GetMapping("/me")
     public ResponseEntity<?> getMyInductions(Authentication auth) {
@@ -32,7 +30,6 @@ public class InductionEmployeeController {
         return ResponseEntity.ok(list);
     }
 
-    // 🔹 ADMIN: guardar (asignar inducción a empleado)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> save(@RequestBody induction_employeeDTO dto) {
@@ -40,7 +37,6 @@ public class InductionEmployeeController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(Integer.parseInt(response.getStatus())));
     }
 
-    // 🔹 EMPLEADO: marcar como vista
     @PreAuthorize("hasRole('EMPLEADO')")
     @PutMapping("/{id}/seen")
     public ResponseEntity<?> markAsSeen(@PathVariable int id) {
@@ -48,7 +44,6 @@ public class InductionEmployeeController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(Integer.parseInt(response.getStatus())));
     }
 
-    // 🔹 EMPLEADO: completar inducción
     @PreAuthorize("hasRole('EMPLEADO')")
     @PutMapping("/{id}/complete")
     public ResponseEntity<?> completeInduction(@PathVariable int id, @RequestParam int points) {
@@ -56,7 +51,6 @@ public class InductionEmployeeController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(Integer.parseInt(response.getStatus())));
     }
 
-    // 🔹 ADMIN: eliminar asignación
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {

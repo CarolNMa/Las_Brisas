@@ -21,7 +21,6 @@ export default function SchedulesModule() {
     const [form, setForm] = useState(initialForm);
     const [errors, setErrors] = useState({});
 
-    // filtros
     const [qDay, setQDay] = useState("");
     const [qShift, setQShift] = useState("");
 

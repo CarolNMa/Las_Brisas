@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ArrowLeft, Plus, RefreshCw, MessageCircle, Edit, Trash2 } from "lucide-react";
 import ApiService from "../../services/api";
 import { styles } from "../Dashboard/styles";
 import Modal from "../Layout/Modal";
@@ -22,7 +23,7 @@ export default function QuestionList({ moduleId }) {
             const data = await ApiService.getQuestionsByModule(moduleId);
             setQuestions(data.data || data);
         } catch (err) {
-            console.error("❌ Error cargando preguntas:", err);
+            console.error("Error cargando preguntas:", err);
         } finally {
             setLoading(false);
         }
@@ -34,7 +35,7 @@ export default function QuestionList({ moduleId }) {
             await ApiService.deleteQuestion(id);
             load();
         } catch (err) {
-            console.error("❌ Error eliminando pregunta:", err);
+            console.error("Error eliminando pregunta:", err);
         }
     };
 
@@ -49,7 +50,7 @@ export default function QuestionList({ moduleId }) {
         return (
             <div style={styles.card}>
                 <button style={styles.btnAlt} onClick={() => setSelectedQuestion(null)}>
-                    ⬅️ Volver a preguntas
+                    <ArrowLeft size={16} style={{ marginRight: 4 }} /> Volver a preguntas
                 </button>
                 <AnswerList question={selectedQuestion} />
             </div>
@@ -62,9 +63,9 @@ export default function QuestionList({ moduleId }) {
 
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                 <button style={styles.btn} onClick={() => { setEditing(null); setModalOpen(true); }}>
-                    ➕ Nueva Pregunta
+                    <Plus size={16} style={{ marginRight: 4 }} /> Nueva Pregunta
                 </button>
-                <button style={styles.btnAlt} onClick={load}>🔄 Actualizar</button>
+                <button style={styles.btnAlt} onClick={load}><RefreshCw size={16} style={{ marginRight: 4 }} /> Actualizar</button>
             </div>
 
             <table style={styles.table}>
@@ -87,19 +88,19 @@ export default function QuestionList({ moduleId }) {
                                     style={styles.btnSmall}
                                     onClick={() => setSelectedQuestion(q)}
                                 >
-                                    💬 Respuestas
+                                    <MessageCircle size={16} style={{ marginRight: 4 }} /> Respuestas
                                 </button>{" "}
                                 <button
                                     style={styles.btnSmall}
                                     onClick={() => { setEditing(q); setModalOpen(true); }}
                                 >
-                                    ✏️ Editar
+                                    <Edit size={16} style={{ marginRight: 4 }} /> Editar
                                 </button>{" "}
                                 <button
                                     style={styles.btnAlt}
                                     onClick={() => handleDelete(q.id)}
                                 >
-                                    🗑️ Eliminar
+                                    <Trash2 size={16} style={{ marginRight: 4 }} /> Eliminar
                                 </button>
                             </td>
                         </tr>

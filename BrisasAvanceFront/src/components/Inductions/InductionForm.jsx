@@ -36,7 +36,7 @@ export default function InductionForm({ induction, onClose, onSaved }) {
             if (onSaved) onSaved();
             onClose();
         } catch (err) {
-            console.error("❌ Error guardando inducción:", err);
+            console.error("Error guardando inducción:", err);
             alert("Error guardando inducción");
         } finally {
             setSaving(false);
@@ -67,9 +67,14 @@ export default function InductionForm({ induction, onClose, onSaved }) {
                     name="description"
                     value={form.description}
                     onChange={handleChange}
-                    className={styles.textarea}
-                    style={{ border: errors.description ? "1px solid red" : "" }}
+                    onFocus={(e) => (e.target.style.border = "1px solid #2563eb")}
+                    onBlur={(e) => (e.target.style.border = "1px solid #ddd")}
+                    style={{
+                        ...styles.textarea,
+                        border: errors.description ? "1px solid red" : "1px solid #ddd",
+                    }}
                 />
+
                 {errors.description && (
                     <span style={{ color: "red", fontSize: "12px" }}>{errors.description}</span>
                 )}

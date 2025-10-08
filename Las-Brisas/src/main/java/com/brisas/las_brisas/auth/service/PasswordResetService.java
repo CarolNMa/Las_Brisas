@@ -36,7 +36,6 @@ public class PasswordResetService {
             log.info("Código enviado a: {}", email);
         } catch (RuntimeException e) {
             log.error("Error enviando email a: {}", email, e);
-            // Proceed without throwing to allow testing the flow without email configuration
         }
 
         return "Código enviado al correo.";
@@ -91,7 +90,6 @@ public class PasswordResetService {
     }
 
     private String generateSecureCode() {
-        // Genera un código de 6 dígitos numérico seguro
         return String.valueOf(100000 + new Random().nextInt(900000));
     }
 }

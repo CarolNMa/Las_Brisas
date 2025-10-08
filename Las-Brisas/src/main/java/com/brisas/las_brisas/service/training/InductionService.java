@@ -65,13 +65,11 @@ public class InductionService {
 
             induction entity = convertToEntity(dto);
 
-            // Control de fechas
             if (entity.getId() == 0) {
                 entity.setDateCreate(LocalDateTime.now());
             }
             entity.setDateUpdate(LocalDateTime.now());
 
-            // IMPORTANTE: guardar y recuperar entidad persistida
             induction saved = iinduction.save(entity);
 
             return new ResponseDTO<>("Inducción guardada correctamente", HttpStatus.OK.toString(), convertToDTO(saved));

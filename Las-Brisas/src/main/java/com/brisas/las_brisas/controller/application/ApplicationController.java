@@ -27,7 +27,6 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    // 🔹 Obtener TODAS las solicitudes (ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<applicationDTO>> getAll() {
@@ -38,7 +37,6 @@ public class ApplicationController {
         return ResponseEntity.ok(apps);
     }
 
-    // 🔹 Obtener solicitudes del usuario autenticado (EMPLEADO)
     @PreAuthorize("hasRole('EMPLEADO')")
     @GetMapping("/me")
     public ResponseEntity<List<applicationDTO>> getMyApplications(Authentication auth) {
@@ -49,7 +47,6 @@ public class ApplicationController {
         return ResponseEntity.ok(apps);
     }
 
-    // 🔹 Obtener solicitud por ID
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
@@ -58,7 +55,6 @@ public class ApplicationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 🔹 Crear solicitud (EMPLEADO)
     @PreAuthorize("hasRole('EMPLEADO')")
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> create(
@@ -84,10 +80,9 @@ public class ApplicationController {
             }
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                    .body("❌ Error guardando archivo: " + e.getMessage());
+                    .body("Error guardando archivo: " + e.getMessage());
         }
 
-        // Parseo de fechas
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         LocalDateTime start = null, end = null;
         try {
@@ -99,7 +94,7 @@ public class ApplicationController {
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body("❌ Error en formato de fechas. Usa yyyy-MM-ddTHH:mm:ss → Ejemplo: 2025-10-06T00:00:00");
+                    .body("Error en formato de fechas. Usa yyyy-MM-ddTHH:mm:ss → Ejemplo: 2025-10-06T00:00:00");
         }
 
         applicationDTO dto = applicationDTO.builder()
@@ -113,14 +108,12 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.create(dto, auth.getName()));
     }
 
-    // 🔹 Eliminar solicitud
     @PreAuthorize("hasAnyRole('ADMIN','EMPLEADO')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
         return ResponseEntity.ok(applicationService.delete(id));
     }
 
-    // 🔹 Aprobar o rechazar (solo ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/approve")
     public ResponseEntity<?> approve(@PathVariable int id, @RequestParam boolean approved) {

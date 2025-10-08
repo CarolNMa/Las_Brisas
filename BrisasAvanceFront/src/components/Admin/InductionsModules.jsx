@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ArrowLeft, BookOpen, Plus, Folder, Edit, Trash2 } from "lucide-react";
 import { styles } from "../Dashboard/styles";
 import ApiService from "../../services/api";
 import Modal from "../Layout/Modal";
@@ -16,9 +17,6 @@ export default function FormacionesModule() {
     const [editing, setEditing] = useState(null);
     const [filterType, setFilterType] = useState("todos");
 
-    // =============================
-    // Cargar formaciones (inducción / capacitación)
-    // =============================
     useEffect(() => {
         loadData();
     }, []);
@@ -26,31 +24,27 @@ export default function FormacionesModule() {
     const loadData = async () => {
         try {
             setLoading(true);
-            const data = await ApiService.getAllInductions(); // ya devuelve todas (ambos tipos)
+            const data = await ApiService.getAllInductions();
             setFormaciones(data.data || data);
         } catch (err) {
-            console.error("❌ Error cargando formaciones:", err);
+            console.error("Error cargando formaciones:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    // =============================
-    // Eliminar formación
-    // =============================
+
     const handleDelete = async (id) => {
         if (!window.confirm("¿Seguro que deseas eliminar esta formación?")) return;
         try {
             await ApiService.deleteInduction(id);
             setFormaciones(formaciones.filter((f) => f.id !== id));
         } catch (err) {
-            console.error("❌ Error eliminando formación:", err);
+            console.error("Error eliminando formación:", err);
         }
     };
 
-    // =============================
-    // Abrir modal crear / editar
-    // =============================
+
     const handleOpenModal = (formacion = null) => {
         setEditing(formacion);
         setModalOpen(true);
@@ -61,15 +55,13 @@ export default function FormacionesModule() {
         loadData();
     };
 
-    // =============================
-    // Vistas condicionales
-    // =============================
+
     if (loading) return <p>Cargando formaciones...</p>;
 
     if (view === "modules" && selectedFormacion) {
         return (
             <div style={styles.card}>
-                <button style={styles.btnAlt} onClick={() => setView("list")}>⬅️ Volver</button>
+                <button style={styles.btnAlt} onClick={() => setView("list")}><ArrowLeft size={16} style={{ marginRight: 4 }} /> Volver</button>
                 <ModuleList
                     induction={selectedFormacion}
                     onSelectModule={(m) => {
@@ -84,20 +76,18 @@ export default function FormacionesModule() {
     if (view === "moduleDetail" && selectedModule) {
         return (
             <div style={styles.card}>
-                <button style={styles.btnAlt} onClick={() => setView("modules")}>⬅️ Volver</button>
+                <button style={styles.btnAlt} onClick={() => setView("modules")}><ArrowLeft size={16} style={{ marginRight: 4 }} /> Volver</button>
                 <ModuleDetail moduleId={selectedModule.id} showQuestions={selectedFormacion?.type === "induction"} />
             </div>
         );
     }
 
-    // =============================
-    // Render principal
-    // =============================
+
     return (
         <div style={styles.card}>
             {/* Encabezado */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2>📚 Formaciones (Inducciones y Capacitaciones)</h2>
+                <h2><BookOpen size={20} style={{ marginRight: 8 }} /> Formaciones (Inducciones y Capacitaciones)</h2>
                 <div style={{ display: "flex", gap: 10 }}>
                     <select
                         value={filterType}
@@ -109,7 +99,7 @@ export default function FormacionesModule() {
                         <option value="capacitacion">Capacitaciones</option>
                     </select>
                     <button style={styles.btn} onClick={() => handleOpenModal()}>
-                        ➕ Nueva
+                        <Plus size={16} style={{ marginRight: 4 }} /> Nueva
                     </button>
                 </div>
             </div>
@@ -144,19 +134,19 @@ export default function FormacionesModule() {
                                             setView("modules");
                                         }}
                                     >
-                                        📂 Módulos
+                                        <Folder size={16} style={{ marginRight: 4 }} /> Módulos
                                     </button>{" "}
                                     <button
                                         style={styles.btnSmall}
                                         onClick={() => handleOpenModal(f)}
                                     >
-                                        ✏️ Editar
+                                       Editar
                                     </button>{" "}
                                     <button
                                         style={styles.btnAlt}
                                         onClick={() => handleDelete(f.id)}
                                     >
-                                        🗑️ Eliminar
+                                        Eliminar
                                     </button>
                                 </td>
                             </tr>

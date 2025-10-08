@@ -106,7 +106,7 @@ public class QuestionService {
         return questionDTO.builder()
                 .id(entity.getId())
                 .question(entity.getQuestion())
-                .type(entity.getType().name().toLowerCase()) // 🔥 siempre minúscula
+                .type(entity.getType().name().toLowerCase())
                 .moduleInductionId(entity.getModuleInduction() != null ? entity.getModuleInduction().getId() : 0)
                 .build();
     }

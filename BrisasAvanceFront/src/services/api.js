@@ -11,7 +11,7 @@ class ApiService {
 
   getAuthHeaders() {
     const token = localStorage.getItem("brisas:token");
-    console.log("🔑 Token usado en request:", token);
+    console.log("Token usado en request:", token);
     return {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -44,7 +44,6 @@ class ApiService {
           throw new Error("La respuesta del servidor no es un JSON válido");
         }
       } else {
-        // Si no es JSON, devolver el texto
         return await response.text();
       }
     } catch (error) {
@@ -115,7 +114,7 @@ class ApiService {
     URL.revokeObjectURL(downloadUrl);
   }
 
-  // SOLICITUDES (Applications)
+  // SOLICITUDES
 
   // Empleado
   async getMyApplications() {
@@ -437,9 +436,7 @@ class ApiService {
     return this.request(`/role/${id}`, { method: "DELETE" });
   }
 
-  // ==============================
   // INDUCCIONES
-  // ==============================
   getAllInductions() {
     return this.request("/inductions", { method: "GET" });
   }
@@ -459,9 +456,7 @@ class ApiService {
     return this.request(`/inductions/${id}`, { method: "DELETE" });
   }
 
-  // ==============================
   // MÓDULOS
-  // ==============================
   getModulesByInduction(inductionId) {
     return this.request(`/modules/induction/${inductionId}`, { method: "GET" });
   }
@@ -493,9 +488,7 @@ class ApiService {
     return this.request(`/modules/${id}`, { method: "DELETE" });
   }
 
-  // ==============================
   // PREGUNTAS
-  // ==============================
   getQuestionsByModule(moduleId) {
     return this.request(`/questions/module/${moduleId}`, { method: "GET" });
   }
@@ -511,9 +504,7 @@ class ApiService {
     return this.request(`/questions/${id}`, { method: "DELETE" });
   }
 
-  // ==============================
   // RESPUESTAS
-  // ==============================
   async getAnswersByQuestion(questionId) {
     return this.request(`/answers/question/${questionId}`);
   }
@@ -558,14 +549,11 @@ class ApiService {
 
   //  CAPACITACIONES
 
-  // ======================= CAPACITACIONES =======================
 
-  // Listar capacitaciones
   async getAllTrainings() {
     return this.request("/inductions/capacitaciones");
   }
 
-  // Crear capacitación
   async createTraining(data) {
     return this.request("/inductions/capacitaciones", {
       method: "POST",
@@ -573,7 +561,6 @@ class ApiService {
     });
   }
 
-  // Actualizar capacitación (usa el mismo endpoint POST)
   async updateTraining(id, data) {
     return this.request("/inductions/capacitaciones", {
       method: "POST",
@@ -581,7 +568,6 @@ class ApiService {
     });
   }
 
-  // Eliminar capacitación
   async deleteTraining(id) {
     return this.request(`/inductions/${id}`, { method: "DELETE" });
   }
@@ -616,7 +602,7 @@ class ApiService {
     return this.request(`/employees/${id}`, { method: "DELETE" });
   }
 
-  // ---- Hojas de Vida ----
+  // HOJAS DE VIDA
   async getAllResumes() {
     return this.request("/resumes");
   }
@@ -630,7 +616,7 @@ class ApiService {
 
     const response = await fetch(`${API_URL}/resumes/upload`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` }, // ⚠️ sin Content-Type
+      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
 
@@ -649,7 +635,7 @@ class ApiService {
 
     const response = await fetch(`${API_URL}/resumes/${id}`, {
       method: "PUT",
-      headers: { Authorization: `Bearer ${token}` }, // ⚠️ no pongas Content-Type
+      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
 
@@ -682,7 +668,7 @@ class ApiService {
     URL.revokeObjectURL(downloadUrl);
   }
 
-  // ==== CERTIFICADOS LABORALES ====
+  // CERTIFICADOS LABORALES
 
   async generateCertificateByEmployee(employeeId) {
     const token = localStorage.getItem("brisas:token");
@@ -692,10 +678,9 @@ class ApiService {
     });
 
     if (!response.ok) throw new Error("No se pudo generar el certificado");
-    return await response.blob(); // PDF como blob
+    return await response.blob();
   }
 
-  // Utilidad para descargar blob como archivo
   async downloadCertificate(blob, filename = "certificado.pdf") {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -708,7 +693,7 @@ class ApiService {
   }
 
 
-  // ---- Employee - Post ----
+  // EMPLEADO - CARGO
   async getAllEmployeePosts() {
     return this.request("/employee-post");
   }
@@ -728,7 +713,7 @@ class ApiService {
     return this.request(`/employee-post/${id}`, { method: "DELETE" });
   }
 
-  // ---- Employee Areas ----
+  // EMPLEADO - ÁREAS
   async getAllEmployeeAreas() {
     return this.request("/employee-areas");
   }
@@ -744,7 +729,7 @@ class ApiService {
     return this.request(`/employee-areas/${id}`, { method: "DELETE" });
   }
 
-  // ---- Employee - Location ----
+  // EMPLEADO - UBICACIONES
 
   async getAllEmployeeLocations() {
     return this.request("/employee-locations");
@@ -759,7 +744,7 @@ class ApiService {
     return this.request(`/employee-locations/${id}`, { method: "DELETE" });
   }
 
-  // ---- Employee - Schedule ----
+  // EMPLEADO - HORAS
   async getAllEmployeeSchedules() {
     return this.request("/employee-schedules");
   }
@@ -773,7 +758,7 @@ class ApiService {
     return this.request(`/employee-schedules/${id}`, { method: "DELETE" });
   }
 
-  // ==== SCHEDULES ====
+  // HORARIO
   async getAllSchedules() {
     return this.request(`/schedules`);
   }

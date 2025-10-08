@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ApiService from "../../services/api";
-import { styles } from "../Dashboard/styles"; 
+import { styles } from "../Dashboard/styles";
 
 export default function ModuleForm({ inductionId, moduleData = null, onClose, onSaved }) {
     const [form, setForm] = useState({
@@ -44,7 +44,7 @@ export default function ModuleForm({ inductionId, moduleData = null, onClose, on
             onSaved?.();
             onClose?.();
         } catch (err) {
-            console.error("❌ Error guardando módulo:", err);
+            console.error("Error guardando módulo:", err);
             alert("Error guardando módulo");
         } finally {
             setSaving(false);
@@ -52,34 +52,52 @@ export default function ModuleForm({ inductionId, moduleData = null, onClose, on
     };
 
     return (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <h3>{form.id ? "Editar Módulo" : "Nuevo Módulo"}</h3>
+
+            {/* Nombre */}
             <input
-                className={styles.input}
+                style={styles.input}
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 placeholder="Nombre del módulo"
             />
+
+            {/* Descripción */}
             <textarea
-                className={styles.textarea}
+                style={styles.textarea}
                 name="description"
                 value={form.description}
                 onChange={handleChange}
                 placeholder="Descripción"
             />
+
+            {/* URL del video */}
             <input
-                className={styles.input}
+                style={styles.input}
                 name="videoUrl"
                 value={form.videoUrl}
                 onChange={handleChange}
                 placeholder="URL del video"
             />
+
+            {/* Botones */}
             <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                <button className={styles.button} onClick={handleSave} disabled={saving}>
+                <button
+                    style={styles.btn}
+                    onClick={handleSave}
+                    disabled={saving}
+                >
                     {saving ? "Guardando..." : "Guardar"}
                 </button>
-                <button className={styles.buttonCancel} onClick={onClose}>Cancelar</button>
+
+                <button
+                    style={styles.btnAlt}
+                    onClick={onClose}
+                >
+                    Cancelar
+                </button>
             </div>
         </div>
     );

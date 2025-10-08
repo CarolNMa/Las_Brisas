@@ -27,7 +27,6 @@ public class ResumeController {
 
     private final resumeService resumeService;
 
-    // 🔹 Crear hoja de vida con archivo (ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/upload")
     public ResponseEntity<ResponseDTO<resumeDTO>> uploadResume(
@@ -36,34 +35,29 @@ public class ResumeController {
             @RequestParam("file") MultipartFile file) {
 
         try {
-            // Validación archivo
             if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().body(
                         new ResponseDTO<>("El archivo PDF es obligatorio", "400", null));
             }
 
-            // Validación empleado
             if (!resumeService.existsEmployee(employeeId)) {
                 return ResponseEntity.badRequest().body(
                         new ResponseDTO<>("El empleado con ID " + employeeId + " no existe", "400", null));
             }
 
-            // Carpeta en la raíz del proyecto
             String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "resumes";
             File dir = new File(uploadDir);
             if (!dir.exists())
                 dir.mkdirs();
 
-            // Guardar archivo
             String filePath = uploadDir + File.separator + System.currentTimeMillis() + "_"
                     + file.getOriginalFilename();
             file.transferTo(new File(filePath));
 
-            // Construcción DTO
             resumeDTO dto = resumeDTO.builder()
                     .id(0)
                     .employeeId(employeeId)
-                    .documentUrl(filePath) // se convierte en URL en service
+                    .documentUrl(filePath) 
                     .observations(observations != null ? observations : "")
                     .dateCreate(java.time.LocalDateTime.now())
                     .dateUpdate(java.time.LocalDateTime.now())
@@ -80,14 +74,12 @@ public class ResumeController {
         }
     }
 
-    // 🔹 Listar todas las hojas de vida (ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllResumes() {
         return ResponseEntity.ok(resumeService.getAllResumesDTO());
     }
 
-    // 🔹 Descargar hoja de vida por ID (ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/download")
     public ResponseEntity<?> downloadResume(@PathVariable int id) {
@@ -110,7 +102,6 @@ public class ResumeController {
                 .body(resource);
     }
 
-    // 🔹 Eliminar hoja de vida (ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDTO<resumeDTO>> deleteResume(@PathVariable int id) {
@@ -118,7 +109,6 @@ public class ResumeController {
         return ResponseEntity.status(Integer.parseInt(response.getStatus())).body(response);
     }
 
-    // 🔹 Empleado obtiene su hoja de vida
     @PreAuthorize("hasRole('EMPLEADO')")
     @GetMapping("/me")
     public ResponseEntity<?> getMyResume(Authentication auth) {
@@ -130,7 +120,6 @@ public class ResumeController {
         return ResponseEntity.ok(opt.get());
     }
 
-    // 🔹 Empleado descarga su hoja de vida
     @PreAuthorize("hasRole('EMPLEADO')")
     @GetMapping("/me/download")
     public ResponseEntity<?> downloadMyResume(Authentication auth) {
@@ -178,7 +167,7 @@ public class ResumeController {
             resumeDTO dto = resumeDTO.builder()
                     .id(id)
                     .employeeId(employeeId)
-                    .documentUrl(filePath) // solo se actualiza si hay archivo nuevo
+                    .documentUrl(filePath) 
                     .observations(observations != null ? observations : "")
                     .dateUpdate(LocalDateTime.now())
                     .build();

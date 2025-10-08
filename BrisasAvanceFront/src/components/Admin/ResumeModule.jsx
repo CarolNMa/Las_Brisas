@@ -44,7 +44,7 @@ export default function ResumesModule() {
             await ApiService.deleteResume(id);
             setResumes(resumes.filter((r) => r.id !== id));
         } catch (err) {
-            console.error("❌ Error eliminando hoja de vida:", err);
+            console.error("Error eliminando hoja de vida:", err);
         }
     };
 
@@ -99,10 +99,8 @@ export default function ResumesModule() {
             if (form.file) formData.append("file", form.file);
 
             if (editingResume) {
-                // ✅ Editar
                 await ApiService.updateResume(editingResume.id, formData);
             } else {
-                // ✅ Crear
                 await ApiService.uploadResume(formData);
             }
 
@@ -111,7 +109,7 @@ export default function ResumesModule() {
         } catch (err) {
             let msg = err?.message || "Error guardando hoja de vida";
             alert(msg);
-            console.error("❌ Error guardando hoja de vida:", err);
+            console.error("Error guardando hoja de vida:", err);
         }
     };
 
@@ -213,9 +211,15 @@ export default function ResumesModule() {
                             <textarea
                                 value={form.observations}
                                 onChange={(e) => setForm({ ...form, observations: e.target.value })}
-                                style={{ width: "100%", padding: 6, border: "1px solid #ddd", borderRadius: 4 }}
+                                style={{
+                                    ...styles.textarea,
+                                    border: "1px solid #ddd",
+                                    minHeight: "100px",
+                                }}
+                                placeholder="Escribe aquí comentarios, notas o detalles relevantes sobre la hoja de vida..."
                             />
                         </label>
+
 
                         <label>
                             Archivo PDF:

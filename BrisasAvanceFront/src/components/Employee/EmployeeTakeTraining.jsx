@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Eye, AlertTriangle, GraduationCap, Video } from "lucide-react";
 import ApiService from "../../services/api";
 
 export default function EmployeeTakeTraining({ assignment, onComplete }) {
@@ -9,50 +10,43 @@ export default function EmployeeTakeTraining({ assignment, onComplete }) {
 
     useEffect(() => {
         loadModules();
-        markAsSeen(); // 👁️ marcar como vista al entrar
+        markAsSeen();
     }, []);
 
-    // ==============================
-    // Cargar módulos de capacitación
-    // ==============================
     const loadModules = async () => {
         try {
             const data = await ApiService.getModulesByInduction(assignment.inductionId);
             setModules(data.data || data);
         } catch (err) {
-            console.error("❌ Error cargando módulos de capacitación:", err);
+            console.error("Error cargando módulos de capacitación:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    // ==============================
-    // Marcar como vista
-    // ==============================
+   
     const markAsSeen = async () => {
         try {
             await ApiService.request(`/induction-employee/${assignment.id}/seen`, {
                 method: "PUT",
             });
-            console.log("👁️ Capacitación marcada como vista");
+            console.log("Capacitación marcada como vista");
         } catch (err) {
-            console.warn("⚠️ No se pudo marcar como vista:", err);
+            console.warn("No se pudo marcar como vista:", err);
         }
     };
 
-    // ==============================
-    // Completar capacitación (100 puntos)
-    // ==============================
+   
     const markComplete = async () => {
         try {
             setSubmitting(true);
             await ApiService.request(`/induction-employee/${assignment.id}/complete-training`, {
                 method: "PUT",
             });
-            alert("🎓 Capacitación completada correctamente con 100 puntos");
+            alert("Capacitación completada correctamente con 100 puntos");
             onComplete && onComplete();
         } catch (err) {
-            console.error("❌ Error completando capacitación:", err);
+            console.error("Error completando capacitación:", err);
             alert("Error al completar la capacitación");
         } finally {
             setSubmitting(false);
@@ -64,7 +58,7 @@ export default function EmployeeTakeTraining({ assignment, onComplete }) {
     const module = modules[currentModule];
     if (!module) return <div>No hay módulos disponibles</div>;
 
-    // Asegurarse de tener una URL válida
+   
     const videoUrl =
         module.videoUrl || module.video_url || module.urlVideo || module.video;
 
@@ -85,7 +79,7 @@ export default function EmployeeTakeTraining({ assignment, onComplete }) {
                 <div style={{ margin: "20px 0" }}>
 
                     <p style={{ marginTop: "10px" }}>
-                        🎥{" "}
+                        <Video size={16} style={{ marginRight: 4 }} />
                         <a
                             href={videoUrl}
                             target="_blank"
@@ -97,7 +91,7 @@ export default function EmployeeTakeTraining({ assignment, onComplete }) {
                     </p>
                 </div>
             ) : (
-                <p style={{ color: "gray" }}>⚠️ No hay video disponible para este módulo.</p>
+                <p style={{ color: "gray" }}><AlertTriangle size={16} style={{ marginRight: 4 }} /> No hay video disponible para este módulo.</p>
             )}
 
             {/* Navegación entre módulos */}

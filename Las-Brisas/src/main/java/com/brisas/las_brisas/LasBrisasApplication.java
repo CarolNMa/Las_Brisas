@@ -27,7 +27,6 @@ public class LasBrisasApplication {
 	@Bean
 	CommandLineRunner initDatabase(Irol rolRepo, Iuser userRepo, PasswordEncoder encoder) {
 		return args -> {
-			// Create ADMIN role if it doesn't exist
 			if (rolRepo.findByName("ADMIN").isEmpty()) {
 				rol adminRole = rol.builder()
 					.name("ADMIN")
@@ -37,7 +36,6 @@ public class LasBrisasApplication {
 			}
 
 
-			// Create default admin user if no users exist
 			if (userRepo.count() == 0) {
 				rol adminRole = rolRepo.findByName("ADMIN")
 					.orElseThrow(() -> new RuntimeException("ADMIN role not found"));

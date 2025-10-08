@@ -222,7 +222,7 @@ export default function EmployeesModule() {
                                                 `certificado_${e.firstName}_${e.lastName}.pdf`
                                             );
                                         } catch (err) {
-                                            alert("❌ Error al generar certificado: " + err.message);
+                                            alert("Error al generar certificado: " + err.message);
                                         }
                                     }}
                                 >

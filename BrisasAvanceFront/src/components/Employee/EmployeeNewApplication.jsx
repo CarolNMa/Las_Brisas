@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { CheckCircle, X } from "lucide-react";
 import api from "../../services/api";
 
 export default function EmployeeNewApplication({ employeeId, onCreated }) {
@@ -68,7 +69,6 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
         } else {
             setForm({ ...form, [name]: value });
         }
-        // Clear errors when user starts typing
         if (errors[name]) {
             setErrors({ ...errors, [name]: null });
         }
@@ -95,7 +95,7 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
 
             const response = await api.createApplication(formData, true);
 
-            setMessage({ type: "success", text: "Solicitud enviada correctamente ✅" });
+            setMessage({ type: "success", text: "Solicitud enviada correctamente" });
 
             if (onCreated) onCreated();
 
@@ -108,7 +108,7 @@ export default function EmployeeNewApplication({ employeeId, onCreated }) {
             });
         } catch (err) {
             console.error("Error creando solicitud:", err);
-            setMessage({ type: "error", text: "Error al enviar la solicitud ❌" });
+            setMessage({ type: "error", text: "Error al enviar la solicitud" });
         } finally {
             setLoading(false);
         }
