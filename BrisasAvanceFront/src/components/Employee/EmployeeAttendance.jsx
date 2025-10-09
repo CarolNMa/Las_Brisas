@@ -189,7 +189,6 @@ export default function EmployeeAttendance({ employeeId }) {
 }
 
 const styles = {
-  // 🔹 Página general con fondo y margen lateral
   page: {
     marginLeft: "250px",
     padding: "30px 40px",
