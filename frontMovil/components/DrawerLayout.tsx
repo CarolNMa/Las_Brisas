@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Alert }
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Home, User, Key, Users, Calendar, Clock, Briefcase, MapPin, Building, Mail, ClipboardList, FileText } from "lucide-react-native";
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = 250;
@@ -13,19 +14,19 @@ interface DrawerLayoutProps {
 }
 
 const items = [
-  { key: "dashboard", label: "Dashboard", icon: "🏠" },
-  { key: "users", label: "Usuarios", icon: "👤" },
-  { key: "roles", label: "Roles", icon: "🔑" },
-  { key: "empleados", label: "Empleados", icon: "👥" },
-  { key: "positions", label: "Posiciones", icon: "💼" },
-  { key: "locations", label: "Ubicaciones", icon: "📍" },
-  { key: "areas", label: "Áreas", icon: "🏢" },
-  { key: "applications", label: "Solicitudes", icon: "📩" },
-  { key: "applicationTypes", label: "Tipos de Solicitud", icon: "📋" },
-  { key: "contratos", label: "Contratos", icon: "📄" },
-  { key: "attendance", label: "Asistencia", icon: "📋" },
-  { key: "schedules", label: "Horarios", icon: "🕒" },
-  { key: "employeePosts", label: "Relaciones Empleado - Cargo", icon: "👥" },
+  { key: "dashboard", label: "Dashboard", icon: <Home size={16} /> },
+  { key: "users", label: "Usuarios", icon: <User size={16} /> },
+  { key: "roles", label: "Roles", icon: <Key size={16} /> },
+  { key: "empleados", label: "Empleados", icon: <Users size={16} /> },
+  { key: "positions", label: "Posiciones", icon: <Briefcase size={16} /> },
+  { key: "locations", label: "Ubicaciones", icon: <MapPin size={16} /> },
+  { key: "areas", label: "Áreas", icon: <Building size={16} /> },
+  { key: "applications", label: "Solicitudes", icon: <Mail size={16} /> },
+  { key: "applicationTypes", label: "Tipos de Solicitud", icon: <ClipboardList size={16} /> },
+  { key: "contratos", label: "Contratos", icon: <FileText size={16} /> },
+  { key: "attendance", label: "Asistencia", icon: <Clock size={16} /> },
+  { key: "schedules", label: "Horarios", icon: <Calendar size={16} /> },
+  { key: "employeePosts", label: "Relaciones Empleado - Cargo", icon: <Users size={16} /> },
 ];
 
 export default function DrawerLayout({ children, currentModule = "dashboard" }: DrawerLayoutProps) {
@@ -85,7 +86,7 @@ export default function DrawerLayout({ children, currentModule = "dashboard" }: 
                 ]}
                 onPress={() => handleModulePress(item.key)}
               >
-                <Text style={styles.drawerIcon}>{item.icon}</Text>
+                <View style={styles.drawerIcon}>{item.icon}</View>
                 <Text style={[
                   styles.drawerText,
                   currentModule === item.key && styles.activeDrawerText
@@ -164,10 +165,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#a50000',
   },
   drawerIcon: {
-    fontSize: 24,
     marginRight: 15,
     width: 30,
-    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   drawerText: {
     fontSize: 16,
