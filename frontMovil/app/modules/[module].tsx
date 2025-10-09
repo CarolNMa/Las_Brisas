@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import DrawerLayout from "@/components/DrawerLayout";
 
-// Import module components
 import UsersModule from "./UsersModule";
 import RolesModule from "./RolesModule";
 import EmployeesModule from "./EmployeesModule";

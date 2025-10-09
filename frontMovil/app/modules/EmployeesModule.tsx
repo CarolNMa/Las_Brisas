@@ -71,7 +71,6 @@ export default function EmployeeList() {
   const [submitting, setSubmitting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  // ✅ Verificar autenticación
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem("jwt_token");
@@ -86,7 +85,6 @@ export default function EmployeeList() {
     checkAuth();
   }, []);
 
-  // ✅ Cargar empleados
   useEffect(() => {
     if (isAuthenticated === true) {
       const fetchEmployees = async () => {
@@ -126,7 +124,6 @@ export default function EmployeeList() {
     setModalVisible(true);
   }, [resetForm]);
 
-  // ✅ Crear empleado
   const handleSubmit = useCallback(async () => {
     if (
       !formData.firstName.trim() ||
@@ -153,7 +150,6 @@ export default function EmployeeList() {
     }
   }, [formData, resetForm]);
 
-  // ✅ Filtrar lista
   const filteredEmployees = employees.filter(
     (employee) =>
       (employee.firstName?.toLowerCase() || "").includes(searchText.toLowerCase()) ||
@@ -237,7 +233,7 @@ export default function EmployeeList() {
         }
       />
 
-      {/* Modal para Crear Empleado */}
+      {}
       <Modal
         visible={modalVisible}
         animationType="slide"

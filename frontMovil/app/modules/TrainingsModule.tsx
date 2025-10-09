@@ -30,7 +30,6 @@ export default function TrainingsModule() {
     try {
       setLoading(true);
 
-      // Mock data showing all backend fields (only capacitacion type)
       const mockTrainings: Training[] = [
         {
           id: 2,

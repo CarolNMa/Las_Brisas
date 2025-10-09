@@ -17,9 +17,9 @@ import api from "../../services/api";
 interface EmployeePost {
   id: number;
   employeeId: number;
-  employeeName?: string; // opcional para evitar undefined
+  employeeName?: string; 
   postId: number;
-  postName?: string; // opcional
+  postName?: string;
 }
 
 interface Employee {
@@ -100,7 +100,6 @@ export default function EmployeePostModule() {
 
       const newRelation = await api.createEmployeePost(employeePostData);
 
-      // Añadir datos locales para evitar undefined
       const completeRelation: EmployeePost = {
         ...newRelation,
         employeeName: employee ? `${employee.firstName} ${employee.lastName}` : "Desconocido",
@@ -115,7 +114,6 @@ export default function EmployeePostModule() {
     }
   };
 
-  // 🔹 Evita el error con valores por defecto
   const filteredRelations = relations.filter((relation) =>
     (relation.employeeName ?? "").toLowerCase().includes(searchText.toLowerCase()) ||
     (relation.postName ?? "").toLowerCase().includes(searchText.toLowerCase())

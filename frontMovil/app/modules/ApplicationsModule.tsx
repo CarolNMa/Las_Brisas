@@ -24,7 +24,7 @@ interface Application {
   employeeId: number;
   applicationTypeId: number;
   applicationTypeName?: string;
-  // Additional fields that might come from the backend join
+
   employee?: {
     id: number;
     firstName: string;

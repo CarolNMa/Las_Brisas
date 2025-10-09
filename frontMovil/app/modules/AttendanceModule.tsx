@@ -52,7 +52,7 @@ export default function AttendanceModule() {
       setAttendances(att);
       setEmployees(emp);
     } catch (err: any) {
-      console.error("❌ Error cargando asistencias:", err);
+      console.error("Error cargando asistencias:", err);
       Alert.alert("Error", "Error cargando asistencias. Verifica el backend.");
     } finally {
       setLoading(false);
@@ -121,7 +121,7 @@ export default function AttendanceModule() {
       <Text style={styles.title}>📋 Registro de Asistencias</Text>
 
 
-      {/* Filtros */}
+      {}
       <View style={styles.filterContainer}>
         <Text style={styles.label}>Empleado:</Text>
         <View style={styles.pickerContainer}>
@@ -168,7 +168,7 @@ export default function AttendanceModule() {
         </TouchableOpacity>
       </View>
 
-      {/* Lista de asistencias */}
+      {}
       <FlatList
         data={filteredAttendances}
         keyExtractor={(item) => item.id.toString()}

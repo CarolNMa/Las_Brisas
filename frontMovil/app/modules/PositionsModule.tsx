@@ -44,7 +44,6 @@ export default function PositionsModule() {
   const [submitting, setSubmitting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  // 🔐 Verificación de autenticación
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem("jwt_token");
@@ -59,7 +58,6 @@ export default function PositionsModule() {
     checkAuth();
   }, []);
 
-  // 🔄 Cargar posiciones
   useEffect(() => {
     if (isAuthenticated === true) {
       const fetchPositions = async () => {
@@ -171,7 +169,7 @@ export default function PositionsModule() {
         }
       />
 
-      {/* Modal para crear posición */}
+      {}
       <Modal
         visible={modalVisible}
         animationType="slide"

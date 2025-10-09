@@ -90,7 +90,6 @@ export default function RolesModule() {
       setModalVisible(false);
       resetForm();
 
-      // Refrescar lista
       const rolesData = await api.getRoles();
       setRoles(rolesData);
     } catch (error) {
@@ -147,7 +146,7 @@ export default function RolesModule() {
         }
       />
 
-      {/* Modal para Crear Rol */}
+      {}
       <Modal
         visible={modalVisible}
         animationType="slide"

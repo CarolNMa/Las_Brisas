@@ -38,7 +38,6 @@ export default function AreasModule() {
   const [submitting, setSubmitting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  // 🔐 Verificación de sesión
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem("jwt_token");
@@ -53,7 +52,6 @@ export default function AreasModule() {
     checkAuth();
   }, []);
 
-  // 🔄 Cargar áreas
   useEffect(() => {
     if (isAuthenticated === true) {
       const fetchAreas = async () => {
@@ -93,7 +91,6 @@ export default function AreasModule() {
       setModalVisible(false);
       resetForm();
 
-      // Recargar lista
       const areasData = await api.getAreas();
       setAreas(areasData);
     } catch (error) {
@@ -157,7 +154,7 @@ export default function AreasModule() {
         }
       />
 
-      {/* Modal Crear Área */}
+      {}
       <Modal
         visible={modalVisible}
         animationType="slide"

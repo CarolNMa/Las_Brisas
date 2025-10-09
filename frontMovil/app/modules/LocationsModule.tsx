@@ -37,7 +37,6 @@ export default function LocationsModule() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  // 🔐 Verificación de sesión
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem("jwt_token");
@@ -50,7 +49,6 @@ export default function LocationsModule() {
     checkAuth();
   }, []);
 
-  // 🔄 Cargar ubicaciones
   useEffect(() => {
     const fetchLocations = async () => {
       try {
